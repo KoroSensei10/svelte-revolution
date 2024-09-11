@@ -1,3 +1,6 @@
+import Message from '$lib/models/Message.js';
+import Scenario from '$lib/models/Scenario.js';
+import Session from '$lib/models/Session.js';
 import { error } from '@sveltejs/kit';
 import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
 
@@ -5,24 +8,36 @@ export interface Node extends SimulationNodeDatum {
 	id: number;
 	name: string;
 }
+export type Link = SimulationLinkDatum<Node>;
 
-let nodes: Node[] = [
-	{ id: 1, name: 'A' },
-	{ id: 2, name: 'B' },
-	{ id: 3, name: 'C' }
-];
+async function getSession(sessionId: number) {
+	const session = await Session.findByPk(sessionId, { include: [Message, Scenario] });
 
-let links: SimulationLinkDatum<Node>[] = [
-	{ source: 1, target: 2 },
-	{ source: 2, target: 3 },
-	{ source: 3, target: 1 }
-];
+	if (!session) throw error(404);
 
-export function load({ params }) {
-	// const post = posts.find((post) => post.slug === params.slug);
-	// if (!post) throw error(404);
-	return {
-		nodes,
-		links
-	};
+	return session.toJSON();
+}
+
+function buildNodesAndLinks(session: any): { nodes: Node[]; links: Link[] } {
+	const nodes: Node[] = [];
+	const links: Link[] = [];
+
+	session.messages.forEach((message: any) => {
+		nodes.push({ id: message.id, name: message.title });
+		if (message.parentId) {
+			links.push({ source: message.parentId, target: message.id });
+		}
+	});
+
+	return { nodes, links };
+}
+
+export async function load({ params }) {
+	// TODO : dépendre de params.slug
+	const sessoinData = await getSession(1);
+
+	const nodesAndLinks = buildNodesAndLinks(sessoinData);
+	console.log(nodesAndLinks);
+
+	return nodesAndLinks;
 }

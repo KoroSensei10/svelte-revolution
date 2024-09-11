@@ -29,8 +29,8 @@ Message.init(
 	}
 );
 
-Message.belongsTo(Session, {
-	foreignKey: 'sessionId'
+Message.hasOne(Message, {
+	foreignKey: 'parentId'
 });
 
 export default Message;

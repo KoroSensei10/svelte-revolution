@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../sequelize';
 import Info from './Info';
-import Session from './Session';
 
-const Scenario = sequelize.define(
-	'Scenario',
+class Scenario extends Info {}
+
+Scenario.init(
 	{
 		name: {
 			type: DataTypes.STRING,
@@ -17,11 +17,9 @@ const Scenario = sequelize.define(
 		}
 	},
 	{
-		modelName: 'scenario'
+		sequelize,
+		modelName: 'Scenario'
 	}
 );
-
-Scenario.hasMany(Info);
-Scenario.hasMany(Session);
 
 export default Scenario;
