@@ -1,26 +1,36 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
 import Session from './Session';
 
-const Message = sequelize.define(
-	'Message',
+class Message extends Model {}
+
+Message.init(
 	{
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+			unique: 'compositeIndex'
+		},
+		sessionId: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			unique: 'compositeIndex'
+		},
 		title: {
 			type: DataTypes.STRING,
 			allowNull: false
-		},
-		text: {
-			type: DataTypes.TEXT,
-			allowNull: false
-		},
-		belief: DataTypes.STRING,
-		author: DataTypes.STRING
+		}
 	},
 	{
-		modelName: 'message'
+		sequelize,
+		modelName: 'message',
+		timestamps: false
 	}
 );
 
-Message.belongsTo(Message, { as: 'parent' });
+Message.belongsTo(Session, {
+	foreignKey: 'sessionId'
+});
 
 export default Message;

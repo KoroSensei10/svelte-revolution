@@ -1,25 +1,15 @@
-<script>
-    let username = '';
-    let password = '';
-  
-    const register = async () => {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-  
-      const data = await res.json();
-      if (data.success) {
-        alert('Registration successful!');
-      } else {
-        alert(data.message);
-      }
-    };
+<script lang="ts">
+	import type { ActionData } from './$types';
+
+	export let form: ActionData;
 </script>
 
-<form on:submit|preventDefault={register}>
-    <input type="text" bind:value={username} placeholder="Username" />
-    <input type="password" bind:value={password} placeholder="Password" />
-    <button type="submit">Register</button>
+<form method="POST" action="?/register">
+	{#if form?.missing}<p class="error">The email field is required</p>{/if}
+	{#if form?.error}
+		<p class="error">Error !</p>
+	{/if}
+	<input name="username" type="text" placeholder="Username" />
+	<input name="password" type="password" placeholder="Password" />
+	<button type="submit">Register</button>
 </form>

@@ -1,25 +1,26 @@
 <script lang="ts">
-	let username = '';
-	let password = '';
+	import type { PageData, ActionData } from './$types';
 
-	async function login() {
-		const res = await fetch('/api/login', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ username, password })
-		});
-
-		const data = await res.json();
-		if (data.success) {
-			alert('Login successful!');
-		} else {
-			alert(data.message);
-		}
-	}
+	export let data: PageData;
+	export let form: ActionData;
 </script>
 
-<form on:submit|preventDefault={login}>
-	<input type="text" bind:value={username} placeholder="Username" />
-	<input type="password" bind:value={password} placeholder="Password" />
+{#if form?.success}
+	<!-- ce message est ephémère ; il existe parce que la page a été rendue en
+		réponse à la soumission du formulaire. il disparaîtra si l'utilisateur recharge la page -->
+	<p>Vous êtes bien connecté•e ! Ravi de vous revoir, {data.user?.username}</p>
+{/if}
+
+<form method="POST" action="?/login">
+	{#if form?.missing}<p class="error">The username field is required</p>{/if}
+	{#if form?.incorrect}<p class="error">Invalid credentials!</p>{/if}
+	<label>
+		Username
+		<input name="username" type="text" placeholder="Username" />
+	</label>
+	<label>
+		Password
+		<input name="password" type="password" placeholder="Password" />
+	</label>
 	<button type="submit">Login</button>
 </form>

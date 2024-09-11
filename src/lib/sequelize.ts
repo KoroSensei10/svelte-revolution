@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
 });
 
 export const sync = async () => {
-	await sequelize.sync({ force: true });
+	await sequelize.sync();
 };
 
 export default sequelize;

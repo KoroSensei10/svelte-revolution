@@ -8,12 +8,13 @@
 	export let nodes: Node[] = [];
 	export let links: SimulationLinkDatum<Node>[] = [];
 
-	const socket = io();
+	const socket = io('');
 	socket.on('connect', () => {
-		console.log('Connected to server');
+		socket.emit('join', 'room1');
 	});
-	socket.on('eventFromServer', (message) => {
-		console.log(message);
+
+	socket.on('newNodeServer', (data: { selectedNodeId: number; newNodeName }) => {
+		addNode(data.selectedNodeId, data.newNodeName);
 	});
 
 	const width = 600;
@@ -106,27 +107,17 @@
 		updateGraph();
 	}
 
-	function addNode() {
-		if (!selectedNode) {
-			alert("Veuillez sélectionner un nœud d'abord");
-			return;
-		}
-
-		if (newNodeName.trim() === '') {
-			alert('Veuillez entrer un nom pour le nouveau nœud');
-			return;
-		}
-
+	function addNode(selectedNodeIdSnoup: number, newNodeNameSnoup: string) {
 		const newNode = {
 			id: nodes.length + 1,
-			name: newNodeName
+			name: newNodeNameSnoup || newNodeName
 		};
 
 		nodes.push(newNode);
 
-		links.push({ source: selectedNode.id, target: newNode.id });
+		const id = selectedNodeIdSnoup || selectedNode.id;
 
-		newNodeName = '';
+		links.push({ source: id, target: newNode.id });
 
 		simulation.nodes(nodes);
 		simulation.force('link')?.links(links);
@@ -134,6 +125,28 @@
 		simulation.alpha(1).restart();
 
 		updateGraph();
+
+		fetch('/api/graph', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ newNode, selectNodeId: id })
+		});
+
+		newNodeName = '';
+	}
+
+	function addNodeHook() {
+		if (!selectedNode) {
+			alert("Veuillez sélectionner un nœud d'abord");
+			return;
+		}
+		if (newNodeName.trim() === '') {
+			alert('Veuillez entrer un nom pour le nouveau nœud');
+			return;
+		}
+		socket.emit('newNodeClient', { selectedNodeId: selectedNode.id, newNodeName });
 	}
 
 	onMount(async () => {
@@ -158,7 +171,7 @@
 <input id="nodeName" bind:value={newNodeName} placeholder="Entrez un nom" />
 
 <!-- Bouton pour ajouter un nouveau nœud -->
-<button on:click={addNode}>Ajouter un nœud au nœud sélectionné</button>
+<button on:click={addNodeHook}>Ajouter un nœud au nœud sélectionné</button>
 
 <button on:click={() => socket.send('Hello from client')}>Send event to server</button>
 

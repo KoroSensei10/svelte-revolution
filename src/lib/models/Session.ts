@@ -1,9 +1,9 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
-import Message from './Message';
 
-const Session = sequelize.define(
-	'Session',
+class Session extends Model {}
+
+Session.init(
 	{
 		name: {
 			type: DataTypes.STRING,
@@ -12,10 +12,9 @@ const Session = sequelize.define(
 		}
 	},
 	{
+		sequelize,
 		modelName: 'session'
 	}
 );
-
-Session.hasMany(Message);
 
 export default Session;

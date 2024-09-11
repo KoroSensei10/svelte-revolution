@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../sequelize';
-import User from './User';
 import Info from './Info';
 import Session from './Session';
 
