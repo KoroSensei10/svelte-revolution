@@ -1,15 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
-import Session from './Session';
 
-class Message extends Model {}
+class Message extends Model { }
 
 Message.init(
 	{
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
-			autoIncrement: true,
 			unique: 'compositeIndex'
 		},
 		sessionId: {
@@ -20,12 +18,15 @@ Message.init(
 		title: {
 			type: DataTypes.STRING,
 			allowNull: false
+		},
+		text: {
+			type: DataTypes.STRING,
+			allowNull: false
 		}
 	},
 	{
 		sequelize,
-		modelName: 'message',
-		timestamps: false
+		modelName: 'Message'
 	}
 );
 

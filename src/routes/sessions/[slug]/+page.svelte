@@ -5,5 +5,5 @@
 </script>
 
 <div class="container">
-	<ForceGraph nodes={data.nodes} links={data.links} />
+	<ForceGraph nodes={data.nodes} links={data.links} sessionId={data.id} />
 </div>

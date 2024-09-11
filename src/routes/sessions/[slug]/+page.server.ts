@@ -6,11 +6,28 @@ import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
 
 export interface Node extends SimulationNodeDatum {
 	id: number;
-	name: string;
+	title: string;
+	text: string;
 }
 export type Link = SimulationLinkDatum<Node>;
 
-async function getSession(sessionId: number) {
+export interface SessionData {
+	id: number;
+	name: string;
+	creatorId: string | null;
+	Messages: {
+		id: number,
+		title: string
+	}[];
+	Scenario: {
+		id: number;
+		name: string;
+		prologue: string;
+		creatorId: string | null;
+	}
+}
+
+async function getSession(sessionId: number): Promise<SessionData> {
 	const session = await Session.findByPk(sessionId, { include: [Message, Scenario] });
 
 	if (!session) throw error(404);
@@ -18,13 +35,13 @@ async function getSession(sessionId: number) {
 	return session.toJSON();
 }
 
-function buildNodesAndLinks(session: any): { nodes: Node[]; links: Link[] } {
+function buildNodesAndLinks(session: SessionData): { nodes: Node[]; links: Link[] } {
 	const nodes: Node[] = [];
 	const links: Link[] = [];
 
-	session.messages.forEach((message: any) => {
-		nodes.push({ id: message.id, name: message.title });
-		if (message.parentId) {
+	session.Messages.forEach((message: any) => {
+		nodes.push({ id: message.id, title: message.title, text: message.text });
+		if (message.parentId && message.parentId !== 'NULL') {
 			links.push({ source: message.parentId, target: message.id });
 		}
 	});
@@ -34,10 +51,15 @@ function buildNodesAndLinks(session: any): { nodes: Node[]; links: Link[] } {
 
 export async function load({ params }) {
 	// TODO : dépendre de params.slug
-	const sessoinData = await getSession(1);
+	const sessionData = await getSession(1);
 
-	const nodesAndLinks = buildNodesAndLinks(sessoinData);
+	const nodesAndLinks = buildNodesAndLinks(sessionData);
+
 	console.log(nodesAndLinks);
 
-	return nodesAndLinks;
+
+	return {
+		...sessionData,
+		...nodesAndLinks
+	};
 }

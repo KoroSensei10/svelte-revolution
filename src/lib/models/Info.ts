@@ -16,7 +16,7 @@ const Info = sequelize.define(
 		type: DataTypes.STRING // décret/fins/prologue
 	},
 	{
-		modelName: 'info'
+		modelName: 'Info'
 	}
 );
 

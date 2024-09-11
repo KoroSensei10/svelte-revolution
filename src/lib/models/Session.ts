@@ -3,7 +3,7 @@ import sequelize from '../sequelize';
 import Message from './Message';
 import Scenario from './Scenario';
 
-class Session extends Model {}
+class Session extends Model { }
 
 Session.init(
 	{
@@ -15,8 +15,7 @@ Session.init(
 	},
 	{
 		sequelize,
-		modelName: 'session',
-		timestamps: false
+		modelName: 'Session',
 	}
 );
 
