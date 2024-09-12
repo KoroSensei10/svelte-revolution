@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import * as d3 from 'd3';
+	import * as d3 from 'd3'; // TODO : Importer uniquement les parties nécessaires
 	import { io } from 'socket.io-client';
-	import type { Simulation, SimulationLinkDatum } from 'd3';
+
 	import type { Node } from '../routes/sessions/[slug]/+page.server';
 	import AddNode from './AddNode.svelte';
+	import type { Simulation, SimulationLinkDatum } from 'd3';
+	import toast from 'svelte-french-toast';
 
 	export let sessionId: number;
 	export let nodes: Node[] = [];
@@ -12,7 +14,7 @@
 
 	const socket = io();
 
-	const height = window.innerHeight - 300;
+	let height = 500;
 
 	let svg: SVGElement;
 	let selectedNode: Node | null = null;
@@ -23,19 +25,17 @@
 		socket.emit('join', 'session' + sessionId);
 	});
 
-	socket.on(
-		'newNodeServer',
-		async (data: { selectedNodeId: number; nodeTitle: string; nodeText: string }) => {
-			await addNode(data.selectedNodeId, data.nodeTitle, data.nodeText);
-		}
-	);
+	socket.on('newNodeServer', async ({ node, parentNodeId }) => {
+		console.log('newNodeServer', node, parentNodeId);
+		updateGraph(node, parentNodeId);
+	});
 
-	function updateGraph(svgDomElement: SVGElement) {
-		const svgElement = d3.select(svgDomElement);
-		
-		const currentWidth = parseInt(svgElement.style('width'), 10)
-		svgElement.attr("width", currentWidth)
-		svgElement.attr("height", height)
+	function renderGraph() {
+		const svgElement = d3.select(svg);
+
+		const currentWidth = parseInt(svgElement.style('width'), 10);
+		svgElement.attr('width', currentWidth);
+		svgElement.attr('height', height);
 
 		// Update links
 		const link = svgElement
@@ -44,7 +44,7 @@
 			.join('line')
 			.attr('stroke', '#999')
 			.attr('stroke-opacity', 0.6)
-			.attr('stroke-width', (d) => Math.sqrt(d.value));
+			.attr('stroke-width', (d) => Math.sqrt(Number(d.index || 0 + 1)));
 
 		// Update nodes
 		const node = svgElement
@@ -64,21 +64,22 @@
 			})
 			.call(
 				d3
-					.drag()
-					.on('start', (event, d: Node) => {
+					.drag<any, Node>()
+					.on('start', (event, d) => {
 						if (!event.active) simulation.alphaTarget(0.3).restart();
 						d.fx = d.x;
 						d.fy = d.y;
 					})
-					.on('drag', (event, d: Node) => {
+					.on('drag', (event, d) => {
 						d.fx = event.x;
 						d.fy = event.y;
 					})
-					.on('end', (event, d: Node) => {
+					.on('end', (event, d) => {
 						if (!event.active) simulation.alphaTarget(0);
 						d.fx = null;
 						d.fy = null;
-					})
+					}),
+				null
 			)
 			.on('mouseout', () => {
 				// Réinitialiser la couleur des liens
@@ -114,52 +115,52 @@
 		simulation.force('center', d3.forceCenter(currentWidth / 2, height / 2));
 	}
 
-	function selectNode(node: Node) {
-		selectedNode = node;
-		updateGraph(svg);
+	function updateGraph(node: Node, parentNodeId: number) {
+		nodes.push(node);
+		links.push({ source: parentNodeId, target: node.id });
+		restartSimulation();
 	}
 
-	async function addNode(selectedNodeId: number, newNodeTitle: string, newNodeText: string) {
-		const newNode = {
-			id: nodes.length + 1,
-			title: newNodeTitle,
-			text: newNodeText
-		};
+	async function addNode(title: string, text: string, parentNodeId: number) {
+		const newNode = await addNodeToDb(title, text, parentNodeId);
+		
+		socket.emit('newNodeClient', { node: newNode, parentNodeId });
 
-		nodes.push(newNode);
+		updateGraph(newNode, parentNodeId);
 
-		const id = selectedNodeId;
-
-		links.push({ source: id, target: newNode.id });
-
-		simulation.nodes(nodes);
-		simulation.force('link')?.links(links);
-
-		simulation.alpha(1).restart();
-
-		await addNodeToDb(newNode, id);
-
-		updateGraph(svg);
+		toast.success('Nœud ajouté avec succès', {
+			position: 'bottom-center',
+		});
 	}
 
-	async function addNodeToDb(newNode: Node, selectNodeId: number) {
-		await fetch('/api/graph/addNode', {
+	async function addNodeToDb(title: string, text: string, selectNodeId: number) {
+		const response = await fetch('/api/graph/addNode', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ newNode, selectNodeId, sessionId })
+			body: JSON.stringify({ newNode: {
+				title,
+				text
+			}, selectNodeId, sessionId })
 		});
+		return response.json() as Promise<Node>;
+	}
+
+	function selectNode(node: Node) {
+		selectedNode = node;
+		renderGraph();
 	}
 
 	function restartSimulation() {
 		simulation.nodes(nodes);
 		simulation.force('link')?.links(links);
-		simulation.alpha(1).restart();	
-		updateGraph(svg);
+		simulation.alpha(1).restart();
+		renderGraph();
 	}
 
 	onMount(() => {
+		height = window.innerHeight - 300;
 		simulation = d3
 			.forceSimulation(nodes)
 			.force(
@@ -169,9 +170,8 @@
 					.id((d) => d.id)
 					.distance(100)
 			)
-			.force('charge', d3.forceManyBody().strength(-200))
-
-		updateGraph(svg);
+			.force('charge', d3.forceManyBody().strength(-300));
+		renderGraph();
 	});
 </script>
 
@@ -181,5 +181,5 @@
 	<svg class="w-full" bind:this={svg}></svg>
 </div>
 <div>
-	<AddNode {socket} selectedNodeId={selectedNode?.id} />
+	<AddNode addnode={addNode} selectedNodeId={selectedNode?.id} />
 </div>

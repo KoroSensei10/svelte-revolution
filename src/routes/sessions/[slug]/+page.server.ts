@@ -38,7 +38,7 @@ async function getSession(sessionId: number): Promise<SessionData> {
 function buildNodesAndLinks(session: SessionData): { nodes: Node[]; links: Link[] } {
 	const nodes: Node[] = [];
 	const links: Link[] = [];
-
+	
 	session.Messages.forEach((message: any) => {
 		nodes.push({ id: message.id, title: message.title, text: message.text });
 		if (message.parentId && message.parentId !== 'NULL') {
@@ -50,7 +50,6 @@ function buildNodesAndLinks(session: SessionData): { nodes: Node[]; links: Link[
 }
 
 export async function load({ params }) {
-	// TODO : dépendre de params.slug
 	const sessionData = await getSession(Number(params.slug));
 
 	const nodesAndLinks = buildNodesAndLinks(sessionData);
