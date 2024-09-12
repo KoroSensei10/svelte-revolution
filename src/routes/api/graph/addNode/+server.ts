@@ -16,7 +16,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	const lastMessage = await getLastMessage(data.sessionId);
 
 	if (!lastMessage) {
-		error(500, 'No messages found');
+		error(500, {
+			message: 'No message found',
+			status: 500
+		});
 	}
 
 	const lastMessageId = Number(lastMessage.get('id'));

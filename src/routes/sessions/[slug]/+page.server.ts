@@ -30,7 +30,10 @@ export interface SessionData {
 async function getSession(sessionId: number): Promise<SessionData> {
 	const session = await Session.findByPk(sessionId, { include: [Message, Scenario] });
 
-	if (!session) error(404);
+	if (!session) error(404, {
+		message: 'Session not found',
+		status: 404
+	});
 
 	return session.toJSON();
 }
