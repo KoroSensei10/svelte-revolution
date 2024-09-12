@@ -3,36 +3,34 @@
 	import * as d3 from 'd3';
 	import { io } from 'socket.io-client';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
-	import type { Node, SessionData } from '../routes/sessions/[slug]/+page.server';
+	import type { Node } from '../routes/sessions/[slug]/+page.server';
+	import AddNode from './AddNode.svelte';
 
 	export let sessionId: number;
 	export let nodes: Node[] = [];
 	export let links: SimulationLinkDatum<Node>[] = [];
 
-	const socket = io('');
+	const socket = io();
 
 	const width = 600;
 	const height = 400;
 
 	let svg: SVGElement;
 	let selectedNode: Node | null = null; // Variable pour stocker le nœud sélectionné
-	let newNodeTitle = ''; // Variable pour stocker le nom du nouveau nœud
-	let newNodeText = '';
 
 	let simulation: Simulation<Node, SimulationLinkDatum<Node>>;
 
 	socket.on('connect', () => {
-		socket.emit('join', 'room1');
+		socket.emit('join', 'session' + sessionId);
 	});
 
 	socket.on(
 		'newNodeServer',
-		async (data: { selectedNodeId: number; newNodeTitle: string; newNodeText: string }) => {
-			await addNode(data.selectedNodeId, data.newNodeTitle, data.newNodeText);
+		async (data: { selectedNodeId: number; nodeTitle: string; nodeText: string }) => {
+			await addNode(data.selectedNodeId, data.nodeTitle, data.nodeText);
 		}
 	);
 
-	// Fonction pour mettre à jour le graphe
 	function updateGraph(svgElement = d3.select(svg).attr('width', width).attr('height', height)) {
 		// Update links
 		const link = svgElement
@@ -113,20 +111,16 @@
 		updateGraph();
 	}
 
-	async function addNode(
-		selectedNodeIdSnoup: number,
-		newNodeTitleSnoup: string,
-		newNodeText: string
-	) {
+	async function addNode(selectedNodeId: number, newNodeTitle: string, newNodeText: string) {
 		const newNode = {
 			id: nodes.length + 1,
-			title: newNodeTitleSnoup || newNodeTitle,
-			text: newNodeTitleSnoup || newNodeText
+			title: newNodeTitle,
+			text: newNodeText
 		};
 
 		nodes.push(newNode);
 
-		const id = selectedNodeIdSnoup || selectedNode?.id;
+		const id = selectedNodeId;
 
 		links.push({ source: id, target: newNode.id });
 
@@ -135,43 +129,18 @@
 
 		simulation.alpha(1).restart();
 
-		updateGraph();
-
 		await addNodeToDb(newNode, id);
 
-		console.log(newNode);
-
-		newNodeTitle = '';
-		newNodeText = '';
+		updateGraph();
 	}
 
-	async function addNodeToDb(newNode: Node, id: number) {
+	async function addNodeToDb(newNode: Node, selectNodeId: number) {
 		await fetch('/api/graph/addNode', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ newNode, selectNodeId: id, sessionId })
-		});
-	}
-
-	function addNodeHook() {
-		if (!selectedNode) {
-			alert("Veuillez sélectionner un nœud d'abord");
-			return;
-		}
-		if (newNodeTitle.trim() === '') {
-			alert('Veuillez entrer un nom pour le nouveau nœud');
-			return;
-		}
-		if (newNodeText.trim() === '') {
-			alert('Veuillez entrer un texte pour le nouveau nœud');
-			return;
-		}
-		socket.emit('newNodeClient', {
-			selectedNodeId: selectedNode.id,
-			newNodeTitle,
-			newNodeText
+			body: JSON.stringify({ newNode, selectNodeId, sessionId })
 		});
 	}
 
@@ -192,14 +161,6 @@
 	});
 </script>
 
-<!-- Champ de texte pour le nom du nouveau nœud -->
-<label for="nodeTitle">Nom du nouveau nœud :</label>
-<input id="nodeTitle" bind:value={newNodeTitle} placeholder="Entrez le titre" />
-<label for="nodeText">Texte du nouveau noeud :</label>
-<input id="nodeText" bind:value={newNodeText} placeholder="Entrez votre texte" />
-
-<!-- Bouton pour ajouter un nouveau nœud -->
-<button on:click={addNodeHook}>Ajouter un nœud au nœud sélectionné</button>
-
-<!-- Affichage du graphe -->
 <svg bind:this={svg}></svg>
+
+<AddNode {socket} selectedNodeId={selectedNode?.id} />

@@ -1,33 +1,39 @@
 import Message from '$lib/models/Message';
-import { sync } from '$lib/sequelize';
 import type { RequestHandler } from '@sveltejs/kit';
 
+async function getLastMessage(sessionId: string) {
+	return await Message.findOne({
+		where: {
+			sessionId
+		},
+		order: [['id', 'DESC']]
+	});
+}
+
 export const POST: RequestHandler = async ({ request }) => {
-    sync();
+	const data = JSON.parse(await request.text());
 
-    const data = JSON.parse(await request.text());
+	const lastMessage = await getLastMessage(data.sessionId);
 
-    const lastMessage = await Message.findOne({
-        where: {
-            sessionId: data.sessionId
-        }, order: [
-            ['id', 'DESC']
-        ]
-    });
+	if (!lastMessage) {
+		return new Response('error');
+	}
 
-    if (!lastMessage) {
-        return new Response('error');
-    }
+	const lastMessageId = Number(lastMessage.get('id'));
 
-    const lastMessageId = lastMessage?.get('id') as number;
+	const node = {
+		id: lastMessageId + 1,
+		title: data.newNode.title,
+		text: data.newNode.text,
+		parentId: data.selectNodeId,
+		sessionId: data.sessionId
+	};
 
-    Message.create({
-        id: lastMessageId + 1,
-        sessionId: data.sessionId,
-        title: data.newNode.title,
-        text: data.newNode.text,
-        parentId: data.selectNodeId
-    })
+	Message.create(node);
 
-    return new Response('ok');
+	return new Response(JSON.stringify(node), {
+		headers: {
+			'content-type': 'application/json'
+		}
+	});
 };

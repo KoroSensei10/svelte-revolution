@@ -16,21 +16,21 @@ export interface SessionData {
 	name: string;
 	creatorId: string | null;
 	Messages: {
-		id: number,
-		title: string
+		id: number;
+		title: string;
 	}[];
 	Scenario: {
 		id: number;
 		name: string;
 		prologue: string;
 		creatorId: string | null;
-	}
+	};
 }
 
 async function getSession(sessionId: number): Promise<SessionData> {
 	const session = await Session.findByPk(sessionId, { include: [Message, Scenario] });
 
-	if (!session) throw error(404);
+	if (!session) error(404);
 
 	return session.toJSON();
 }
@@ -51,12 +51,9 @@ function buildNodesAndLinks(session: SessionData): { nodes: Node[]; links: Link[
 
 export async function load({ params }) {
 	// TODO : dépendre de params.slug
-	const sessionData = await getSession(1);
+	const sessionData = await getSession(Number(params.slug));
 
 	const nodesAndLinks = buildNodesAndLinks(sessionData);
-
-	console.log(nodesAndLinks);
-
 
 	return {
 		...sessionData,
