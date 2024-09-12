@@ -3,8 +3,8 @@
 	import * as d3 from 'd3'; // TODO : Importer uniquement les parties nécessaires
 	import { io } from 'socket.io-client';
 
-	import type { Node } from '../routes/sessions/[slug]/+page.server';
-	import AddNode from './AddNode.svelte';
+	import type { Node } from '../../routes/sessions/[slug]/+page.server';
+	import AddNode from './graphe/AddNode.svelte';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import toast from 'svelte-french-toast';
 
@@ -26,7 +26,6 @@
 	});
 
 	socket.on('newNodeServer', async ({ node, parentNodeId }) => {
-		console.log('newNodeServer', node, parentNodeId);
 		updateGraph(node, parentNodeId);
 	});
 
@@ -123,13 +122,13 @@
 
 	async function addNode(title: string, text: string, parentNodeId: number) {
 		const newNode = await addNodeToDb(title, text, parentNodeId);
-		
+
 		socket.emit('newNodeClient', { node: newNode, parentNodeId });
 
 		updateGraph(newNode, parentNodeId);
 
 		toast.success('Nœud ajouté avec succès', {
-			position: 'bottom-center',
+			position: 'bottom-center'
 		});
 	}
 
@@ -139,10 +138,14 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ newNode: {
-				title,
-				text
-			}, selectNodeId, sessionId })
+			body: JSON.stringify({
+				newNode: {
+					title,
+					text
+				},
+				selectNodeId,
+				sessionId
+			})
 		});
 		return response.json() as Promise<Node>;
 	}
