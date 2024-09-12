@@ -12,11 +12,10 @@
 
 	const socket = io();
 
-	const width = 600;
-	const height = 400;
+	const height = window.innerHeight - 300;
 
 	let svg: SVGElement;
-	let selectedNode: Node | null = null; // Variable pour stocker le nœud sélectionné
+	let selectedNode: Node | null = null;
 
 	let simulation: Simulation<Node, SimulationLinkDatum<Node>>;
 
@@ -31,7 +30,13 @@
 		}
 	);
 
-	function updateGraph(svgElement = d3.select(svg).attr('width', width).attr('height', height)) {
+	function updateGraph(svgDomElement: SVGElement) {
+		const svgElement = d3.select(svgDomElement);
+		
+		const currentWidth = parseInt(svgElement.style('width'), 10)
+		svgElement.attr("width", currentWidth)
+		svgElement.attr("height", height)
+
 		// Update links
 		const link = svgElement
 			.selectAll('line')
@@ -93,6 +98,7 @@
 			.attr('dy', -20) // Positionne le texte au-dessus du nœud
 			.text((d) => d.title);
 
+		// Update simulation
 		simulation.on('tick', () => {
 			link.attr('x1', (d) => d.source.x)
 				.attr('y1', (d) => d.source.y)
@@ -104,11 +110,13 @@
 			// Positionner les labels en fonction des positions des nœuds
 			labels.attr('x', (d) => String(d.x)).attr('y', (d) => String(d.y));
 		});
+
+		simulation.force('center', d3.forceCenter(currentWidth / 2, height / 2));
 	}
 
 	function selectNode(node: Node) {
 		selectedNode = node;
-		updateGraph();
+		updateGraph(svg);
 	}
 
 	async function addNode(selectedNodeId: number, newNodeTitle: string, newNodeText: string) {
@@ -131,7 +139,7 @@
 
 		await addNodeToDb(newNode, id);
 
-		updateGraph();
+		updateGraph(svg);
 	}
 
 	async function addNodeToDb(newNode: Node, selectNodeId: number) {
@@ -142,6 +150,13 @@
 			},
 			body: JSON.stringify({ newNode, selectNodeId, sessionId })
 		});
+	}
+
+	function restartSimulation() {
+		simulation.nodes(nodes);
+		simulation.force('link')?.links(links);
+		simulation.alpha(1).restart();	
+		updateGraph(svg);
 	}
 
 	onMount(() => {
@@ -155,12 +170,16 @@
 					.distance(100)
 			)
 			.force('charge', d3.forceManyBody().strength(-200))
-			.force('center', d3.forceCenter(width / 2, height / 2));
 
-		updateGraph();
+		updateGraph(svg);
 	});
 </script>
 
-<svg bind:this={svg}></svg>
+<svelte:window on:resize={() => restartSimulation()} />
 
-<AddNode {socket} selectedNodeId={selectedNode?.id} />
+<div class="border border-gray-300 rounded-xl m-5">
+	<svg class="w-full" bind:this={svg}></svg>
+</div>
+<div>
+	<AddNode {socket} selectedNodeId={selectedNode?.id} />
+</div>

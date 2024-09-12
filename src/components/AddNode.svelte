@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Socket } from 'socket.io-client';
 
-	export let socket: Socket; // TODO : type this
+	export let socket: Socket;
 	export let selectedNodeId: number | null = null;
 
 	let nodeTitle = '';
@@ -28,7 +28,7 @@
 	}
 </script>
 
-<form>
+<form class="flex flex-col justify-center items-center border border-gray-300 rounded-xl mx-5 p-5">
 	<label>
 		Nom du nouveau nœud :
 		<input id="nodeTitle" bind:value={nodeTitle} placeholder="Entrez le titre" />
@@ -37,5 +37,5 @@
 		Texte du nouveau noeud :
 		<input id="nodeText" bind:value={nodeText} placeholder="Entrez votre texte" />
 	</label>
-	<button on:click={addNodeHook}>Ajouter un nœud au nœud sélectionné</button>
+	<button class="border border-gray-950 rounded-lg p-1" on:click={addNodeHook}>Ajouter un nœud au nœud sélectionné</button>
 </form>
