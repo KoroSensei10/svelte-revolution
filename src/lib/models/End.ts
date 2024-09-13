@@ -1,28 +1,23 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
 
-class Event extends Model {}
+class End extends Model {}
 
-Event.init(
+End.init(
 	{
 		title: {
 			type: DataTypes.STRING,
-			allowNull: false,
-			unique: true
+			allowNull: false
 		},
 		text: {
 			type: DataTypes.TEXT,
-			allowNull: false
-		},
-		author: {
-			type: DataTypes.STRING,
 			allowNull: false
 		}
 	},
 	{
 		sequelize,
-		modelName: 'Event'
+		modelName: 'End'
 	}
 );
 
-export default Event;
+export default End;

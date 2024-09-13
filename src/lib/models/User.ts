@@ -6,6 +6,14 @@ import Session from './Session';
 const User = sequelize.define(
 	'User',
 	{
+		mail: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			unique: true,
+			validate: {
+				isEmail: true
+			}
+		},
 		username: {
 			type: DataTypes.STRING,
 			allowNull: false,
@@ -14,6 +22,9 @@ const User = sequelize.define(
 		password: {
 			type: DataTypes.STRING,
 			allowNull: false
+			// validate: {
+			// 	len: [8, 100]
+			// }
 		}
 	},
 	{

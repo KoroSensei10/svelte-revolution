@@ -1,8 +1,8 @@
-import Message from '$lib/models/Message';
+import Node from '$lib/models/Node';
 import { error, type RequestHandler } from '@sveltejs/kit';
 
 async function getLastMessage(sessionId: string) {
-	return await Message.findOne({
+	return await Node.findOne({
 		where: {
 			sessionId
 		},
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		sessionId: data.sessionId
 	};
 
-	Message.create(node);
+	Node.create(node);
 
 	return new Response(JSON.stringify(node), {
 		status: 200,

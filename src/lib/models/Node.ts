@@ -1,9 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
+import Side from './Side';
 
-class Message extends Model { }
+class Node extends Model {}
 
-Message.init(
+Node.init(
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -22,16 +23,31 @@ Message.init(
 		text: {
 			type: DataTypes.STRING,
 			allowNull: false
+		},
+		author: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		type: {
+			type: DataTypes.ENUM,
+			allowNull: false,
+			values: ['contribution', 'event'],
+			defaultValue: 'contribution'
 		}
 	},
 	{
 		sequelize,
-		modelName: 'Message'
+		modelName: 'Node'
 	}
 );
 
-Message.hasOne(Message, {
-	foreignKey: 'parentId'
+Node.hasOne(Node, {
+	foreignKey: {
+		name: 'parentId',
+		allowNull: true
+	}
 });
 
-export default Message;
+Node.hasOne(Side);
+
+export default Node;

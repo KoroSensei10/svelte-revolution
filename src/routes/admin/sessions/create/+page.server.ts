@@ -1,4 +1,4 @@
-import Message from '$lib/models/Message';
+import Node from '$lib/models/Node';
 import Scenario from '$lib/models/Scenario';
 import Session from '$lib/models/Session';
 import { fail, type Actions } from '@sveltejs/kit';
@@ -23,7 +23,7 @@ export const actions = {
 
 			const scenarioData = await scenario.toJSON();
 
-			const message = {
+			const firstMessage = {
 				id: 1,
 				sessionId: session.get('id'),
 				text: scenarioData.prologue,
@@ -31,7 +31,7 @@ export const actions = {
 				parentId: 0
 			};
 
-			await Message.create(message);
+			await Node.create(firstMessage);
 			return {
 				success: true,
 				status: 201,

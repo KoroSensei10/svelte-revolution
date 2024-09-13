@@ -1,5 +1,5 @@
 <script>
-	import ForceGraph from '../../../components/graphe/ForceGraph.svelte';
+	import ForceGraph from '../../../components/graph/ForceGraph.svelte';
 
 	export let data;
 </script>
