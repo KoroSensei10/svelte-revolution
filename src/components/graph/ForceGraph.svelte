@@ -3,23 +3,23 @@
 	import * as d3 from 'd3'; // TODO : Importer uniquement les parties nécessaires
 	import { io } from 'socket.io-client';
 
-	import type { Node } from '../../routes/sessions/[slug]/+page.server';
+	import type { NodeMessage } from '../../routes/sessions/[slug]/+page.server';
 	import AddNode from './graphe/AddNode.svelte';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import toast from 'svelte-french-toast';
 
 	export let sessionId: number;
-	export let nodes: Node[] = [];
-	export let links: SimulationLinkDatum<Node>[] = [];
+	export let nodes: NodeMessage[] = [];
+	export let links: SimulationLinkDatum<NodeMessage>[] = [];
 
 	const socket = io();
 
 	let height = 500;
 
 	let svg: SVGElement;
-	let selectedNode: Node | null = null;
+	let selectedNode: NodeMessage | null = null;
 
-	let simulation: Simulation<Node, SimulationLinkDatum<Node>>;
+	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 
 	socket.on('connect', () => {
 		socket.emit('join', 'session' + sessionId);
@@ -63,7 +63,7 @@
 			})
 			.call(
 				d3
-					.drag<any, Node>()
+					.drag<any, NodeMessage>()
 					.on('start', (event, d) => {
 						if (!event.active) simulation.alphaTarget(0.3).restart();
 						d.fx = d.x;
@@ -114,7 +114,7 @@
 		simulation.force('center', d3.forceCenter(currentWidth / 2, height / 2));
 	}
 
-	function updateGraph(node: Node, parentNodeId: number) {
+	function updateGraph(node: NodeMessage, parentNodeId: number) {
 		nodes.push(node);
 		links.push({ source: parentNodeId, target: node.id });
 		restartSimulation();
@@ -147,10 +147,10 @@
 				sessionId
 			})
 		});
-		return response.json() as Promise<Node>;
+		return response.json() as Promise<NodeMessage>;
 	}
 
-	function selectNode(node: Node) {
+	function selectNode(node: NodeMessage) {
 		selectedNode = node;
 		renderGraph();
 	}

@@ -9,8 +9,9 @@ export const actions = {
 
 		const name = data.get('name');
 		const scenarioId = data.get('scenarioId');
+		const author = data.get('author')
 
-		if (!name || !scenarioId) {
+		if (!name || !scenarioId || !author) {
 			return fail(400, { error: 'Missing required fields' });
 		}
 
@@ -19,7 +20,7 @@ export const actions = {
 			if (!scenario) {
 				return fail(404, { error: 'Scenario not found' });
 			}
-			const session = await Session.create({ name, scenarioId });
+			const session = await Session.create({ name, scenarioId, author });
 
 			const scenarioData = await scenario.toJSON();
 
@@ -33,12 +34,12 @@ export const actions = {
 
 			await Node.create(firstMessage);
 			return {
-				success: true,
 				status: 201,
+				success: true,
 				session: await session.toJSON()
 			};
 		} catch (error) {
-			return fail(500, { error: 'error' });
+			return fail(500, { error: String(error) });
 		}
 	}
 } satisfies Actions;

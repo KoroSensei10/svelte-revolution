@@ -1,6 +1,6 @@
 <script>
-	import { Toaster } from "svelte-french-toast";
-    import "../app.css";
+	import '../app.css';
+	import { Toaster } from 'svelte-french-toast';
 </script>
 
 <Toaster />

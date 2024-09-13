@@ -1,14 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
 
-class Event extends Model {}
+class Event extends Model { }
 
 Event.init(
 	{
 		title: {
 			type: DataTypes.STRING,
-			allowNull: false,
-			unique: true
+			allowNull: false
 		},
 		text: {
 			type: DataTypes.TEXT,
@@ -16,7 +15,7 @@ Event.init(
 		},
 		author: {
 			type: DataTypes.STRING,
-			allowNull: false
+			allowNull: true
 		}
 	},
 	{
