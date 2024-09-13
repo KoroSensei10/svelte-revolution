@@ -7,7 +7,7 @@
 	export let form: ActionData;
 	export let data;
 
-	let currentStep = 3;
+	let currentStep = 0;
 	let theForm: HTMLFormElement;
 
 	const steps = ['Essentiels', 'Premier Noeud', 'Evénement(s)', 'Fin(s)'];
@@ -69,7 +69,7 @@
 					{/each}
 				</div>
 			</div>
-			<!--  -->
+			<!-- Premier Noeud -->
 			<div slot="step-2" class="flex flex-col p-2 gap-4">
 				<label for="firstNodeTitle" class="text-xl font-thin">Titre du premier noeud</label>
 				<input
@@ -111,14 +111,15 @@
 					}}
 				/>
 			</div>
+
+			<button
+				slot="submit"
+				type="submit"
+				disabled={!validForm}
+				class="text-black bg-white text-lg rounded disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				Créer le scénario
+			</button>
 		</Stepper>
-		<!--  -->
-		<button
-			type="submit"
-			disabled={!validForm}
-			class="p-4 inline-flex self-center text-sm font-bold rounded border-2 disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			Créer le scénario
-		</button>
 	</form>
 </div>

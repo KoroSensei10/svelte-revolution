@@ -19,7 +19,7 @@
 			class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 		/>
 	</div>
-	<div class="w-full">
+	<div class="w-full pt-6">
 		<label for={props.name + '-text'} class="text-lg font-thin">{props.textName}</label>
 		<textarea
 			rows="3"

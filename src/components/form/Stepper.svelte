@@ -75,15 +75,20 @@
 	</div>
 
 	<!-- Navigation Buttons -->
-	<div class="border-t pt-6 flex justify-between">
+	<div class="pt-6 grid grid-cols-3 gap-4 md:gap-14">
 		<button
 			type="button"
-			class="border rounded text-white px-4 py-2 {currentStep <= 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+			class="border rounded text-lg text-white px-4 py-2 {currentStep <= 0
+				? 'opacity-50 cursor-not-allowed'
+				: ''}"
 			on:click={prev}
 			disabled={currentStep <= 0}
 		>
 			Précédent
 		</button>
+		{#if $$slots['submit']}
+			<slot name="submit"></slot>
+		{/if}
 		<button
 			class="rounded border text-black text-lg bg-white px-4 py-2 {currentStep === steps.length - 1
 				? 'opacity-50 cursor-not-allowed'
