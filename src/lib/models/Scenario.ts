@@ -1,12 +1,13 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
-import Info from './Info';
+import Event from './Event';
+import End from './End';
 
-class Scenario extends Info { }
+class Scenario extends Model {}
 
 Scenario.init(
 	{
-		titre: {
+		title: {
 			type: DataTypes.STRING,
 			allowNull: false,
 			unique: true
@@ -14,6 +15,12 @@ Scenario.init(
 		prologue: {
 			type: DataTypes.TEXT,
 			allowNull: false
+		},
+		lang: {
+			type: DataTypes.ENUM,
+			allowNull: false,
+			values: ['en', 'fr', 'jp'],
+			defaultValue: 'fr'
 		}
 	},
 	{
@@ -21,5 +28,8 @@ Scenario.init(
 		modelName: 'Scenario'
 	}
 );
+
+Scenario.hasMany(Event);
+Scenario.hasMany(End);
 
 export default Scenario;

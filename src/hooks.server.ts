@@ -5,13 +5,7 @@ import { sync } from '$lib/sequelize';
 export const handle: Handle = async ({ event, resolve }) => {
 	sync();
 
-	// check if the user is logged in
-	const session = event.cookies.get('session');
-	if (session) {
-		event.locals.user = (await User.findByPk(session))?.toJSON();
-	} else {
-		event.locals.user = null;
-	}
+	// TODO : check if the user is logged in
 	const response = await resolve(event);
 
 	return response;

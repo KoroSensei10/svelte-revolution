@@ -1,8 +1,8 @@
-import Message from '$lib/models/Message';
-import type { RequestHandler } from '@sveltejs/kit';
+import Node from '$lib/models/Node';
+import { error, type RequestHandler } from '@sveltejs/kit';
 
 async function getLastMessage(sessionId: string) {
-	return await Message.findOne({
+	return await Node.findOne({
 		where: {
 			sessionId
 		},
@@ -16,7 +16,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	const lastMessage = await getLastMessage(data.sessionId);
 
 	if (!lastMessage) {
-		return new Response('error');
+		error(500, {
+			message: 'No message found',
+			status: 500
+		});
 	}
 
 	const lastMessageId = Number(lastMessage.get('id'));
@@ -29,11 +32,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		sessionId: data.sessionId
 	};
 
-	Message.create(node);
+	Node.create(node);
 
 	return new Response(JSON.stringify(node), {
+		status: 200,
 		headers: {
-			'content-type': 'application/json'
+			'Content-Type': 'application/json'
 		}
 	});
 };
