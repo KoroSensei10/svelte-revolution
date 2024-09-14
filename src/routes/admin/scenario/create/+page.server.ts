@@ -12,12 +12,14 @@ export const actions = {
 		const lang = data.get('lang');
 		const firstNodeTitle = data.get('firstNodeTitle');
 		const firstNodeText = data.get('firstNodeText');
+		const firstNodeAuthor = data.get('firstNodeAuthor');
 		const events = data.getAll('event');
 		const eventTexts = data.getAll('event-text');
+		const eventAuthors = data.getAll('event-author');
 		const ends = data.getAll('end');
 		const endTexts = data.getAll('end-text');
 
-		if (!title || !prologue) {
+		if (!title || !prologue || !lang || !firstNodeTitle || !firstNodeText || !firstNodeAuthor) {
 			return fail(400, { error: 'Missing required fields' });
 		}
 
@@ -27,14 +29,13 @@ export const actions = {
 					title,
 					prologue,
 					lang,
-					// node: {
-					// 	title: firstNodeTitle,
-					// 	text: firstNodeText
-					// },
+					firstNodeTitle,
+					firstNodeText,
+					firstNodeAuthor,
 					Events: events.map((event, i) => ({
 						title: event,
 						text: eventTexts[i],
-						author: 'admin'
+						author: eventAuthors[i]
 					})),
 					Ends: ends.map((end, i) => ({
 						title: end,

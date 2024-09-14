@@ -2,19 +2,17 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../sequelize';
 import Side from './Side';
 
-class Node extends Model {}
+class Node extends Model { }
 
 Node.init(
 	{
 		id: {
 			type: DataTypes.INTEGER,
-			primaryKey: true,
-			unique: 'compositeIndex'
+			primaryKey: true
 		},
 		sessionId: {
 			type: DataTypes.INTEGER,
-			primaryKey: true,
-			unique: 'compositeIndex'
+			primaryKey: true
 		},
 		title: {
 			type: DataTypes.STRING,
@@ -31,7 +29,7 @@ Node.init(
 		type: {
 			type: DataTypes.ENUM,
 			allowNull: false,
-			values: ['contribution', 'event'],
+			values: ['contribution', 'event', 'startNode'],
 			defaultValue: 'contribution'
 		}
 	},

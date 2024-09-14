@@ -3,8 +3,8 @@
 	import * as d3 from 'd3'; // TODO : Importer uniquement les parties nécessaires
 	import { io } from 'socket.io-client';
 
-	import type { NodeMessage } from '../../routes/sessions/[slug]/+page.server';
-	import AddNode from './graphe/AddNode.svelte';
+	import type { Node as NodeMessage } from '../../routes/sessions/[slug]/+page.server';
+	import AddNode from './AddNode.svelte';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import toast from 'svelte-french-toast';
 
@@ -52,9 +52,7 @@
 			.join('circle')
 			.attr('draggable', true)
 			.attr('r', 10)
-			.attr('fill', (d) =>
-				selectedNode && selectedNode.id === d.id ? 'red' : d3.schemeCategory10[0]
-			) // Colorie en rouge si sélectionné
+			.attr('fill', (d) => (selectedNode && selectedNode.id === d.id ? 'red' : d3.schemeCategory10[0])) // Colorie en rouge si sélectionné
 			.on('mouseover', (event, d) => {
 				// Mettre en surbrillance les nœuds liés
 				link.attr('stroke', (l) => (l.source === d || l.target === d ? 'red' : '#999'));
@@ -83,9 +81,7 @@
 			.on('mouseout', () => {
 				// Réinitialiser la couleur des liens
 				link.attr('stroke', '#999');
-				node.attr('fill', (d) =>
-					selectedNode && selectedNode.id === d.id ? 'red' : d3.schemeCategory10[0]
-				);
+				node.attr('fill', (d) => (selectedNode && selectedNode.id === d.id ? 'red' : d3.schemeCategory10[0]));
 			})
 			.on('click', (event, d) => selectNode(d));
 

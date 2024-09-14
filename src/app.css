@@ -14,4 +14,8 @@
     textarea {
         @apply bg-transparent;
     }
+
+    select {
+        @apply bg-transparent;
+    }
 }

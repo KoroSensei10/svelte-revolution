@@ -25,21 +25,26 @@ export const actions = {
 
 			const scenarioData = await scenario.toJSON();
 
-			const firstMessage = {
+			const firstNode = {
 				id: 1,
 				sessionId: session.get('id'),
-				text: scenarioData.prologue,
-				title: scenarioData.title,
-				parentId: 0
+				title: scenarioData.firstNodeTitle,
+				text: scenarioData.firstNodeText,
+				author: scenarioData.firstNodeAuthor,
+				type: 'startNode',
 			};
 
-			await Node.create(firstMessage);
+			await Node.create(firstNode);
+
+
 			return {
 				status: 201,
 				success: true,
 				session: await session.toJSON()
 			};
 		} catch (error) {
+			console.log(error);
+
 			return fail(500, { error: String(error) });
 		}
 	}

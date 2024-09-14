@@ -34,7 +34,7 @@
 		action="?/createScenario"
 		class="flex flex-col p-4 border-t text-center gap-4 md:w-4/6 w-full"
 	>
-		<Stepper {currentStep} {steps}>
+		<Stepper bind:currentStep {steps}>
 			<!-- Step 1  -->
 			<div slot="step-1" class="flex flex-col p-2 gap-4">
 				<label for="title" class="text-xl font-thin">Titre</label>
@@ -56,13 +56,27 @@
 			</div>
 			<!-- Premier Noeud -->
 			<div slot="step-2" class="flex flex-col p-2 gap-4">
-				<label for="firstNodeTitle" class="text-xl font-thin">Titre du premier noeud</label>
-				<input
-					required
-					name="firstNodeTitle"
-					class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-					placeholder="Votre super titre"
-				/>
+				<div class="flex gap-4">
+					<div class="flex flex-col w-full">
+						<label for="firstNodeTitle" class="text-xl font-thin">Titre du premier noeud</label>
+						<input
+							required
+							name="firstNodeTitle"
+							class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+							placeholder="Génialisime titre"
+						/>
+					</div>
+
+					<div>
+						<label for="firstNodeAuthor" class="text-xl font-thin">Auteur</label>
+						<input
+							required
+							name="firstNodeAuthor"
+							class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+							placeholder="Snoup"
+						/>
+					</div>
+				</div>
 				<label for="firstNodeText" class="text-xl font-thin">Texte du premier noeud</label>
 				<textarea
 					required
@@ -85,14 +99,25 @@
 				>
 					<span slot="header" class="text-xl font-thin border-b pb-2">Evenement(s)</span>
 					<div class="flex flex-col items-center p-2">
-						<div class="w-full">
-							<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
-							<input
-								required
-								name={item.name}
-								placeholder={item.placeholderTitle}
-								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-							/>
+						<div class="flex gap-4">
+							<div class="w-full">
+								<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
+								<input
+									required
+									name={item.name}
+									placeholder={item.placeholderTitle}
+									class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+								/>
+							</div>
+							<div>
+								<label for={item.name + '-author'} class="text-lg font-thin">Auteur</label>
+								<input
+									required
+									name={item.name + '-author'}
+									placeholder="Auteur"
+									class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+								/>
+							</div>
 						</div>
 						<div class="w-full pt-6">
 							<label for={item.name + '-text'} class="text-lg font-thin">{item.textName}</label>
@@ -147,7 +172,10 @@
 				slot="submit"
 				type="submit"
 				disabled={!validForm}
-				class="text-black bg-white text-lg rounded disabled:cursor-not-allowed disabled:opacity-50"
+				class="text-black bg-white text-lg rounded disabled:cursor-not-allowed ease-linear disabled:opacity-50 transition-all {currentStep ===
+					steps.length - 1 || validForm
+					? 'disabled:opacity-50 block opacity-100'
+					: 'disabled:opacity-0 opacity-0 disabled:cursor-default'}"
 			>
 				Créer le scénario
 			</button>

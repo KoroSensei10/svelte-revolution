@@ -3,7 +3,7 @@ import sequelize from '../sequelize';
 import Event from './Event';
 import End from './End';
 
-class Scenario extends Model {}
+class Scenario extends Model { }
 
 Scenario.init(
 	{
@@ -21,6 +21,18 @@ Scenario.init(
 			allowNull: false,
 			values: ['en', 'fr', 'jp'],
 			defaultValue: 'fr'
+		},
+		firstNodeTitle: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		firstNodeText: {
+			type: DataTypes.TEXT,
+			allowNull: false
+		},
+		firstNodeAuthor: {
+			type: DataTypes.STRING,
+			allowNull: false
 		}
 	},
 	{
