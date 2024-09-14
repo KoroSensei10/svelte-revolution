@@ -19,6 +19,8 @@
 			currentStep = index;
 		}
 	}
+
+	function validStep() {}
 </script>
 
 <div class="w-full flex flex-col gap-4">
@@ -86,11 +88,11 @@
 		>
 			Précédent
 		</button>
-		{#if $$slots['submit']}
+		{#if $$slots['submit'] && currentStep === steps.length - 1}
 			<slot name="submit"></slot>
 		{/if}
 		<button
-			class="rounded border text-black text-lg bg-white px-4 py-2 {currentStep === steps.length - 1
+			class="col-start-3 rounded border text-black text-lg bg-white px-4 py-2 {currentStep === steps.length - 1
 				? 'opacity-50 cursor-not-allowed'
 				: ''}"
 			on:click={next}

@@ -1,23 +1,27 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import toast from 'svelte-french-toast';
-	import type { ActionData } from './$types';
-	import DoubleInput from '../../../../components/form/DoubleInput.svelte';
+
 	import Stepper from '../../../../components/form/Stepper.svelte';
+	import Radio from '../../../../components/form/Radio.svelte';
+	import MultiField from '../../../../components/form/MultiField.svelte';
+
+	import type { ActionData } from './$types';
 
 	export let form: ActionData;
 	export let data;
 
-	let currentStep = 0;
-	let theForm: HTMLFormElement;
-
 	const steps = ['Essentiels', 'Premier Noeud', 'Evénement(s)', 'Fin(s)'];
 
-	$: form?.success && toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
-
+	let currentStep = 0;
+	let theForm: HTMLFormElement;
 	let validForm = false;
+
 	function checkValidity() {
 		validForm = theForm?.checkValidity();
 	}
+
+	$: form?.success && toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
 </script>
 
 <div class="h-screen flex flex-col items-center">
@@ -26,6 +30,7 @@
 		bind:this={theForm}
 		on:input={() => checkValidity()}
 		method="POST"
+		use:enhance
 		action="?/createScenario"
 		class="flex flex-col p-4 border-t text-center gap-4 md:w-4/6 w-full"
 	>
@@ -47,27 +52,7 @@
 					rows="3"
 					placeholder="La nuit était sombre..."
 				></textarea>
-				<div class="flex gap-4 justify-center">
-					{#each data.lang as lang}
-						<button
-							type="button"
-							class="apparence-none has-[:checked]:bg-white has-[:checked]:text-black
-								border rounded-lg"
-						>
-							<label class="flex flex-col" for="lang-{lang}">
-								<span class="uppercase cursor-pointer p-4 px-5">{lang}</span>
-								<input
-									id="lang-{lang}"
-									type="radio"
-									name="lang"
-									class="collapse w-0 h-0"
-									checked={lang === 'fr'}
-									value={lang}
-								/>
-							</label>
-						</button>
-					{/each}
-				</div>
+				<Radio langs={[...data.lang]} />
 			</div>
 			<!-- Premier Noeud -->
 			<div slot="step-2" class="flex flex-col p-2 gap-4">
@@ -89,27 +74,73 @@
 			</div>
 			<!-- Evenements -->
 			<div slot="step-3" class="flex flex-col p-2 gap-4">
-				<span class="text-xl font-thin border-b pb-2">Evenement(s)</span>
-				<DoubleInput
+				<MultiField
 					props={{
 						name: 'event',
-						title: 'Evénement',
-						placeholderTitle: "Titre de l'événement",
-						placeholderText: "Texte de l'événement"
+						title: 'Evenement',
+						placeholderTitle: "Titre de l'evenement",
+						placeholderText: "Texte de l'evenement"
 					}}
-				/>
+					let:item
+				>
+					<span slot="header" class="text-xl font-thin border-b pb-2">Evenement(s)</span>
+					<div class="flex flex-col items-center p-2">
+						<div class="w-full">
+							<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
+							<input
+								required
+								name={item.name}
+								placeholder={item.placeholderTitle}
+								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+							/>
+						</div>
+						<div class="w-full pt-6">
+							<label for={item.name + '-text'} class="text-lg font-thin">{item.textName}</label>
+							<textarea
+								rows="3"
+								required
+								name={item.name + '-text'}
+								placeholder={item.placeholderText}
+								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+							></textarea>
+						</div>
+					</div>
+				</MultiField>
 			</div>
 			<!-- Fins -->
 			<div slot="step-4" class="flex flex-col p-2 gap-4">
-				<span class="text-xl font-thin border-b pb-2">Fin(s)</span>
-				<DoubleInput
+				<MultiField
 					props={{
 						name: 'end',
 						title: 'Fin',
 						placeholderTitle: 'Titre de la fin',
 						placeholderText: 'Texte de la fin'
 					}}
-				/>
+					let:item
+				>
+					<span slot="header" class="text-xl font-thin border-b pb-2">Fin(s)</span>
+					<div class="flex flex-col items-center p-2">
+						<div class="w-full">
+							<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
+							<input
+								required
+								name={item.name}
+								placeholder={item.placeholderTitle}
+								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+							/>
+						</div>
+						<div class="w-full pt-6">
+							<label for={item.name + '-text'} class="text-lg font-thin">{item.textName}</label>
+							<textarea
+								rows="3"
+								required
+								name={item.name + '-text'}
+								placeholder={item.placeholderText}
+								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+							></textarea>
+						</div>
+					</div>
+				</MultiField>
 			</div>
 
 			<button

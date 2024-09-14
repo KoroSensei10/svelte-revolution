@@ -4,12 +4,13 @@ import Session from '$lib/models/Session';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {
+	// TODO - Add validation + split code
 	createSession: async ({ request }) => {
 		const data = await request.formData();
 
 		const name = data.get('name');
 		const scenarioId = data.get('scenarioId');
-		const author = data.get('author')
+		const author = data.get('author');
 
 		if (!name || !scenarioId || !author) {
 			return fail(400, { error: 'Missing required fields' });
