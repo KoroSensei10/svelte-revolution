@@ -1,38 +1,90 @@
-# create-svelte
+# Mise en place du projet
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## Installation
 
-## Creating a project
+### Prérequis
 
-If you're seeing this, you've probably already done this step. Congrats!
+- [Node.js](https://nodejs.org/en/)
+
+### Installation des dépendances
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+npm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### Lancer le projet en mode développement
 
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## Structure du projet
 
-To create a production version of your app:
+- `src/` : code source
+    - `lib/` : fonctions utilitaires
+    - `components/` : composants
+    - `routes/` : Toutes les routes de l'application
+        - `admin/` : pages d'administration
+- `public/` : fichiers statiques
+- `build/` : fichiers générés
+- `node_modules/` : dépendances
 
-```bash
-npm run build
+## Technologies utilisées
+
+### Frontend
+- [Svelte](https://svelte.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+Svelte est un framework JavaScript qui permet de créer des applications web en générant du code optimisé.
+
+Tailwind CSS est un framework CSS qui permet de créer des interfaces rapidement en utilisant des classes utilitaires.
+
+### Backend
+- [SvelteKit](https://kit.svelte.dev/)
+
+SvelteKit est un framework basé sur Svelte qui permet de créer des applications web avec un backend intégré.
+
+Sert pour le rendu côté serveur, la gestion des routes, etc.
+
+### Outils
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [ESLint](https://eslint.org/)
+- [Prettier](https://prettier.io/)
+
+
+## Styler avec Tailwind CSS
+
+Tailwind CSS est un framework CSS qui permet de créer des interfaces rapidement en utilisant des classes utilitaires.
+Similaire à Bootstrap, mais plus minimaliste. Simplemement ajouter des classes aux éléments HTML pour styliser.
+
+### Exemple
+
+La manière la plus simple est d'ajouter les classes directement dans le code HTML. C'est aussi la méthode recommandée.
+
+```svelte
+<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+  Button
+</button>
 ```
 
-You can preview the production build with `npm run preview`.
+### Exemple avec postcss
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Il est aussi possible d'utiliser les classes Tailwind CSS dans un fichier `.svelte` en utilisant le langage `postcss`.
+
+```svelte
+<button>
+    Button
+</button>
+
+<style class="postcss">
+    button {
+        @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
+    }
+</style>
+```
+
+
+### Documentation
+
+- [Tailwind CSS](https://tailwindcss.com/docs)
