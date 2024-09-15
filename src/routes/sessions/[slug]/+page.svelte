@@ -4,11 +4,11 @@
 	export let data;
 </script>
 
-{#if !data}
-	<p class="text-center mt-5">Aucun nœud pour cette session</p>
+<!-- {#if !data}
+	<p class="mt-5 text-center">Aucun nœud pour cette session</p>
 {:else}
-	<div class="flex flex-col justify-center">
-		<h1 class="text-center mt-5">
+	<div class="flex flex-col justify-center h-full">
+		<h1 class="mt-5 text-center">
 			Session :
 			<span class="first-letter:capitalize">
 				{data.name}
@@ -17,6 +17,7 @@
 				#{data.id}
 			</span>
 		</h1>
-		<ForceGraph nodes={data.nodes} links={data.links} sessionId={data.id} />
 	</div>
-{/if}
+{/if} -->
+
+<ForceGraph nodes={data.nodes} links={data.links} sessionId={data.id} />

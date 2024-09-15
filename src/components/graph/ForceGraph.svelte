@@ -4,7 +4,7 @@
 	import { io } from 'socket.io-client';
 
 	import type { Node as NodeMessage } from '../../routes/sessions/[slug]/+page.server';
-	import AddNode from './AddNode.svelte';
+	import UI from './GraphUI.svelte';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import toast from 'svelte-french-toast';
 
@@ -14,12 +14,18 @@
 
 	const socket = io();
 
-	let height = 500;
-
 	let svg: SVGElement;
-	let selectedNode: NodeMessage | null = null;
-
+	let svgElement: d3.Selection<SVGElement, unknown, null, undefined>;
+	let g: d3.Selection<SVGElement, unknown, null, undefined>;
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
+
+	let transform;
+	const zoom = d3.zoom().on('zoom', (e) => {
+		g.attr('transform', (transform = e.transform));
+		g.style('stroke-width', 3 / Math.sqrt(transform.k));
+	});
+
+	let selectedNode: NodeMessage | null = null;
 
 	socket.on('connect', () => {
 		socket.emit('join', 'session' + sessionId);
@@ -30,14 +36,13 @@
 	});
 
 	function renderGraph() {
-		const svgElement = d3.select(svg);
-
-		const currentWidth = parseInt(svgElement.style('width'), 10);
+		const currentWidth = window.innerWidth;
+		const currentHeight = window.innerHeight;
 		svgElement.attr('width', currentWidth);
-		svgElement.attr('height', height);
+		svgElement.attr('height', currentHeight);
 
 		// Update links
-		const link = svgElement
+		const link = g
 			.selectAll('line')
 			.data(links)
 			.join('line')
@@ -46,7 +51,7 @@
 			.attr('stroke-width', (d) => Math.sqrt(Number(d.index || 0 + 1)));
 
 		// Update nodes
-		const node = svgElement
+		const node = g
 			.selectAll('circle')
 			.data(nodes)
 			.join('circle')
@@ -86,12 +91,13 @@
 			.on('click', (event, d) => selectNode(d));
 
 		// Ajouter des labels de texte pour chaque nœud
-		const labels = svgElement
+		const labels = g
 			.selectAll('text')
 			.data(nodes)
 			.join('text')
 			.attr('text-anchor', 'middle')
 			.attr('dy', -20) // Positionne le texte au-dessus du nœud
+			.classed('fill-white', true)
 			.text((d) => d.title);
 
 		// Update simulation
@@ -107,7 +113,7 @@
 			labels.attr('x', (d) => String(d.x)).attr('y', (d) => String(d.y));
 		});
 
-		simulation.force('center', d3.forceCenter(currentWidth / 2, height / 2));
+		simulation.force('center', d3.forceCenter(currentWidth / 2, currentHeight / 2));
 	}
 
 	function updateGraph(node: NodeMessage, parentNodeId: number) {
@@ -116,7 +122,7 @@
 		restartSimulation();
 	}
 
-	async function addNode(title: string, text: string, parentNodeId: number) {
+	async function addNode(title: string, text: string, author: string, parentNodeId: number) {
 		const newNode = await addNodeToDb(title, text, parentNodeId);
 
 		socket.emit('newNodeClient', { node: newNode, parentNodeId });
@@ -159,7 +165,11 @@
 	}
 
 	onMount(() => {
-		height = window.innerHeight - 300;
+		svgElement = d3.select(svg);
+		g = svgElement.append('g');
+
+		svgElement.call(zoom).call(zoom.transform, d3.zoomIdentity);
+
 		simulation = d3
 			.forceSimulation(nodes)
 			.force(
@@ -170,15 +180,12 @@
 					.distance(100)
 			)
 			.force('charge', d3.forceManyBody().strength(-300));
+
 		renderGraph();
 	});
 </script>
 
 <svelte:window on:resize={() => restartSimulation()} />
 
-<div class="border border-gray-300 rounded-xl m-5">
-	<svg class="w-full" bind:this={svg}></svg>
-</div>
-<div>
-	<AddNode addnode={addNode} selectedNodeId={selectedNode?.id} />
-</div>
+<UI addnode={addNode} selectedNodeId={selectedNode?.id} />
+<svg class="w-full h-full cursor-grab" bind:this={svg}></svg>

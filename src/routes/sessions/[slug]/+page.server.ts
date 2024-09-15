@@ -44,10 +44,10 @@ function buildNodesAndLinks(session: SessionData) {
 	const nodes: Node[] = [];
 	const links: Link[] = [];
 
-	session.Nodes.forEach((message) => {
-		nodes.push({ id: message.id, title: message.title, text: message.text });
-		if (message.parentId && message.parentId !== 'NULL') {
-			links.push({ source: message.parentId, target: message.id });
+	session.Nodes.forEach((node) => {
+		nodes.push({ id: node.id, title: node.title, text: node.text });
+		if (node.parentId && node.parentId !== 'NULL') {
+			links.push({ source: node.parentId, target: node.id });
 		}
 	});
 
