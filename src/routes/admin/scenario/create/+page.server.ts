@@ -1,9 +1,9 @@
-import End from '$lib/models/End';
-import Event from '$lib/models/Event';
-import Scenario from '$lib/models/Scenario';
 import { fail, type Actions } from '@sveltejs/kit';
 
+import { pb } from '$lib/pocketbase';
+
 export const actions = {
+	// TODO - Add validation + split code
 	createScenario: async ({ request }) => {
 		const data = await request.formData();
 
@@ -24,30 +24,38 @@ export const actions = {
 		}
 
 		try {
-			const scenario = await Scenario.create(
-				{
-					title,
-					prologue,
-					lang,
-					firstNodeTitle,
-					firstNodeText,
-					firstNodeAuthor,
-					Events: events.map((event, i) => ({
-						title: event,
-						text: eventTexts[i],
-						author: eventAuthors[i]
-					})),
-					Ends: ends.map((end, i) => ({
-						title: end,
-						text: endTexts[i]
-					}))
-				},
-				{ include: [Event, End] }
-			);
+			const scenario = await pb.collection('scenario').create({
+				title,
+				prologue,
+				lang,
+				firstNodeTitle,
+				firstNodeText,
+				firstNodeAuthor
+			});
+
+			const eventPromises = events.map((event, i) =>
+				pb.collection('event').create({
+					title: event,
+					text: eventTexts[i],
+					author: eventAuthors[i],
+					scenario: scenario.id
+				}));
+
+			const endPromises = ends.map((end, i) =>
+				pb.collection('end').create({
+					title: end,
+					text: endTexts[i],
+					scenario: scenario.id
+				}));
+
+			await Promise.all([
+				...eventPromises,
+				...endPromises
+			]);
 			return {
 				success: true,
 				status: 201,
-				body: await scenario.toJSON()
+				body: scenario
 			};
 		} catch (error) {
 			console.log(error);
@@ -59,6 +67,6 @@ export const actions = {
 
 export function load() {
 	return {
-		lang: Scenario.getAttributes().lang.values ?? []
+		lang: ["en", "fr", 'jp']
 	};
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let addnode: Function;
-	export let selectedNodeId: number | undefined;
+	export let selectedNodeId: string | undefined;
 
 	let nodeTitle = '';
 	let nodeText = '';

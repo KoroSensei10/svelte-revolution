@@ -1,18 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3'; // TODO : Importer uniquement les parties nécessaires
-	import { io } from 'socket.io-client';
 
 	import type { Node as NodeMessage } from '../../routes/sessions/[slug]/+page.server';
 	import UI from './GraphUI.svelte';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import toast from 'svelte-french-toast';
+	import { pb } from '$lib/pocketbase';
 
-	export let sessionId: number;
+	export let sessionId: string;
 	export let nodes: NodeMessage[] = [];
 	export let links: SimulationLinkDatum<NodeMessage>[] = [];
-
-	const socket = io();
 
 	let svg: SVGElement;
 	let svgElement: d3.Selection<SVGElement, unknown, null, undefined>;
@@ -26,14 +24,6 @@
 	});
 
 	let selectedNode: NodeMessage | null = null;
-
-	socket.on('connect', () => {
-		socket.emit('join', 'session' + sessionId);
-	});
-
-	socket.on('newNodeServer', async ({ node, parentNodeId }) => {
-		updateGraph(node, parentNodeId);
-	});
 
 	function renderGraph() {
 		const currentWidth = window.innerWidth;
@@ -116,40 +106,25 @@
 		simulation.force('center', d3.forceCenter(currentWidth / 2, currentHeight / 2));
 	}
 
-	function updateGraph(node: NodeMessage, parentNodeId: number) {
+	function updateGraph(node: NodeMessage, parentNodeId: string) {
 		nodes.push(node);
 		links.push({ source: parentNodeId, target: node.id });
 		restartSimulation();
 	}
 
-	async function addNode(title: string, text: string, author: string, parentNodeId: number) {
-		const newNode = await addNodeToDb(title, text, parentNodeId);
-
-		socket.emit('newNodeClient', { node: newNode, parentNodeId });
-
-		updateGraph(newNode, parentNodeId);
+	async function addNode(title: string, text: string, author: string, parentNodeId: sring) {
+		await pb.collection('Node').create({
+			title,
+			text,
+			author,
+			type: 'contribution',
+			parent: parentNodeId,
+			session: sessionId
+		});
 
 		toast.success('Nœud ajouté avec succès', {
 			position: 'bottom-center'
 		});
-	}
-
-	async function addNodeToDb(title: string, text: string, selectNodeId: number) {
-		const response = await fetch('/api/graph/addNode', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				newNode: {
-					title,
-					text
-				},
-				selectNodeId,
-				sessionId
-			})
-		});
-		return response.json() as Promise<NodeMessage>;
 	}
 
 	function selectNode(node: NodeMessage) {
@@ -164,7 +139,18 @@
 		renderGraph();
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		await pb.collection('Node').subscribe(
+			'*',
+			({ record }) => {
+				nodes = [...nodes, record];
+				updateGraph(record, record.parent);
+			},
+			{
+				filter: `session="${sessionId}"`
+			}
+		);
+
 		svgElement = d3.select(svg);
 		g = svgElement.append('g');
 

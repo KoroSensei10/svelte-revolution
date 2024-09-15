@@ -1,6 +1,4 @@
-import Node from '$lib/models/Node';
-import Scenario from '$lib/models/Scenario';
-import Session from '$lib/models/Session';
+import { pb } from '$lib/pocketbase';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {
@@ -17,33 +15,37 @@ export const actions = {
 		}
 
 		try {
-			const scenario = await Scenario.findByPk(scenarioId.toString());
+			// check if scenario exists
+			const scenario = await pb.collection('scenario').getOne(scenarioId.toString());
 			if (!scenario) {
 				return fail(404, { error: 'Scenario not found' });
 			}
-			const session = await Session.create({ name, scenarioId, author });
 
-			const scenarioData = await scenario.toJSON();
+			// get number of sessions
+			const sessions = await pb.collection('session').getFullList({ fields: 'id' });
+			const session = await pb.collection('session').create({
+				name,
+				scenario: scenario.id,
+				author,
+				slug: sessions.length + 1,
 
-			const firstNode = {
-				id: 1,
-				sessionId: session.get('id'),
-				title: scenarioData.firstNodeTitle,
-				text: scenarioData.firstNodeText,
-				author: scenarioData.firstNodeAuthor,
-				type: 'startNode',
-			};
+			});
 
-			await Node.create(firstNode);
-
+			await pb.collection('node').create({
+				title: scenario.firstNodeTitle,
+				text: scenario.firstNodeText,
+				author: scenario.firstNodeAuthor,
+				session: session.id,
+				type: 'startNode'
+			});
 
 			return {
 				status: 201,
 				success: true,
-				session: await session.toJSON()
+				session: session
 			};
 		} catch (error) {
-			console.log(error);
+			console.log(error.response);
 
 			return fail(500, { error: String(error) });
 		}
@@ -51,8 +53,8 @@ export const actions = {
 } satisfies Actions;
 
 export const load = async () => {
-	const scenarios = await Scenario.findAll();
+	const scenarios = await pb.collection('scenario').getFullList();
 	return {
-		scenarios: scenarios.map((scenario) => scenario.toJSON())
+		scenarios
 	};
 };
