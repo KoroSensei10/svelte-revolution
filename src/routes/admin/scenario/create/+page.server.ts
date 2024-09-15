@@ -1,9 +1,9 @@
-import End from '$lib/models/End';
-import Event from '$lib/models/Event';
-import Scenario from '$lib/models/Scenario';
 import { fail, type Actions } from '@sveltejs/kit';
 
+import { pb } from '$lib/pocketbase';
+
 export const actions = {
+	// TODO - Add validation + split code
 	createScenario: async ({ request }) => {
 		const data = await request.formData();
 
@@ -12,41 +12,50 @@ export const actions = {
 		const lang = data.get('lang');
 		const firstNodeTitle = data.get('firstNodeTitle');
 		const firstNodeText = data.get('firstNodeText');
+		const firstNodeAuthor = data.get('firstNodeAuthor');
 		const events = data.getAll('event');
 		const eventTexts = data.getAll('event-text');
+		const eventAuthors = data.getAll('event-author');
 		const ends = data.getAll('end');
 		const endTexts = data.getAll('end-text');
 
-		if (!title || !prologue) {
+		if (!title || !prologue || !lang || !firstNodeTitle || !firstNodeText || !firstNodeAuthor) {
 			return fail(400, { error: 'Missing required fields' });
 		}
 
 		try {
-			const scenario = await Scenario.create(
-				{
-					title,
-					prologue,
-					lang,
-					// node: {
-					// 	title: firstNodeTitle,
-					// 	text: firstNodeText
-					// },
-					Events: events.map((event, i) => ({
-						title: event,
-						text: eventTexts[i],
-						author: 'admin'
-					})),
-					Ends: ends.map((end, i) => ({
-						title: end,
-						text: endTexts[i]
-					}))
-				},
-				{ include: [Event, End] }
-			);
+			const scenario = await pb.collection('scenario').create({
+				title,
+				prologue,
+				lang,
+				firstNodeTitle,
+				firstNodeText,
+				firstNodeAuthor
+			});
+
+			const eventPromises = events.map((event, i) =>
+				pb.collection('event').create({
+					title: event,
+					text: eventTexts[i],
+					author: eventAuthors[i],
+					scenario: scenario.id
+				}));
+
+			const endPromises = ends.map((end, i) =>
+				pb.collection('end').create({
+					title: end,
+					text: endTexts[i],
+					scenario: scenario.id
+				}));
+
+			await Promise.all([
+				...eventPromises,
+				...endPromises
+			]);
 			return {
 				success: true,
 				status: 201,
-				body: await scenario.toJSON()
+				body: scenario
 			};
 		} catch (error) {
 			console.log(error);
@@ -58,6 +67,6 @@ export const actions = {
 
 export function load() {
 	return {
-		lang: Scenario.getAttributes().lang.values ?? []
+		lang: ["en", "fr", 'jp']
 	};
 }

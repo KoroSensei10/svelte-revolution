@@ -1,16 +1,27 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+
 	export let steps: string[] = []; // Liste des étapes
-	export let currentStep: number; // Étape actuelle
+	export let currentStep: number = 2; // Étape actuelle
+
+	function buildUrl(step: number) {
+		const url = new URL(location.href);
+		url.searchParams.set('step', `${step}`);
+		return url.toString();
+	}
 
 	function next() {
 		if (currentStep < steps.length - 1) {
 			currentStep += 1;
+			goto(buildUrl(currentStep));
 		}
 	}
 
 	function prev() {
 		if (currentStep > 0) {
 			currentStep -= 1;
+			goto(buildUrl(currentStep));
 		}
 	}
 
@@ -20,23 +31,31 @@
 		}
 	}
 
-	function validStep() {}
+	onMount(() => {
+		const params = new URLSearchParams(location.search);
+		const step = params.get('step');
+		if (step) {
+			currentStep = steps.indexOf(step);
+			if (currentStep === -1) {
+				currentStep = 0;
+			}
+		}
+	});
 </script>
 
 <div class="w-full flex flex-col gap-4">
 	<!-- Step Indicators -->
-	<div class="flex justify-between">
+	<div class="grid grid-cols-{steps.length * 2 - 1}">
 		{#each steps as step, index}
 			<button
 				disabled={index > currentStep}
 				type="button"
-				class="flex flex-col items-center"
+				class="flex flex-col items-center col-span-1"
 				on:click={() => handleClick(index)}
 			>
 				<div class="flex items-center justify-center">
 					<div
-						class="w-8 h-8 flex items-center justify-center rounded-full border transition-all {index <=
-						currentStep
+						class="w-8 h-8 flex items-center justify-center rounded-full border {index <= currentStep
 							? ' bg-white text-black font-bold text-lg'
 							: 'border-white bg-black text-gray-300 font-thin'}"
 					>
@@ -54,7 +73,9 @@
 
 			{#if index < steps.length - 1}
 				<div
-					class="flex-1 h-1 my-auto mx-2 transition-all {index < currentStep ? 'bg-white' : 'bg-gray-600'}"
+					class="col-span-1 max-md:hidden rounded-full flex-1 mt-4 h-1 {index < currentStep
+						? 'bg-white'
+						: 'bg-gray-600'}"
 				></div>
 			{/if}
 		{/each}
@@ -88,13 +109,11 @@
 		>
 			Précédent
 		</button>
-		{#if $$slots['submit'] && currentStep === steps.length - 1}
+		{#if $$slots['submit']}
 			<slot name="submit"></slot>
 		{/if}
 		<button
-			class="col-start-3 rounded border text-black text-lg bg-white px-4 py-2 {currentStep === steps.length - 1
-				? 'opacity-50 cursor-not-allowed'
-				: ''}"
+			class="col-start-3 rounded border text-black text-lg bg-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
 			on:click={next}
 			type="button"
 			disabled={currentStep === steps.length - 1}

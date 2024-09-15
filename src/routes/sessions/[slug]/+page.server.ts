@@ -1,63 +1,77 @@
-import NodeMessage from '$lib/models/Node.js';
-import Scenario from '$lib/models/Scenario.js';
-import Session from '$lib/models/Session.js';
+import { pb } from '$lib/pocketbase.js';
 import { error } from '@sveltejs/kit';
 import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
 
 export interface Node extends SimulationNodeDatum {
-	id: number;
+	id: string;
 	title: string;
 	text: string;
+	author: string;
+	type: string;
+	session: string;
+	side: string;
+	parent: string | null | 'NULL';
 }
 export type Link = SimulationLinkDatum<Node>;
 
 export interface SessionData {
-	id: number;
+	id: string;
+	slug: number;
 	name: string;
 	creatorId: string | null;
 	Nodes: {
-		id: number;
+		id: string;
 		title: string;
 		text: string;
-		parentId: number | null | 'NULL';
+		author: string;
+		type: string;
+		session: string;
+		side: string;
+		parent: string | null | 'NULL';
 	}[];
 	Scenario: {
-		id: number;
+		id: string;
 		name: string;
 		prologue: string;
 		creatorId: string | null;
 	};
 }
 
-async function getSession(sessionId: number): Promise<SessionData> {
-	const session = await Session.findByPk(sessionId, { include: [NodeMessage, Scenario] });
-
+async function getSession(sessionId: number) {
+	const session = await pb.collection('session').getFirstListItem('slug=' + sessionId.toString());
 	if (!session) error(404, {
 		message: 'Session not found',
 		status: 404
 	});
 
-	return session.toJSON();
+	return session;
 }
 
-function buildNodesAndLinks(session: SessionData) {
-	const nodes: Node[] = [];
+async function buildNodesAndLinks(session: any) {
+	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` }) as Node[];
 	const links: Link[] = [];
 
-	session.Nodes.forEach((message) => {
-		nodes.push({ id: message.id, title: message.title, text: message.text });
-		if (message.parentId && message.parentId !== 'NULL') {
-			links.push({ source: message.parentId, target: message.id });
+
+	nodes.forEach((node: Node) => {
+		const parent = !node.parent ? null : String(node.parent);
+		if (parent) {
+			links.push({
+				source: parent,
+				target: node.id
+			});
 		}
 	});
 
-	return { nodes, links };
+	return {
+		nodes,
+		links
+	}
 }
 
 export async function load({ params }) {
 	const sessionData = await getSession(Number(params.slug));
 
-	const nodesAndLinks = buildNodesAndLinks(sessionData);
+	const nodesAndLinks = await buildNodesAndLinks(sessionData);
 
 	return {
 		...sessionData,
