@@ -22,7 +22,7 @@ const config = {
 			$routes: './src/routes',
 			$services: './src/services',
 			$layouts: './src/layouts',
-			$hooks: './src/hooks',
+			$hooks: './src/hooks'
 		}
 	}
 };

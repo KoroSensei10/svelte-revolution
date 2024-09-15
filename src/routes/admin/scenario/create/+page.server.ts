@@ -39,19 +39,18 @@ export const actions = {
 					text: eventTexts[i],
 					author: eventAuthors[i],
 					scenario: scenario.id
-				}));
+				})
+			);
 
 			const endPromises = ends.map((end, i) =>
 				pb.collection('end').create({
 					title: end,
 					text: endTexts[i],
 					scenario: scenario.id
-				}));
+				})
+			);
 
-			await Promise.all([
-				...eventPromises,
-				...endPromises
-			]);
+			await Promise.all([...eventPromises, ...endPromises]);
 			return {
 				success: true,
 				status: 201,
@@ -67,6 +66,6 @@ export const actions = {
 
 export function load() {
 	return {
-		lang: ["en", "fr", 'jp']
+		lang: ['en', 'fr', 'jp']
 	};
 }

@@ -39,18 +39,18 @@ export interface SessionData {
 
 async function getSession(sessionId: number) {
 	const session = await pb.collection('session').getFirstListItem('slug=' + sessionId.toString());
-	if (!session) error(404, {
-		message: 'Session not found',
-		status: 404
-	});
+	if (!session)
+		error(404, {
+			message: 'Session not found',
+			status: 404
+		});
 
 	return session;
 }
 
 async function buildNodesAndLinks(session: any) {
-	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` }) as Node[];
+	const nodes = (await pb.collection('Node').getFullList({ filter: `session="${session.id}"` })) as Node[];
 	const links: Link[] = [];
-
 
 	nodes.forEach((node: Node) => {
 		const parent = !node.parent ? null : String(node.parent);
@@ -65,7 +65,7 @@ async function buildNodesAndLinks(session: any) {
 	return {
 		nodes,
 		links
-	}
+	};
 }
 
 export async function load({ params }) {

@@ -27,8 +27,7 @@ export const actions = {
 				name,
 				scenario: scenario.id,
 				author,
-				slug: sessions.length + 1,
-
+				slug: sessions.length + 1
 			});
 
 			await pb.collection('node').create({

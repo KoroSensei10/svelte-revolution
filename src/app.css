@@ -3,19 +3,19 @@
 @tailwind utilities;
 
 @layer base {
-    /* body {
+	/* body {
         @apply bg-[#0a0a0a] text-white;
     } */
 
-    input {
-        @apply bg-transparent;
-    }
+	input {
+		@apply bg-transparent;
+	}
 
-    textarea {
-        @apply bg-transparent;
-    }
+	textarea {
+		@apply bg-transparent;
+	}
 
-    select {
-        @apply bg-transparent;
-    }
+	select {
+		@apply bg-transparent;
+	}
 }
