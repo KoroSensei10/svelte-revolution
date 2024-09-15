@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 import { writable } from 'svelte/store';
 
-export const pb = new PocketBase('http://172.232.44.109');
+export const pb = new PocketBase('https://db.canard.cc');
 
 export const currentUser = writable(pb.authStore.model);
 
