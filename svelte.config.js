@@ -16,13 +16,7 @@ const config = {
 			$components: './src/components',
 			$lib: './src/lib',
 			$stores: './src/stores',
-			$utils: './src/utils',
-			$styles: './src/styles',
-			$assets: './src/assets',
-			$routes: './src/routes',
-			$services: './src/services',
-			$layouts: './src/layouts',
-			$hooks: './src/hooks'
+			$types: './src/types'
 		}
 	}
 };
