@@ -10,9 +10,9 @@
 	<p>Loading...</p>
 {:else}
 	<div>
-		<select bind:value={$locale} class="fixed top-0 left-0 bg-black p-4 text-white">
+		<select bind:value={$locale} class="fixed top-0 left-0 rounded-br-xl bg-black p-4 text-white">
 			{#each $locales as l, i}
-				<option value={l}>{l.toUpperCase()}</option>
+				<option selected={$locale === l} value={l}>{l.toUpperCase()}</option>
 			{/each}
 		</select>
 	</div>

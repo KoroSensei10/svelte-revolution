@@ -2,6 +2,8 @@
 	import { t } from 'svelte-i18n';
 	import { tasks, type Task } from '$lib/taskProgress';
 
+	tasks.sort((a, b) => Number(a.order) - Number(b.order));
+
 	let [completed, total] = sumTaskDuration(tasks);
 
 	function sumTaskDuration(tasks: Task[]): number[] {
@@ -34,9 +36,14 @@
 	</div>
 	<div class="flex flex-col items-center w-full gap-2">
 		{#each tasks as task (task.taskName)}
-			<div class="w-1/2 bg-black border rounded text-gray-200 {task.subTasks?.length ? 'collapse' : ''}">
+			<div
+				class="w-full sm:w-2/3 md:w-1/2 bg-black even:bg-slate-900 border rounded text-gray-200 {task.subTasks
+					?.length
+					? 'collapse'
+					: ''}"
+			>
 				{#if task.subTasks?.length}
-					<input type="checkbox" checked name={task.taskName} />
+					<input type="checkbox" class="" checked name={task.taskName} />
 				{/if}
 				<h2 class="flex items-center justify-between w-full px-4 justify-items-center collapse-title">
 					<span class="mr-2">
@@ -55,7 +62,7 @@
 							<h3 class="flex items-center justify-between w-full">
 								<span class="mr-2">{subTask.taskName}</span>
 								<span class="border-b border-dashed grow"></span>
-								<span class="ml-2 badge badge-info">
+								<span class="ml-2 badge badge-info text-nowrap">
 									{subTask.duration} points
 								</span>
 							</h3>
