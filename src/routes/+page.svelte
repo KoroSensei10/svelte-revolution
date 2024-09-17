@@ -26,11 +26,11 @@
 	}
 </script>
 
-<div class="flex flex-col items-center w-full h-full gap-4 my-4">
+<div class="flex flex-col items-center w-full h-lvh gap-4 pt-4 mb-4 bg-gray-800">
 	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
 	<div class="flex flex-col items-center gap-2">
-		<progress class="w-56 progress progress-accent" value={completed} max={total} />
-		<span>
+		<progress class="w-56 progress progress-accent border" value={completed} max={total} />
+		<span class="text-white">
 			{completed} / {total} points ({Math.round((completed / total) * 100)}%)
 		</span>
 	</div>
