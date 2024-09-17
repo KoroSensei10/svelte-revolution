@@ -1,6 +1,7 @@
 import { pb } from '$lib/pocketbase.js';
 import { error } from '@sveltejs/kit';
 import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
+import { ClientResponseError } from 'pocketbase';
 
 export interface Node extends SimulationNodeDatum {
 	id: string;
@@ -38,17 +39,28 @@ export interface SessionData {
 }
 
 async function getSession(sessionId: number) {
-	const session = await pb.collection('session').getFirstListItem('slug=' + sessionId.toString());
-	if (!session)
-		error(404, {
-			message: 'Session not found',
-			status: 404
-		});
+	let session: SessionData;
+	try {
+		session = await pb.collection('session').getFirstListItem('slug=' + sessionId.toString());
+	} catch (e) {
+		const err = e as ClientResponseError;
+		if (err.status === 404) {
+			error(404, {
+				status: 404,
+				message: 'Session not found'
+			});
+		} else {
+			error(500, {
+				status: err.status,
+				message: err.message
+			});
+		}
+	}
 
 	return session;
 }
 
-async function buildNodesAndLinks(session: any) {
+async function buildNodesAndLinks(session: SessionData) {
 	const nodes = (await pb.collection('Node').getFullList({ filter: `session="${session.id}"` })) as Node[];
 	const links: Link[] = [];
 
