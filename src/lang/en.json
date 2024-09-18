@@ -4,5 +4,6 @@
   "scenario": "Scenario",
   "join": "Join",
   "createSession": "Create session",
-  "createScenario": "Create Scenario"
+  "createScenario": "Create Scenario",
+	"language": "Language"
 }
