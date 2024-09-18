@@ -1,6 +1,8 @@
 {
-	"page_title": "Home page",
-	"sessions": "Sessions",
-	"scenario": "Scenario",
-	"join": "Join"
+  "page_title": "Home page",
+  "sessions": "Sessions",
+  "scenario": "Scenario",
+  "join": "Join",
+  "createSession": "Create session",
+  "createScenario": "Create Scenario"
 }

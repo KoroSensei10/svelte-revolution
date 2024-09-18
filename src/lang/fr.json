@@ -2,5 +2,7 @@
   "page_title": "Page d'accueil",
   "sessions": "Sessions",
   "scenario": "Scénario ",
-  "join": "Rejoindre"
+  "join": "Rejoindre",
+  "createSession": "Créer une session",
+  "createScenario": "Créer un scénario"
 }
