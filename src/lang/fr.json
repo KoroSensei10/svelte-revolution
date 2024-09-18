@@ -1,4 +1,9 @@
 {
-	"page_title": "Page d'accueil",
+  "page_title": "Page d'accueil",
+  "sessions": "Sessions",
+  "scenario": "Scénario ",
+  "join": "Rejoindre",
+  "createSession": "Créer une session",
+  "createScenario": "Créer un scénario",
 	"language": "Langue"
 }

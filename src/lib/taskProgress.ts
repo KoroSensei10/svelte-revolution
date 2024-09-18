@@ -12,14 +12,38 @@ export const tasks: Task[] = [
 		taskName: 'Traduction',
 		duration: 5,
 		completed: false,
-		order: 4
+		order: 5
+	},
+	{
+		taskName: 'Sessions',
+		duration: 0,
+		completed: false,
+		order: 2,
+		inCharge: 'Mathis',
+		subTasks: [
+			{
+				taskName: 'Créer une session',
+				duration: 5,
+				completed: false
+			},
+			{
+				taskName: 'Affichage sur la page d\'accueil',
+				duration: 1,
+				completed: true,
+			},
+			{
+				taskName: 'Page : Sessions',
+				duration: 5,
+				completed: true
+			}
+		]
 	},
 	{
 		taskName: 'Admin',
 		duration: 0,
 		completed: false,
 		inCharge: 'Mathis',
-		order: 3,
+		order: 5,
 		subTasks: [
 			{
 				taskName: 'Création de compte',
@@ -48,7 +72,7 @@ export const tasks: Task[] = [
 		duration: 0,
 		completed: false,
 		inCharge: 'Mathis',
-		order: 2,
+		order: 3,
 		subTasks: [
 			{
 				taskName: 'Voir les messages et les auteurs',
