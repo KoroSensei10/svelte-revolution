@@ -1,9 +1,9 @@
 {
-  "page_title": "Home page",
-  "sessions": "Sessions",
-  "scenario": "Scenario",
-  "join": "Join",
-  "createSession": "Start Session",
-  "createScenario": "Create Scenario",
-  "language": "Language"
+	"page_title": "Home page",
+	"sessions": "Sessions",
+	"scenario": "Scenario",
+	"join": "Join",
+	"createSession": "Start Session",
+	"createScenario": "Create Scenario",
+	"language": "Language"
 }

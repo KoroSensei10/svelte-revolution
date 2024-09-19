@@ -12,7 +12,7 @@
 		<p>Loading...</p>
 	{:else}
 		<select bind:value={$locale} class="fixed z-50 bottom-0 right-0 rounded-tl-xl bg-gray-900 p-4 text-white">
-			{#each $locales as l, i}
+			{#each $locales as l (l)}
 				<option selected={String($locale).toUpperCase() === l.toUpperCase()} value={l}>{l}</option>
 			{/each}
 		</select>

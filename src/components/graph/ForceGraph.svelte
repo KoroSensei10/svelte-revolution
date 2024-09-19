@@ -112,7 +112,7 @@
 		restartSimulation();
 	}
 
-	async function addNode(title: string, text: string, author: string, parentNodeId: sring) {
+	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
 		await pb.collection('Node').create({
 			title,
 			text,

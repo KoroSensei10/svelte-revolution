@@ -9,8 +9,6 @@
 	let theForm: HTMLFormElement;
 	let validForm = false;
 
-	$: validForm;
-
 	$: form?.success && toast.success('Session créée avec succès', { duration: 5000, position: 'bottom-center' });
 </script>
 

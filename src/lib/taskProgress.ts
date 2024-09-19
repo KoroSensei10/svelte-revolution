@@ -27,9 +27,9 @@ export const tasks: Task[] = [
 				completed: false
 			},
 			{
-				taskName: 'Affichage sur la page d\'accueil',
+				taskName: "Affichage sur la page d'accueil",
 				duration: 1,
-				completed: true,
+				completed: true
 			},
 			{
 				taskName: 'Page : Sessions',

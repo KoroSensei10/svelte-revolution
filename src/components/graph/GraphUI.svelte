@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let addnode: Function;
+	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
 	export let selectedNodeId: string | undefined;
 
 	let nodeTitle = '';
