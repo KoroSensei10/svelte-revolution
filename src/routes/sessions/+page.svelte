@@ -14,7 +14,7 @@
 				<figure>
 					<img src={graphe1} alt={session.image ?? graphe1}/>
 				</figure>
-				<div class="card-body p-4">
+				<div class="card-body p-4 bg-gray-900 text-white">
 					<h2 class="capitalize card-title">{session.name}</h2>
 					<div>
 						{$t('scenario')}:

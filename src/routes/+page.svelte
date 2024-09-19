@@ -26,7 +26,7 @@
 	}
 </script>
 
-<div class="flex flex-col items-center w-full gap-4 pt-4 mb-4">
+<div class="flex flex-col items-center w-full gap-4 py-4 mb-4">
 	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
 	<div class="flex flex-col items-center gap-2">
 		<progress class="w-56 progress progress-accent border" value={completed} max={total} />

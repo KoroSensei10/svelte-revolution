@@ -6,12 +6,12 @@
 	import { Toaster } from 'svelte-french-toast';
 </script>
 
-<div class="h-lvh overflow-auto bg-black dark:bg-black">
+<div class="h-lvh">
 	<Toaster />
 	{#if $isLoading}
 		<p>Loading...</p>
 	{:else}
-		<select bind:value={$locale} class="fixed bottom-0 right-0 rounded-tl-xl bg-gray-900 p-4 text-white">
+		<select bind:value={$locale} class="fixed z-50 bottom-0 right-0 rounded-tl-xl bg-gray-900 p-4 text-white">
 			{#each $locales as l, i}
 				<option selected={String($locale).toUpperCase() === l.toUpperCase()} value={l}>{l}</option>
 			{/each}
@@ -29,8 +29,6 @@
 				<a href="/admin/scenario/create" class="hover:underline">{$t('createScenario')}</a>
 			</div>
 		</nav>
-		<div>
-			<slot />
-		</div>
+		<slot />
 	{/if}
 </div>
