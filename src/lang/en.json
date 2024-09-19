@@ -3,7 +3,7 @@
   "sessions": "Sessions",
   "scenario": "Scenario",
   "join": "Join",
-  "createSession": "Create session",
+  "createSession": "Start Session",
   "createScenario": "Create Scenario",
-	"language": "Language"
+  "language": "Language"
 }
