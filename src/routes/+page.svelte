@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { t } from 'svelte-i18n';
 	import { tasks, type Task } from '$lib/taskProgress';
 
 	tasks.sort((a, b) => Number(a.order) - Number(b.order));
@@ -26,7 +25,7 @@
 	}
 </script>
 
-<div class="flex flex-col items-center w-full gap-4 py-4 mb-4">
+<div class="flex flex-col items-center w-full gap-4 py-4">
 	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
 	<div class="flex flex-col items-center gap-2">
 		<progress class="w-56 progress progress-accent border" value={completed} max={total} />
@@ -34,9 +33,9 @@
 			{completed} / {total} points ({Math.round((completed / total) * 100)}%)
 		</span>
 	</div>
-	<div class="flex flex-col items-center w-full gap-2">
+	<ul class="flex flex-col items-center w-full gap-2">
 		{#each tasks as task (task.taskName)}
-			<div
+			<li
 				class="w-full sm:w-2/3 md:w-1/2 bg-black even:bg-slate-900 border rounded text-gray-200 {task.subTasks
 					?.length
 					? 'collapse'
@@ -69,7 +68,7 @@
 						{/each}
 					</div>
 				{/if}
-			</div>
+			</li>
 		{/each}
-	</div>
+	</ul>
 </div>

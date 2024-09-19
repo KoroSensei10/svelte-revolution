@@ -20,7 +20,9 @@
 			class="w-full flex justify-between z-50 items-baseline p-4 sticky top-0 border-b border-white text-white bg-gray-900"
 		>
 			<a href="/">
-				<span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Babel Revolution</span
+				<span
+					class="hover:pl-1 transition-all self-center whitespace-nowrap text-xl font-semibold dark:text-white"
+					>Babel Revolution</span
 				>
 			</a>
 			<div class="float-right flex gap-4 underline-offset-2">
