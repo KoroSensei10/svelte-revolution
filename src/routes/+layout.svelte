@@ -4,6 +4,30 @@
 	import { isLoading, locales, locale } from 'svelte-i18n';
 
 	import { Toaster } from 'svelte-french-toast';
+	import { onMount } from 'svelte';
+
+	function typewriter(node, { speed = 1 }) {
+		const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;
+
+		if (!valid) {
+			throw new Error(`This transition only works on elements with a single text node child`);
+		}
+
+		const text = node.textContent;
+		const duration = text.length / (speed * 0.01);
+
+		return {
+			duration,
+			tick: (t) => {
+				const i = Math.trunc(text.length * t);
+				node.textContent = text.slice(0, i);
+			}
+		};
+	}
+	let visible = false;
+	onMount(() => {
+		visible = true;
+	});
 </script>
 
 <div class="h-lvh">
@@ -19,11 +43,13 @@
 		<nav
 			class="w-full flex justify-between z-50 items-baseline p-4 sticky top-0 border-b border-white text-white bg-gray-900"
 		>
-			<a href="/">
-				<span
-					class="hover:pl-1 transition-all self-center whitespace-nowrap text-xl font-semibold dark:text-white"
-					>Babel Revolution</span
-				>
+			<a
+				href="/"
+				class="hover:pl-1 transition-all self-center whitespace-nowrap font-semibold dark:text-white"
+			>
+				{#if visible}
+					<span transition:typewriter class="">Babel Revolution</span>
+				{/if}
 			</a>
 			<div class="float-right flex gap-4 underline-offset-2">
 				<a href="/sessions" class="hover:underline">{$t('sessions')}</a>
