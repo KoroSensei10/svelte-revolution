@@ -5,7 +5,11 @@ import daisyui from 'daisyui';
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {}
+		extend: {
+			fontFamily: {
+				redditSans: ['RedditSans', 'cursive']
+			},
+		}
 	},
 	variants: {
 		backgroundColor: ['responsive', 'hover', 'focus', 'active', 'checked']

@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 @layer base {
-	/* body {
-        @apply bg-[#0a0a0a] text-white;
-    } */
+	@font-face {
+		font-family: 'RedditSans';
+		src: url('/fonts/Reddit_Sans/RedditSans.ttf');
+		font-weight: normal;
+		font-style: normal;
+	}
 
 	input {
 		@apply bg-transparent;

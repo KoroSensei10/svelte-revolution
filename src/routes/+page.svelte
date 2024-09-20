@@ -1,42 +1,74 @@
 <script lang="ts">
+	import { sumTaskDuration, tasks } from '$lib/taskProgress';
+	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import { tasks, type Task } from '$lib/taskProgress';
 
 	tasks.sort((a, b) => Number(a.order) - Number(b.order));
 
 	let [completed, total] = sumTaskDuration(tasks);
 
-	function sumTaskDuration(tasks: Task[]): number[] {
-		let duration = tasks.reduce(
-			(acc, task) => {
-				if (task.completed) acc[0] = acc[0] + task.duration;
-				acc[1] = acc[1] + task.duration;
-				return acc;
-			},
-			[0, 0]
-		);
-		tasks.map((task) => {
-			if (task.subTasks?.length) {
-				let d = sumTaskDuration(task.subTasks);
-				duration[0] += d[0];
-				duration[1] += d[1];
-			}
-		});
-		return duration;
+	let days = 0,
+		hours = 0,
+		minutes = 0,
+		seconds = 0;
+
+	function updateCountdown() {
+		const targetDate = new Date('2024-09-25T09:00:00');
+		const now = new Date();
+		const timeDifference = targetDate.getTime() - now.getTime();
+
+		days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+		hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+		seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
 	}
+
+	onMount(() => {
+		updateCountdown();
+		const interval = setInterval(updateCountdown, 1000);
+		return () => clearInterval(interval);
+	});
 </script>
 
-<div class="flex flex-col items-center w-full gap-4 pt-4 mb-4">
+<div class="flex flex-col items-center w-full gap-4 py-4">
 	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
+	{#if days > 0 && hours > 0 && minutes > 0 && seconds > 0}
+		<div class="grid grid-flow-col gap-5 text-center auto-cols-max">
+			<div class="flex flex-col">
+				<span class="font-mono text-5xl countdown">
+					<span style="--value:{days};"></span>
+				</span>
+				{$t('days')}
+			</div>
+			<div class="flex flex-col">
+				<span class="font-mono text-5xl countdown">
+					<span style="--value:{hours};"></span>
+				</span>
+				{$t('hours')}
+			</div>
+			<div class="flex flex-col">
+				<span class="font-mono text-5xl countdown">
+					<span style="--value:{minutes};"></span>
+				</span>
+				{$t('minutes')}
+			</div>
+			<div class="flex flex-col">
+				<span class="font-mono text-5xl countdown">
+					<span style="--value:{seconds};"></span>
+				</span>
+				{$t('seconds')}
+			</div>
+		</div>
+	{/if}
 	<div class="flex flex-col items-center gap-2">
-		<progress class="w-56 progress progress-accent border" value={completed} max={total} />
+		<progress class="w-56 border progress progress-accent" value={completed} max={total} />
 		<span class="text-white">
 			{completed} / {total} points ({Math.round((completed / total) * 100)}%)
 		</span>
 	</div>
-	<div class="flex flex-col items-center w-full gap-2">
+	<ul class="flex flex-col items-center w-full gap-2">
 		{#each tasks as task (task.taskName)}
-			<div
+			<li
 				class="w-full sm:w-2/3 md:w-1/2 bg-black even:bg-slate-900 border rounded text-gray-200 {task.subTasks
 					?.length
 					? 'collapse'
@@ -69,7 +101,7 @@
 						{/each}
 					</div>
 				{/if}
-			</div>
+			</li>
 		{/each}
-	</div>
+	</ul>
 </div>

@@ -5,5 +5,13 @@
   "join": "Rejoindre",
   "createSession": "Démarrer une session",
   "createScenario": "Créer un scénario",
-  "language": "Langue"
+  "language": "Langue",
+  "days": "jours",
+  "hours": "heures",
+  "minutes": "minutes",
+  "seconds": "secondes",
+  "writeMessage": "Écrire un message",
+  "nodeInformation": "Informations sur le nœud",
+  "from": "De :",
+  "noNodeSelected": "Aucun nœud sélectionné"
 }

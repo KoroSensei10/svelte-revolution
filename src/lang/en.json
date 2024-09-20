@@ -5,5 +5,13 @@
   "join": "Join",
   "createSession": "Start Session",
   "createScenario": "Create Scenario",
-  "language": "Language"
+  "language": "Language",
+  "days": "days",
+  "hours": "hours",
+  "minutes": "minutes",
+  "seconds": "seconds",
+  "writeMessage": "Write a message",
+  "nodeInformation": "Node Information",
+  "from": "From:",
+  "noNodeSelected": "No node selected"
 }
