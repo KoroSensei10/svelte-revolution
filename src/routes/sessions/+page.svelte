@@ -6,26 +6,26 @@
 </script>
 
 <div class="flex flex-col gap-4 py-4">
-	<h1 class="text-4xl font-thin text-center first-letter:capitalize text-white">{$t('sessions')}</h1>
+	<h1 class="text-4xl font-thin text-center text-white first-letter:capitalize">{$t('sessions')}</h1>
 	{#if data.sessions.length}
-		<ul class="flex flex-col items-center sm:flex-row gap-4 justify-center">
+		<ul class="flex flex-col items-center justify-center gap-4 sm:flex-row">
 			{#each data.sessions as session (session.id)}
 				{@const scenario = session.expand?.scenario}
-				<li class="card border-b rounded-b-none bg-base-100 w-52 shadow-xl">
+				<li class="border-b rounded-b-none shadow-xl card bg-base-100 w-52">
 					<figure>
-						<imgsrc={graphe1} alt={session.image ?? graphe1} />
+						<img src={graphe1} alt={session.image ?? graphe1} />
 					</figure>
-					<div class="card-body p-4 bg-gray-900 text-white">
+					<div class="p-4 text-white bg-gray-900 card-body">
 						<h2 class="capitalize card-title">{session.name}</h2>
 						<div>
 							{$t('scenario')}:
 							<span
 								data-tip={scenario.prologue}
-								class="tooltip tooltip-bottom font-light italic hover:underline cursor-default"
+								class="italic font-light cursor-default tooltip tooltip-bottom hover:underline"
 								>{scenario.title}</span
 							>
 						</div>
-						<div class="card-actions justify-end">
+						<div class="justify-end card-actions">
 							<a
 								class="btn btn-primary first-letter:capitalize hover:text-white"
 								href="/sessions/{session.slug}"
