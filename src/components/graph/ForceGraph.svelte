@@ -1,62 +1,94 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import * as d3 from 'd3'; // TODO : Importer uniquement les parties nécessaires
-
+	import {
+		select,
+		zoom as d3Zoom,
+		zoomIdentity,
+		drag,
+		forceSimulation,
+		forceLink,
+		forceManyBody,
+		schemeCategory10,
+		forceRadial
+	} from 'd3';
 	import type { Node as NodeMessage } from '../../routes/sessions/[slug]/+page.server';
-	import UI from './GraphUI.svelte';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
-	import toast from 'svelte-french-toast';
 	import { pb } from '$lib/pocketbase';
+	import type { NodeType } from '../../../types/tableTypes';
 
 	export let sessionId: string;
 	export let nodes: NodeMessage[] = [];
 	export let links: SimulationLinkDatum<NodeMessage>[] = [];
+	export let selectedNode: NodeType | null = null;
 
 	let svg: SVGElement;
 	let svgElement: d3.Selection<SVGElement, unknown, null, undefined>;
-	let g: d3.Selection<SVGElement, unknown, null, undefined>;
+	let nodeLayer: d3.Selection<SVGElement, unknown, null, undefined>;
+	let linkLayer: d3.Selection<SVGElement, unknown, null, undefined>;
+	let labelLayer: d3.Selection<SVGElement, unknown, null, undefined>;
+
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 
-	let transform;
-	const zoom = d3.zoom().on('zoom', (e) => {
-		g.attr('transform', (transform = e.transform));
-		g.style('stroke-width', 3 / Math.sqrt(transform.k));
+	const zoom = d3Zoom().on('zoom', (e) => {
+		const { transform } = e;
+		nodeLayer.attr('transform', transform);
+		linkLayer.attr('transform', transform);
+		labelLayer.attr('transform', transform);
+		const strokeWidth = 3 / Math.sqrt(transform.k);
+		nodeLayer.style('stroke-width', strokeWidth);
+		linkLayer.style('stroke-width', strokeWidth);
+		labelLayer.style('stroke-width', strokeWidth);
 	});
-
-	let selectedNode: NodeMessage | null = null;
 
 	function renderGraph() {
 		const currentWidth = window.innerWidth;
 		const currentHeight = window.innerHeight;
-		svgElement.attr('width', currentWidth);
-		svgElement.attr('height', currentHeight);
+		svgElement.attr('width', currentWidth).attr('height', currentHeight);
 
-		// Update links
-		const link = g
+		const link = linkLayer
 			.selectAll('line')
 			.data(links)
 			.join('line')
 			.attr('stroke', '#999')
-			.attr('stroke-opacity', 0.6)
-			.attr('stroke-width', (d) => Math.sqrt(Number(d.index || 0 + 1)));
+			.attr('stroke-opacity', 1)
+			.attr('stroke-width', 1)
+			.attr('stroke-linecap', 'round')
+			.attr('stroke-linejoin', 'round')
+			.attr('stroke-dashoffset', 0)
+			.attr('stroke-dasharray', '5, 15');
 
-		// Update nodes
-		const node = g
+		const node = nodeLayer
 			.selectAll('circle')
 			.data(nodes)
 			.join('circle')
 			.attr('draggable', true)
-			.attr('r', 10)
-			.attr('fill', (d) => (selectedNode && selectedNode.id === d.id ? 'red' : d3.schemeCategory10[0])) // Colorie en rouge si sélectionné
-			.on('mouseover', (event, d) => {
-				// Mettre en surbrillance les nœuds liés
+			.attr('r', (d) => {
+				if (d.type === 'startNode') {
+					return 30;
+				}
+				return selectedNode && selectedNode.id === d.id ? 15 : 10;
+			})
+			.style('cursor', 'pointer')
+			.attr('fill', (d) => {
+				if (d.type === 'startNode') {
+					return 'green';
+				}
+				return selectedNode && selectedNode.id === d.id ? 'red' : schemeCategory10[0];
+			})
+			.on('mouseover', (_, d) => {
+				link.attr('stroke-dasharray', (l) => (l.source === d || l.target === d ? 'none' : '5, 15'));
 				link.attr('stroke', (l) => (l.source === d || l.target === d ? 'red' : '#999'));
-				node.attr('fill', (n) => (n === d ? 'red' : d3.schemeCategory10[0]));
-				node.style('cursor', 'pointer');
+				link.attr('stroke-width', (l) => (l.source === d || l.target === d ? 2 : 1));
+				node.attr('fill', (n) => {
+					if (n === d) return 'red';
+					if (links.some((l) => (l.source === d && l.target === n) || (l.target === d && l.source === n))) {
+						return 'purple';
+					}
+					return schemeCategory10[0];
+				});
 			})
 			.call(
-				d3
-					.drag<any, NodeMessage>()
+				drag<any, NodeMessage>()
 					.on('start', (event, d) => {
 						if (!event.active) simulation.alphaTarget(0.3).restart();
 						d.fx = d.x;
@@ -74,23 +106,33 @@
 				null
 			)
 			.on('mouseout', () => {
-				// Réinitialiser la couleur des liens
+				link.attr('stroke-dasharray', '5, 15');
 				link.attr('stroke', '#999');
-				node.attr('fill', (d) => (selectedNode && selectedNode.id === d.id ? 'red' : d3.schemeCategory10[0]));
+				link.attr('stroke-width', 1);
+				node.attr('fill', (d) => {
+					if (d.type === 'startNode') {
+						return 'green';
+					}
+					return selectedNode && selectedNode.id === d.id ? 'red' : schemeCategory10[0];
+				});
 			})
-			.on('click', (event, d) => selectNode(d));
+			.on('click', (_, d) => selectNode(d));
 
-		// Ajouter des labels de texte pour chaque nœud
-		const labels = g
+		const labels = labelLayer
 			.selectAll('text')
 			.data(nodes)
 			.join('text')
 			.attr('text-anchor', 'middle')
-			.attr('dy', -20) // Positionne le texte au-dessus du nœud
+			.attr('dy', (d) => {
+				return d.type !== 'startNode' ? -20 : 5;
+			})
 			.classed('fill-white', true)
-			.text((d) => d.title);
+			// .style('font-size', '10px') TODO personalize font size
+			.text((d) => d.title)
+			.on('click', (_, d) => selectNode(d))
+			.style('cursor', 'pointer');
+		// TODO: corriger le hover sur le texte pour être comme le hover sur le noeud
 
-		// Update simulation
 		simulation.on('tick', () => {
 			link.attr('x1', (d) => d.source.x)
 				.attr('y1', (d) => d.source.y)
@@ -98,33 +140,16 @@
 				.attr('y2', (d) => d.target.y);
 
 			node.attr('cx', (d) => String(d.x)).attr('cy', (d) => String(d.y));
-
-			// Positionner les labels en fonction des positions des nœuds
 			labels.attr('x', (d) => String(d.x)).attr('y', (d) => String(d.y));
 		});
 
-		simulation.force('center', d3.forceCenter(currentWidth / 2, currentHeight / 2));
+		// simulation.force('center', forceCenter(currentWidth / 2, currentHeight / 2));
 	}
 
 	function updateGraph(node: NodeMessage, parentNodeId: string) {
 		nodes.push(node);
 		links.push({ source: parentNodeId, target: node.id });
 		restartSimulation();
-	}
-
-	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
-		await pb.collection('Node').create({
-			title,
-			text,
-			author,
-			type: 'contribution',
-			parent: parentNodeId,
-			session: sessionId
-		});
-
-		toast.success('Nœud ajouté avec succès', {
-			position: 'bottom-center'
-		});
 	}
 
 	function selectNode(node: NodeMessage) {
@@ -151,21 +176,35 @@
 			}
 		);
 
-		svgElement = d3.select(svg);
-		g = svgElement.append('g');
+		const currentWidth = window.innerWidth;
+		const currentHeight = window.innerHeight;
 
-		svgElement.call(zoom).call(zoom.transform, d3.zoomIdentity);
+		svgElement = select(svg);
+		linkLayer = svgElement.append('g');
+		nodeLayer = svgElement.append('g');
+		labelLayer = svgElement.append('g');
 
-		simulation = d3
-			.forceSimulation(nodes)
+		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
+
+		const startNode = nodes.find((n) => n.type === 'startNode');
+
+		simulation = forceSimulation(nodes)
 			.force(
 				'link',
-				d3
-					.forceLink(links)
+				forceLink(links)
 					.id((d) => d.id)
-					.distance(100)
+					.distance((d) => {
+						if (d.source.type === 'startNode' || d.target.type === 'startNode') {
+							return 30;
+						} else if (d.source.type === 'event' || d.target.type === 'event') {
+							return 50;
+						}
+						return 100;
+					})
+					.strength(0.7)
 			)
-			.force('charge', d3.forceManyBody().strength(-300));
+			.force('charge', forceManyBody().strength(-300))
+			.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2));
 
 		renderGraph();
 	});
@@ -173,5 +212,4 @@
 
 <svelte:window on:resize={() => restartSimulation()} />
 
-<UI addnode={addNode} selectedNodeId={selectedNode?.id} {selectedNode} />
 <svg class="w-full h-full cursor-grab" bind:this={svg}></svg>

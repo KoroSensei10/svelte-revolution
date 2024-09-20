@@ -3,6 +3,10 @@
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 
+	import { mainTitle } from '$stores/titles_names';
+
+	mainTitle.set('Babel Révolution');
+
 	tasks.sort((a, b) => Number(a.order) - Number(b.order));
 
 	let [completed, total] = sumTaskDuration(tasks);
