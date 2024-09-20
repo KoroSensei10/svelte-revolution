@@ -1,9 +1,17 @@
 {
-	"page_title": "Page d'accueil",
-	"sessions": "Sessions",
-	"scenario": "Scénario ",
-	"join": "Rejoindre",
-	"createSession": "Démarrer une session",
-	"createScenario": "Créer un scénario",
-	"language": "Langue"
+  "page_title": "Page d'accueil",
+  "sessions": "Sessions",
+  "scenario": "Scénario ",
+  "join": "Rejoindre",
+  "createSession": "Démarrer une session",
+  "createScenario": "Créer un scénario",
+  "language": "Langue",
+  "days": "jours",
+  "hours": "heures",
+  "minutes": "minutes",
+  "seconds": "secondes",
+  "writeMessage": "Écrire un message",
+  "nodeInformation": "Informations sur le nœud",
+  "from": "De :",
+  "noNodeSelected": "Aucun nœud sélectionné"
 }

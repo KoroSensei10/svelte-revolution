@@ -173,5 +173,5 @@
 
 <svelte:window on:resize={() => restartSimulation()} />
 
-<UI addnode={addNode} selectedNodeId={selectedNode?.id} />
+<UI addnode={addNode} selectedNodeId={selectedNode?.id} {selectedNode} />
 <svg class="w-full h-full cursor-grab" bind:this={svg}></svg>

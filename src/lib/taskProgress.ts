@@ -111,3 +111,22 @@ export const tasks: Task[] = [
 		]
 	}
 ];
+
+export function sumTaskDuration(tasks: Task[]): number[] {
+	let duration = tasks.reduce(
+		(acc, task) => {
+			if (task.completed) acc[0] = acc[0] + task.duration;
+			acc[1] = acc[1] + task.duration;
+			return acc;
+		},
+		[0, 0]
+	);
+	tasks.map((task) => {
+		if (task.subTasks?.length) {
+			let d = sumTaskDuration(task.subTasks);
+			duration[0] += d[0];
+			duration[1] += d[1];
+		}
+	});
+	return duration;
+}

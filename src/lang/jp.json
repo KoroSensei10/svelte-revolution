@@ -5,5 +5,13 @@
 	"join": "参加する",
 	"createSession": "セッションを開始",
 	"createScenario": "シナリオを作成",
-	"language": "言語"
+	"language": "言語",
+	"days": "日",
+	"hours": "時間",
+	"minutes": "分",
+	"seconds": "秒",
+	"writeMessage": "メッセージを書く",
+	"nodeInformation": "ノード情報",
+	"from": "著者:",
+	"noNodeSelected": "ノードが選択されていません"
 }

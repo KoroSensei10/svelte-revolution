@@ -1,9 +1,17 @@
 {
-	"page_title": "Home page",
-	"sessions": "Sessions",
-	"scenario": "Scenario",
-	"join": "Join",
-	"createSession": "Start Session",
-	"createScenario": "Create Scenario",
-	"language": "Language"
+  "page_title": "Home page",
+  "sessions": "Sessions",
+  "scenario": "Scenario",
+  "join": "Join",
+  "createSession": "Start Session",
+  "createScenario": "Create Scenario",
+  "language": "Language",
+  "days": "days",
+  "hours": "hours",
+  "minutes": "minutes",
+  "seconds": "seconds",
+  "writeMessage": "Write a message",
+  "nodeInformation": "Node Information",
+  "from": "From:",
+  "noNodeSelected": "No node selected"
 }
