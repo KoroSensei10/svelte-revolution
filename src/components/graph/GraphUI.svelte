@@ -3,8 +3,7 @@
 	import type { NodeType } from '../../../types/tableTypes';
 
 	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
-	export let selectedNode: NodeType | undefined;
-	export let selectedNodeId: string | undefined;
+	export let selectedNode: NodeType | null;
 
 	let nodeTitle = '';
 	let nodeText = '';
@@ -14,7 +13,7 @@
 	let validForm = false;
 
 	function addNodeHook() {
-		if (!selectedNodeId) {
+		if (!selectedNode?.id) {
 			alert("Veuillez sélectionner un nœud d'abord");
 			return;
 		}
@@ -30,7 +29,7 @@
 			alert('Veuillez entrer un auteur pour le nouveau nœud');
 			return;
 		}
-		addnode(nodeTitle, nodeText, nodeAuthor, selectedNodeId);
+		addnode(nodeTitle, nodeText, nodeAuthor, selectedNode.id);
 
 		nodeTitle = '';
 		nodeText = '';
@@ -46,7 +45,7 @@
 		on:input={() => (validForm = theForm?.checkValidity())}
 	>
 		<div class="w-full rounded-none collapse collapse-arrow">
-			<input type="radio" class="min-h-0" name="GraphUI" checked />
+			<input type="radio" class="min-h-0" name="GraphUI" />
 			<div class="w-full min-h-0 font-semibold bg-gray-900 collapse-title">{$t('writeMessage')}</div>
 			<div class="z-50 flex flex-col py-0 bg-black collapse-content snoup">
 				<div class="w-full">
@@ -89,7 +88,7 @@
 			<div class="text-white collapse-content">
 				{#if selectedNode}
 					<div class="p-4 text-xl font-semibold first-letter:capitalize">{selectedNode?.title}</div>
-					<div>{$t('from')} {selectedNode?.text}</div>
+					<div>{$t('from')} {selectedNode?.author}</div>
 					<div class="pt-2">{selectedNode?.text}</div>
 				{:else}
 					<div class="p-4 pb-0 text-xl text-center first-letter:capitalize">{$t('noNodeSelected')}</div>

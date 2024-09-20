@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import { typewriter } from '$lib/animations';
 
@@ -8,17 +8,28 @@
 	import { isLoading, locales, locale } from 'svelte-i18n';
 	import { Toaster } from 'svelte-french-toast';
 
-	let title = 'Babel Revolution';
+	import { mainTitle } from '$stores/titles_names';
 
 	let visible = false;
+	const unsubscribe = mainTitle.subscribe(() => {
+		visible = false;
+		setTimeout(() => {
+			visible = true;
+		}, 0);
+	});
+
 	onMount(() => {
 		visible = true;
+	});
+
+	onDestroy(() => {
+		unsubscribe();
 	});
 </script>
 
 <svelte:head>
 	<title>
-		{title}
+		{$mainTitle}
 	</title>
 </svelte:head>
 
@@ -39,9 +50,8 @@
 		>
 			<a href="/" class="self-center font-semibold transition-all hover:pl-1 whitespace-nowrap dark:text-white">
 				{#if visible}
-					<span transition:typewriter class="">Babel Revolution</span><span class="blinking-underscore"
-						>_</span
-					>
+					<span out:typewriter={{ text: $mainTitle }} in:typewriter={{ text: $mainTitle }} class=""
+					></span><span class="blinking-underscore">_</span>
 				{/if}
 			</a>
 			<div class="flex float-right gap-4 underline-offset-2">
