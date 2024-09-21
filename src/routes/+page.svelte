@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 
-	import { mainTitle } from '$stores/titles_names';
+	import { mainTitle } from '$stores/titles';
 
 	mainTitle.set('Babel Révolution');
 
@@ -35,8 +35,10 @@
 </script>
 
 <div class="flex flex-col items-center w-full gap-4 py-4">
-	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
-	{#if days > 0 && hours > 0 && minutes > 0 && seconds > 0}
+	<h1 class="text-3xl font-thin">Svelte Révolution Roadmap</h1>
+	{#if days < 0 && hours < 0 && minutes < 0 && seconds < 0}
+		<div>{$t('revolution')}</div>
+	{:else}
 		<div class="grid grid-flow-col gap-5 text-center auto-cols-max">
 			<div class="flex flex-col">
 				<span class="font-mono text-5xl countdown">
@@ -65,8 +67,8 @@
 		</div>
 	{/if}
 	<div class="flex flex-col items-center gap-2">
-		<progress class="w-56 border progress progress-accent" value={completed} max={total} />
-		<span class="text-white">
+		<progress class="w-56 border progress progress-primary dark:progress-accent" value={completed} max={total} />
+		<span class="">
 			{completed} / {total} points ({Math.round((completed / total) * 100)}%)
 		</span>
 	</div>

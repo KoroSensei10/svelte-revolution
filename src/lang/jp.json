@@ -13,5 +13,6 @@
 	"writeMessage": "メッセージを書く",
 	"nodeInformation": "ノード情報",
 	"from": "著者:",
-	"noNodeSelected": "ノードが選択されていません"
+	"noNodeSelected": "ノードが選択されていません",
+	"returnInSafePlace": "安全な場所に戻る"
 }

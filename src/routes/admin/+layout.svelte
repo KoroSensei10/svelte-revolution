@@ -1,5 +1,5 @@
 <script>
-	import { mainTitle } from '$stores/titles_names';
+	import { mainTitle } from '$stores/titles';
 	import { onDestroy } from 'svelte';
 
 	mainTitle.set('Admin - Babel Révolution');

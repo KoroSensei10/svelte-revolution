@@ -8,7 +8,7 @@
 	import { isLoading, locales, locale } from 'svelte-i18n';
 	import { Toaster } from 'svelte-french-toast';
 
-	import { mainTitle } from '$stores/titles_names';
+	import { mainTitle } from '$stores/titles';
 
 	let visible = false;
 	const unsubscribe = mainTitle.subscribe(() => {

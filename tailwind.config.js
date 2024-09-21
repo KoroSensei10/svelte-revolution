@@ -8,11 +8,14 @@ export default {
 		extend: {
 			fontFamily: {
 				redditSans: ['RedditSans', 'cursive']
-			},
+			}
 		}
 	},
 	variants: {
 		backgroundColor: ['responsive', 'hover', 'focus', 'active', 'checked']
 	},
-	plugins: [scrollbar(), daisyui]
+	plugins: [scrollbar(), daisyui],
+	daisyui: {
+		logs: false
+	}
 };
