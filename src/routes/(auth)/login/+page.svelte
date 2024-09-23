@@ -28,11 +28,17 @@
 		<div class="flex flex-col items-start gap-4 p-4 w-fit text-black">
 			<label class="flex items-center gap-2 input input-bordered input-accent">
 				{$t('username')}
-				<input type="text" class="grow" placeholder="Daisy" name="username" />
+				<input type="text" class="grow" placeholder="Daisy" autocomplete="username" name="username" />
 			</label>
 			<label class="flex items-center w-full gap-2 input input-bordered input-accent">
 				{$t('password')}
-				<input type="password" class="grow" placeholder="••••••••" name="password" />
+				<input
+					type="password"
+					class="grow"
+					placeholder="••••••••"
+					autocomplete="current-password"
+					name="password"
+				/>
 			</label>
 			<div class="flex flex-row items-center self-start justify-between w-full h-12">
 				<button type="submit" class="p-4 font-bold w-fit btn btn-accent">{$t('login')}</button>

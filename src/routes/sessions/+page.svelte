@@ -5,19 +5,19 @@
 	export let data;
 </script>
 
-<div class="flex flex-col gap-4 py-4">
-	<h1 class="text-4xl font-thin text-center text-white first-letter:capitalize">{$t('sessions')}</h1>
+<div class="flex flex-col items-center gap-4 py-4">
+	<h1 class="text-4xl font-thin text-center first-letter:capitalize">{$t('sessions')}</h1>
 	{#if data.sessions.length}
-		<ul class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+		<ul class="flex flex-col p-4 pt-0 text-black gap-4 w-2/3">
 			{#each data.sessions as session (session.id)}
 				{@const scenario = session.expand?.scenario}
-				<li class="border-b rounded-b-none shadow-xl card bg-base-100 w-52">
-					<figure>
-						<img src={graphe1} alt={session.image ?? graphe1} />
-					</figure>
-					<div class="p-4 text-white bg-gray-900 card-body">
-						<h2 class="capitalize card-title">{session.name}</h2>
-						<div>
+				<li class="rounded-lg bg-primary-300 w-full h-fit">
+					<a
+						class="rounded-lg grid grid-cols-3 p-4 place-items-center w-full transition-all hover:px-2 hover:bg-primary-400"
+						href="/sessions/{session.slug}"
+					>
+						<h2 class="capitalize text-lg font-semibold justify-self-start">{session.name}</h2>
+						<div class="text-center">
 							{$t('scenario')}:
 							<span
 								data-tip={scenario.prologue}
@@ -25,15 +25,10 @@
 								>{scenario.title}</span
 							>
 						</div>
-						<div class="justify-end card-actions">
-							<a
-								class="btn btn-primary first-letter:capitalize hover:text-white"
-								href="/sessions/{session.slug}"
-							>
-								{$t('join')}</a
-							>
-						</div>
-					</div>
+						<figure class="w-12 justify-self-end p-0">
+							<img class="h-fit rounded-lg" src={graphe1} alt={session.image ?? graphe1} />
+						</figure>
+					</a>
 				</li>
 			{/each}
 		</ul>

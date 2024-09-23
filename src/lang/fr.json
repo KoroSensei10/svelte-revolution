@@ -5,6 +5,7 @@
 	"join": "Rejoindre",
 	"createSession": "Démarrer une session",
 	"createScenario": "Créer un scénario",
+	"createUser": "Créer un utilisateur",
 	"language": "Langue",
 	"days": "jours",
 	"hours": "heures",
@@ -18,8 +19,13 @@
 	"login": "Connexion",
 	"logout": "Déconnexion",
 	"admin": "Admin",
+	"administration": "Administration",
 	"register": "S'inscrire",
 	"username": "Nom d'utilisateur",
 	"password": "Mot de passe",
-	"email": "Email"
+	"email": "Email",
+	"yourTitle": "Votre titre",
+	"yourMessage": "Votre message",
+	"yourName": "Votre nom",
+	"publish": "Publier"
 }

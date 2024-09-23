@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { t } from 'svelte-i18n';
-	console.log($page);
 </script>
 
 <div class="h-screen divide-gray-400">
