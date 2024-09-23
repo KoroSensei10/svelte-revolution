@@ -44,8 +44,6 @@ export const actions = {
 				session: session
 			};
 		} catch (error) {
-			console.log(error.response);
-
 			return fail(500, { error: String(error) });
 		}
 	}

@@ -18,8 +18,6 @@ export async function handle({ event, resolve }) {
 	response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
 
 	const url = event.request.url.trim().split('__')[0];
-	console.log(url);
-
 	if (url.endsWith('/admin/') || url.endsWith('/admin')) {
 		return redirect(302, '/admin/sessions/create');
 	} else {

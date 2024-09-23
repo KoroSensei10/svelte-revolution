@@ -57,8 +57,6 @@ export const actions = {
 				body: scenario
 			};
 		} catch (error) {
-			console.log(error);
-
 			return fail(500, { error: String(error) });
 		}
 	}
