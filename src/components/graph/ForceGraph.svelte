@@ -55,7 +55,7 @@
 			.attr('stroke-linecap', 'round')
 			.attr('stroke-linejoin', 'round')
 			.attr('stroke-dashoffset', 0)
-			.attr('stroke-dasharray', '5, 15');
+			.attr('stroke-dasharray', '5, 5');
 
 		const node = nodeLayer
 			.selectAll('circle')

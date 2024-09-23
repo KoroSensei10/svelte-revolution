@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 
-	import { mainTitle } from '$stores/titles_names';
+	import { mainTitle } from '$stores/titles';
 
 	mainTitle.set('Babel Révolution');
 
@@ -35,29 +35,31 @@
 </script>
 
 <div class="flex flex-col items-center w-full gap-4 py-4">
-	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
-	{#if days > 0 && hours > 0 && minutes > 0 && seconds > 0}
-		<div class="grid grid-flow-col gap-5 text-center auto-cols-max">
+	{#if days < 0 && hours < 0 && minutes < 0 && seconds < 0}
+		<div>{$t('revolution')}</div>
+	{:else}
+		<h1 class="text-4xl font-thin text-center text-white first-letter:capitalize">Svelte Révolution Roadmap</h1>
+		<div class="grid grid-flow-col gap-5 text-center auto-cols-max text-green-300">
 			<div class="flex flex-col">
-				<span class="font-mono text-5xl countdown">
+				<span class="justify-center font-mono text-5xl countdown">
 					<span style="--value:{days};"></span>
 				</span>
 				{$t('days')}
 			</div>
 			<div class="flex flex-col">
-				<span class="font-mono text-5xl countdown">
+				<span class="justify-center font-mono text-5xl countdown">
 					<span style="--value:{hours};"></span>
 				</span>
 				{$t('hours')}
 			</div>
 			<div class="flex flex-col">
-				<span class="font-mono text-5xl countdown">
+				<span class="justify-center font-mono text-5xl countdown">
 					<span style="--value:{minutes};"></span>
 				</span>
 				{$t('minutes')}
 			</div>
 			<div class="flex flex-col">
-				<span class="font-mono text-5xl countdown">
+				<span class="justify-center font-mono text-5xl countdown">
 					<span style="--value:{seconds};"></span>
 				</span>
 				{$t('seconds')}
@@ -67,7 +69,9 @@
 	<div class="flex flex-col items-center gap-2">
 		<progress class="w-56 border progress progress-accent" value={completed} max={total} />
 		<span class="text-white">
-			{completed} / {total} points ({Math.round((completed / total) * 100)}%)
+			{completed} / {total}
+			{$t('points')}
+			({Math.round((completed / total) * 100)}%)
 		</span>
 	</div>
 	<ul class="flex flex-col items-center w-full gap-2">

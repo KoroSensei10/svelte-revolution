@@ -12,6 +12,8 @@
 	let theForm: HTMLFormElement;
 	let validForm = false;
 
+	let addNodeChecked = false;
+
 	function addNodeHook() {
 		if (!selectedNode?.id) {
 			alert("Veuillez sélectionner un nœud d'abord");
@@ -37,17 +39,22 @@
 </script>
 
 <div
-	class="fixed bottom-0 z-50 w-full bg-black border-t scrollbar-thin scrollbar-thumb-white scrollbar-track-black sm:top-0 sm:bottom-auto sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
+	class="fixed bottom-0 z-50 w-full bg-black border-t bg-opacity-90 scrollbar-thin scrollbar-thumb-white scrollbar-track-black sm:top-0 sm:bottom-auto sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
 >
 	<form
 		bind:this={theForm}
-		on:submit|preventDefault={addNodeHook}
+		on:submit|preventDefault={() => {
+			addNodeChecked = false;
+			addNodeHook();
+		}}
 		on:input={() => (validForm = theForm?.checkValidity())}
 	>
 		<div class="w-full rounded-none collapse collapse-arrow">
-			<input type="radio" class="min-h-0" name="GraphUI" />
-			<div class="w-full min-h-0 font-semibold bg-gray-900 collapse-title">{$t('writeMessage')}</div>
-			<div class="z-50 flex flex-col py-0 bg-black collapse-content snoup">
+			<input type="checkbox" class="min-h-0" name="GraphUI" bind:checked={addNodeChecked} />
+			<div class="w-full min-h-0 font-semibold collapse-title">
+				{$t('writeMessage')}
+			</div>
+			<div class="z-50 flex flex-col py-0 collapse-content snoup">
 				<div class="w-full">
 					<div class="w-full">
 						<input
@@ -83,8 +90,10 @@
 			</div>
 		</div>
 		<div class="sticky bottom-0 border-t rounded-none collapse collapse-arrow">
-			<input type="radio" name="GraphUI" />
-			<div class="font-bold underline bg-gray-900 underline-offset-4 collapse-title">{$t('nodeInformation')}</div>
+			<input type="checkbox" class="min-h-0" name="GraphUI" />
+			<div class="font-bold collapse-title">
+				{$t('nodeInformation')}
+			</div>
 			<div class="text-white collapse-content">
 				{#if selectedNode}
 					<div class="p-4 text-xl font-semibold first-letter:capitalize">{selectedNode?.title}</div>

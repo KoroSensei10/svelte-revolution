@@ -10,6 +10,7 @@ export interface NodeType {
 	session: string;
 	type: string;
 	parent: string;
+	side: string;
 }
 
 export interface Scenario {
@@ -48,12 +49,4 @@ export interface Session {
 export interface Side {
 	id: string;
 	name: string;
-}
-
-export interface User {
-	id: string;
-	name?: string;
-	username: string;
-	email: string;
-	avatar?: string;
 }

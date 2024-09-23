@@ -1,6 +1,11 @@
 import PocketBase, { RecordService } from 'pocketbase';
-import { writable } from 'svelte/store';
-import type { End, NodeType, Scenario, Session, Side } from '../../types/tableTypes';
+import { writable, type Writable } from 'svelte/store';
+import type { End, NodeType, Scenario, Session, Side, User } from '../../types/tableTypes';
+
+interface UserAuth {
+	model: RecordService<User> | null;
+	token: string | null;
+}
 
 interface MyPocketBase extends PocketBase {
 	collection(idOrName: string): RecordService; // default fallback for any other collection
@@ -10,12 +15,13 @@ interface MyPocketBase extends PocketBase {
 	collection(idOrName: 'Event'): RecordService<Event>;
 	collection(idOrName: 'Session'): RecordService<Session>;
 	collection(idOrName: 'Side'): RecordService<Side>;
+	collection(idOrName: 'User'): RecordService<User>;
 }
 
 export const pb = new PocketBase('https://db.canard.cc') as MyPocketBase;
 
-export const currentUser = writable(pb.authStore.model);
+export const currentUser: Writable<User | null> = writable(pb.authStore.model as User | null);
 
 pb.authStore.onChange(() => {
-	currentUser.set(pb.authStore.model);
+	currentUser.set(pb.authStore.model as User | null);
 });

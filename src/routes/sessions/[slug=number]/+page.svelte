@@ -5,7 +5,7 @@
 
 	import toast from 'svelte-french-toast';
 	import type { NodeType } from '../../../../types/tableTypes';
-	import { mainTitle } from '$stores/titles_names';
+	import { mainTitle } from '$stores/titles';
 
 	export let data;
 
