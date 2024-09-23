@@ -14,5 +14,12 @@
 	"nodeInformation": "ノード情報",
 	"from": "著者:",
 	"noNodeSelected": "ノードが選択されていません",
-	"returnInSafePlace": "安全な場所に戻る"
+	"returnInSafePlace": "安全な場所に戻る",
+	"login": "ログイン",
+	"logout": "ログアウト",
+	"admin": "管理者",
+	"register": "登録",
+	"username": "ユーザー名",
+	"password": "パスワード",
+	"email": "メール"
 }

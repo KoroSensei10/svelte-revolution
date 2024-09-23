@@ -14,5 +14,12 @@
 	"nodeInformation": "Node Information",
 	"from": "From:",
 	"noNodeSelected": "No node selected",
-	"returnInSafePlace": "Return in safe place"
+	"returnInSafePlace": "Return in safe place",
+	"login": "Login",
+	"logout": "Logout",
+	"admin": "Admin",
+	"register": "Register",
+	"username": "Username",
+	"password": "Password",
+	"email": "Email"
 }

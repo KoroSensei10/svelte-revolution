@@ -45,7 +45,7 @@
 
 <div class="w-full flex flex-col gap-4">
 	<!-- Step Indicators -->
-	<div class="grid grid-cols-{steps.length * 2 - 1}">
+	<div class="grid grid-flow-col">
 		{#each steps as step, index}
 			<button
 				disabled={index > currentStep}

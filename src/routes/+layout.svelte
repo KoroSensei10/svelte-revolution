@@ -39,7 +39,7 @@
 		<nav class="sm:fixed top-0 left-0 sm:flex grid grid-cols-3 sm:flex-col p-4 pb-0 font-bold">
 			<a
 				href="/"
-				class="col-span-1 overflow-hidden text-center font-semibold transition-all hover:pl-1 whitespace-nowrap dark:text-white"
+				class="col-span-1 overflow-hidden text-center text-xl sm:text-start font-semibold transition-all hover:pl-1 whitespace-nowrap dark:text-white"
 			>
 				{#if visible}
 					{#key $mainTitle}
@@ -53,7 +53,10 @@
 			</a>
 			{#if data.user}
 				<div class="flex gap-2 justify-end sm:justify-start w-full">
-					<a href="/admin" class="font-semibold transition-all hover:pl-1 dark:text-white border-r pr-2">
+					<a
+						href="/admin"
+						class="font-semibold transition-all hover:pl-1 hover:pr-1 dark:text-white border-r pr-2"
+					>
 						{$t('admin')}
 					</a>
 					<form class="inline" action="/logout?/logout" use:enhance method="POST">

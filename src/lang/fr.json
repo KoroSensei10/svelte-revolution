@@ -14,5 +14,12 @@
 	"nodeInformation": "Informations sur le nœud",
 	"from": "De :",
 	"noNodeSelected": "Aucun nœud sélectionné",
-	"returnInSafePlace": "Retourner dans un endroit sûr"
+	"returnInSafePlace": "Retourner dans un endroit sûr",
+	"login": "Connexion",
+	"logout": "Déconnexion",
+	"admin": "Admin",
+	"register": "S'inscrire",
+	"username": "Nom d'utilisateur",
+	"password": "Mot de passe",
+	"email": "Email"
 }
