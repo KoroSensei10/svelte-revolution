@@ -5,6 +5,7 @@
 	"join": "参加する",
 	"createSession": "セッションを開始",
 	"createScenario": "シナリオを作成",
+	"createUser": "ユーザーを作成",
 	"language": "言語",
 	"days": "日",
 	"hours": "時間",
@@ -18,8 +19,13 @@
 	"login": "ログイン",
 	"logout": "ログアウト",
 	"admin": "管理者",
+	"administration": "管理",
 	"register": "登録",
 	"username": "ユーザー名",
 	"password": "パスワード",
-	"email": "メール"
+	"email": "メール",
+	"yourTitle": "タイトル",
+	"yourMessage": "メッセージ",
+	"yourName": "名前",
+	"publish": "公開"
 }

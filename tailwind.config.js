@@ -9,6 +9,19 @@ export default {
 		extend: {
 			fontFamily: {
 				redditSans: ['RedditSans', 'cursive']
+			},
+			colors: {
+				primary: {
+					100: '#e7fcee',
+					200: '#cff9de',
+					300: '#b6f5cd',
+					400: '#9ef2bd',
+					500: '#86efac', // base
+					600: '#6bbf8a',
+					700: '#508f67',
+					800: '#366045',
+					900: '#1b3022'
+				}
 			}
 		}
 	},

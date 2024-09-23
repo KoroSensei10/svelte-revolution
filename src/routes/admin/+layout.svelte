@@ -4,7 +4,7 @@
 	import { mainTitle } from '$stores/titles';
 	import { page } from '$app/stores';
 
-	mainTitle.set('Babel Révolution - Admin');
+	mainTitle.set('Admin');
 
 	$: activeTab = $page.route.id?.split('/admin/').pop();
 
@@ -18,14 +18,22 @@
 		{$t('administration')}
 	</h1>
 	<div role="tablist" class="tabs tabs-lifted">
-		<a href="/admin/scenario/create" role="tab" class="tab {activeTab === 'scenario/create' ? 'tab-active' : ''}">
-			{$t('create_scenario')}
+		<a
+			href="/admin/scenario/create"
+			role="tab"
+			class="tab {activeTab === 'scenario/create' ? 'tab-active' : 'text-white'}"
+		>
+			{$t('createScenario')}
 		</a>
-		<a href="/admin/sessions/create" role="tab" class="tab {activeTab === 'sessions/create' ? 'tab-active' : ''}">
-			{$t('create_session')}
+		<a
+			href="/admin/sessions/create"
+			role="tab"
+			class="tab {activeTab === 'sessions/create' ? 'tab-active' : 'text-white'}"
+		>
+			{$t('createSession')}
 		</a>
-		<a href="/admin/user/create" role="tab" class="tab {activeTab === 'user/create' ? 'tab-active' : ''}">
-			{$t('create_user')}
+		<a href="/admin/user/create" role="tab" class="tab {activeTab === 'user/create' ? 'tab-active' : 'text-white'}">
+			{$t('createUser')}
 		</a>
 	</div>
 </div>

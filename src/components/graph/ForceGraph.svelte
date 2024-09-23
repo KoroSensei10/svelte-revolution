@@ -11,21 +11,20 @@
 		schemeCategory10,
 		forceRadial
 	} from 'd3';
-	import type { Node as NodeMessage } from '../../routes/sessions/[slug]/+page.server';
+	import type { NodeMessage } from '$types/graph';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import { pb } from '$lib/pocketbase';
-	import type { NodeType } from '../../../types/tableTypes';
 
 	export let sessionId: string;
 	export let nodes: NodeMessage[] = [];
 	export let links: SimulationLinkDatum<NodeMessage>[] = [];
-	export let selectedNode: NodeType | null = null;
+	export let selectedNode: NodeMessage | null = null;
 
 	let svg: SVGElement;
-	let svgElement: d3.Selection<SVGElement, unknown, null, undefined>;
-	let nodeLayer: d3.Selection<SVGElement, unknown, null, undefined>;
-	let linkLayer: d3.Selection<SVGElement, unknown, null, undefined>;
-	let labelLayer: d3.Selection<SVGElement, unknown, null, undefined>;
+	let svgElement: d3.Selection<SVGElement, NodeMessage, null, undefined>;
+	let nodeLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
+	let linkLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
+	let labelLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 
@@ -45,6 +44,26 @@
 		const currentHeight = window.innerHeight;
 		svgElement.attr('width', currentWidth).attr('height', currentHeight);
 
+		const colors = {
+			startNode: '#1b3022',
+			selectedNode: 'red',
+			defaultNode: '#86efac',
+			defaultLink: '#999',
+			hoverLink: 'red',
+			connectedNode: 'purple'
+		};
+
+		const strokeDashArray = {
+			default: '5, 15',
+			hover: 'none'
+		};
+
+		const nodeRadius = {
+			default: 10,
+			selected: 15,
+			start: 30
+		};
+
 		const link = linkLayer
 			.selectAll('line')
 			.data(links)
@@ -55,36 +74,40 @@
 			.attr('stroke-linecap', 'round')
 			.attr('stroke-linejoin', 'round')
 			.attr('stroke-dashoffset', 0)
-			.attr('stroke-dasharray', '5, 5');
+			.attr('stroke-dasharray', strokeDashArray.default);
 
 		const node = nodeLayer
 			.selectAll('circle')
 			.data(nodes)
 			.join('circle')
 			.attr('draggable', true)
-			.attr('r', (d) => {
-				if (d.type === 'startNode') {
-					return 30;
-				}
-				return selectedNode && selectedNode.id === d.id ? 15 : 10;
-			})
+			.attr('r', (d) =>
+				d.type === 'startNode'
+					? nodeRadius.start
+					: selectedNode && selectedNode.id === d.id
+						? nodeRadius.selected
+						: nodeRadius.default
+			)
 			.style('cursor', 'pointer')
-			.attr('fill', (d) => {
-				if (d.type === 'startNode') {
-					return 'green';
-				}
-				return selectedNode && selectedNode.id === d.id ? 'red' : schemeCategory10[0];
-			})
+			.attr('fill', (d) =>
+				d.type === 'startNode'
+					? colors.startNode
+					: selectedNode && selectedNode.id === d.id
+						? colors.selectedNode
+						: colors.defaultNode
+			)
 			.on('mouseover', (_, d) => {
-				link.attr('stroke-dasharray', (l) => (l.source === d || l.target === d ? 'none' : '5, 15'));
-				link.attr('stroke', (l) => (l.source === d || l.target === d ? 'red' : '#999'));
-				link.attr('stroke-width', (l) => (l.source === d || l.target === d ? 2 : 1));
+				link.attr('stroke-dasharray', (l) =>
+					l.source === d || l.target === d ? strokeDashArray.hover : strokeDashArray.default
+				)
+					.attr('stroke', (l) => (l.source === d || l.target === d ? colors.hoverLink : colors.defaultLink))
+					.attr('stroke-width', (l) => (l.source === d || l.target === d ? 2 : 1));
 				node.attr('fill', (n) => {
-					if (n === d) return 'red';
+					if (n === d) return colors.selectedNode;
 					if (links.some((l) => (l.source === d && l.target === n) || (l.target === d && l.source === n))) {
-						return 'purple';
+						return colors.connectedNode;
 					}
-					return schemeCategory10[0];
+					return colors.defaultNode;
 				});
 			})
 			.call(
@@ -106,15 +129,16 @@
 				null
 			)
 			.on('mouseout', () => {
-				link.attr('stroke-dasharray', '5, 15');
-				link.attr('stroke', '#999');
-				link.attr('stroke-width', 1);
-				node.attr('fill', (d) => {
-					if (d.type === 'startNode') {
-						return 'green';
-					}
-					return selectedNode && selectedNode.id === d.id ? 'red' : schemeCategory10[0];
-				});
+				link.attr('stroke-dasharray', strokeDashArray.default)
+					.attr('stroke', colors.defaultLink)
+					.attr('stroke-width', 1);
+				node.attr('fill', (d) =>
+					d.type === 'startNode'
+						? colors.startNode
+						: selectedNode && selectedNode.id === d.id
+							? colors.selectedNode
+							: colors.defaultNode
+				);
 			})
 			.on('click', (_, d) => selectNode(d));
 
@@ -185,8 +209,6 @@
 		labelLayer = svgElement.append('g');
 
 		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
-
-		const startNode = nodes.find((n) => n.type === 'startNode');
 
 		simulation = forceSimulation(nodes)
 			.force(

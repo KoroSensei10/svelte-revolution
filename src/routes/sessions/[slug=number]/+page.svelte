@@ -4,14 +4,14 @@
 	import ForceGraph from '../../../components/graph/ForceGraph.svelte';
 
 	import toast from 'svelte-french-toast';
-	import type { NodeType } from '../../../../types/tableTypes';
 	import { mainTitle } from '$stores/titles';
+	import type { NodeMessage } from '$types/graph';
 
 	export let data;
 
 	mainTitle.set(data.name);
 
-	let selectedNode: NodeType | null = null;
+	let selectedNode: NodeMessage | null = null;
 	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
 		await pb.collection('Node').create({
 			title,
