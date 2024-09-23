@@ -34,10 +34,10 @@
 		</option>
 	{/each}
 </select>
-<nav class="sm:fixed top-0 left-0 sm:flex grid grid-cols-3 sm:flex-col p-4 pb-0 font-bold">
+<nav class="top-0 left-0 grid grid-flow-col p-4 pb-0 font-bold sm:fixed sm:flex sm:flex-col">
 	<a
 		href="/"
-		class="col-span-1 overflow-hidden text-center text-xl sm:text-start font-semibold transition-all hover:pl-1 whitespace-nowrap dark:text-white"
+		class="col-span-1 overflow-hidden text-xl font-semibold text-center transition-all sm:text-start hover:pl-1 whitespace-nowrap dark:text-white"
 	>
 		{#if visible}
 			{#key $mainTitle}
@@ -47,12 +47,12 @@
 			{/key}
 		{/if}
 	</a>
-	<a href="/sessions" class="max-sm:order-first font-semibold transition-all hover:pl-1 dark:text-white">
+	<a href="/sessions" class="font-semibold transition-all max-sm:order-first hover:pl-1 dark:text-white">
 		{$t('sessions')}
 	</a>
 	{#if data.user}
-		<div class="flex gap-2 justify-end sm:justify-start w-full">
-			<a href="/admin" class="font-semibold transition-all hover:pl-1 hover:pr-1 dark:text-white border-r pr-2">
+		<div class="flex justify-end w-full gap-2 sm:justify-start">
+			<a href="/admin" class="pr-2 font-semibold transition-all border-r hover:pl-1 hover:pr-1 dark:text-white">
 				{$t('admin')}
 			</a>
 			<form class="inline" action="/logout?/logout" use:enhance method="POST">
@@ -62,15 +62,15 @@
 			</form>
 		</div>
 	{:else}
-		<a href="/login" class="font-semibold text-end sm:text-start transition-all hover:pl-1 dark:text-white">
+		<a href="/login" class="font-semibold transition-all text-end sm:text-start hover:pl-1 dark:text-white">
 			{$t('login')}
 		</a>
 	{/if}
 </nav>
 <!-- When loading-->
 {#if $isLoading || $navigating}
-	<div class="h-screen flex items-center justify-center">
-		<span class="loading loading-ring text-primary-500 w-52" />
+	<div class="flex items-center justify-center h-screen">
+		<span class="loading loading-infinity text-primary-500 w-52" />
 	</div>
 {:else}
 	<!-- Actual content -->

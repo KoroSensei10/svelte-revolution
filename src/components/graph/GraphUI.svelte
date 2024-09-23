@@ -49,6 +49,7 @@
 	scrollbar-track-black sm:top-0 sm:bottom-auto sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
 >
 	<form
+		class="w-full rounded-none collapse collapse-plus sm:collapse-arrow"
 		bind:this={theForm}
 		on:submit|preventDefault={() => {
 			addNodeChecked = false;
@@ -56,59 +57,57 @@
 		}}
 		on:input={() => (validForm = theForm?.checkValidity())}
 	>
-		<div class="w-full rounded-none collapse collapse-arrow">
-			<input type="checkbox" class="min-h-0" name="GraphUI" bind:checked={addNodeChecked} />
-			<div class="w-full min-h-0 font-semibold collapse-title">
-				{$t('writeMessage')}
-			</div>
-			<div class="z-50 flex flex-col py-0 collapse-content snoup">
-				<div class="w-full">
-					<div class="w-full">
-						<input
-							required
-							autocomplete="off"
-							bind:value={nodeTitle}
-							name={'name'}
-							placeholder={$t('yourTitle')}
-							class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-						/>
-					</div>
-				</div>
-				<div class="w-full">
-					<textarea
-						required
-						autocomplete="off"
-						bind:value={nodeText}
-						name={'text'}
-						placeholder={$t('yourMessage')}
-						class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-					/>
-				</div>
+		<input type="checkbox" class="" name="GraphUI" bind:checked={addNodeChecked} />
+		<div class="w-full font-semibold collapse-title">
+			{$t('writeMessage')}
+		</div>
+		<div class="z-50 flex flex-col py-0 collapse-content snoup">
+			<div class="w-full">
 				<div class="w-full">
 					<input
 						required
-						autocomplete="username"
-						bind:value={nodeAuthor}
-						name={'author'}
-						placeholder={$t('yourName')}
+						autocomplete="off"
+						bind:value={nodeTitle}
+						name={'name'}
+						placeholder={$t('yourTitle')}
 						class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 					/>
 				</div>
-				<div class="w-full py-4 text-center">
-					<button
-						type="submit"
-						disabled={!validForm}
-						class="font-light border-none btn disabled:cursor-not-allowed
+			</div>
+			<div class="w-full">
+				<textarea
+					required
+					autocomplete="off"
+					bind:value={nodeText}
+					name={'text'}
+					placeholder={$t('yourMessage')}
+					class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+				/>
+			</div>
+			<div class="w-full">
+				<input
+					required
+					autocomplete="username"
+					bind:value={nodeAuthor}
+					name={'author'}
+					placeholder={$t('yourName')}
+					class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+				/>
+			</div>
+			<div class="w-full py-4 text-center">
+				<button
+					type="submit"
+					disabled={!validForm}
+					class="font-light border-none btn disabled:cursor-not-allowed
 						disabled:bg-white disabled:opacity-50 hover:bg-white bg-primary-500"
-					>
-						{$t('publish')}
-					</button>
-				</div>
+				>
+					{$t('publish')}
+				</button>
 			</div>
 		</div>
 	</form>
-	<div class="sticky bottom-0 border-t rounded-none collapse collapse-arrow">
-		<input type="checkbox" class="min-h-0" name="GraphUI" />
+	<div class="sticky bottom-0 border-t rounded-none collapse collapse-plus sm:collapse-arrow">
+		<input type="checkbox" class="" name="GraphUI" />
 		<div class="font-bold collapse-title">
 			{$t('nodeInformation')}
 		</div>
