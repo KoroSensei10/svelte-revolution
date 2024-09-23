@@ -35,9 +35,11 @@
 </script>
 
 <div class="flex flex-col items-center w-full gap-4 py-4">
-	<h1 class="text-3xl font-thin text-white">Svelte Révolution Roadmap</h1>
-	{#if days > 0 || hours > 0 || minutes > 0 || seconds > 0}
-		<div class="grid grid-cols-4 gap-5 text-center text-black auto-cols-max dark:text-green-300">
+	{#if days < 0 && hours < 0 && minutes < 0 && seconds < 0}
+		<div>{$t('revolution')}</div>
+	{:else}
+		<h1 class="text-3xl font-thin">Svelte Révolution Roadmap</h1>
+		<div class="grid grid-flow-col gap-5 text-center auto-cols-max">
 			<div class="flex flex-col">
 				<span class="justify-center font-mono text-5xl countdown">
 					<span style="--value:{days};"></span>

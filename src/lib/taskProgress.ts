@@ -17,14 +17,14 @@ export const tasks: Task[] = [
 	{
 		taskName: 'Sessions',
 		duration: 0,
-		completed: false,
+		completed: true,
 		order: 2,
 		inCharge: 'Mathis',
 		subTasks: [
 			{
 				taskName: 'Créer une session',
 				duration: 5,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: "Affichage sur la page d'accueil",
@@ -77,7 +77,7 @@ export const tasks: Task[] = [
 			{
 				taskName: 'Voir les messages et les auteurs',
 				duration: 4,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: 'Ajouter les sides aux messages',
@@ -87,7 +87,7 @@ export const tasks: Task[] = [
 			{
 				taskName: 'Couleur des noeuds',
 				duration: 2,
-				completed: false
+				completed: true
 			}
 		]
 	},
