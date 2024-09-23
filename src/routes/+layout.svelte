@@ -28,6 +28,7 @@
 	<Toaster />
 	{#if $isLoading}
 		<p>Loading...</p>
+	{:else}
 		<select bind:value={$locale} class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl">
 			{#each $locales as l (l)}
 				<option selected={String($locale).toUpperCase() === l.toUpperCase()} value={l}>
@@ -35,9 +36,11 @@
 				</option>
 			{/each}
 		</select>
-	{:else}
-		<div class="fixed top-0 left-0 flex flex-col p-4">
-			<a href="/" class="font-semibold transition-all hover:pl-1 whitespace-nowrap dark:text-white">
+		<nav class="sm:fixed top-0 left-0 sm:flex grid grid-cols-3 sm:flex-col p-4 pb-0 font-bold">
+			<a
+				href="/"
+				class="col-span-1 overflow-hidden text-center font-semibold transition-all hover:pl-1 whitespace-nowrap dark:text-white"
+			>
 				{#if visible}
 					{#key $mainTitle}
 						<span transition:typewriter|global={{ text: $mainTitle }} class=""></span>
@@ -45,24 +48,26 @@
 					<span class="blinking-underscore">_</span>
 				{/if}
 			</a>
-			<a href="/sessions" class="font-semibold transition-all hover:pl-1 dark:text-white">
+			<a href="/sessions" class="max-sm:order-first font-semibold transition-all hover:pl-1 dark:text-white">
 				{$t('sessions')}
 			</a>
 			{#if data.user}
-				<a href="/admin" class="font-semibold transition-all hover:pl-1 dark:text-white">
-					{$t('admin')}
-				</a>
-				<form class="inline" action="/logout?/logout" use:enhance method="POST">
-					<button type="submit" class="font-semibold transition-all hover:pl-1 dark:text-white">
-						{$t('logout')}
-					</button>
-				</form>
+				<div class="flex gap-2 justify-end sm:justify-start w-full">
+					<a href="/admin" class="font-semibold transition-all hover:pl-1 dark:text-white border-r pr-2">
+						{$t('admin')}
+					</a>
+					<form class="inline" action="/logout?/logout" use:enhance method="POST">
+						<button type="submit" class="font-semibold transition-all hover:pl-1 dark:text-white">
+							{$t('logout')}
+						</button>
+					</form>
+				</div>
 			{:else}
-				<a href="/login" class="font-semibold transition-all hover:pl-1 dark:text-white">
+				<a href="/login" class="font-semibold text-end sm:text-start transition-all hover:pl-1 dark:text-white">
 					{$t('login')}
 				</a>
 			{/if}
-		</div>
+		</nav>
 		<slot />
 	{/if}
 </div>
