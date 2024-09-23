@@ -1,4 +1,4 @@
-import { mainTitle } from "$stores/titles_names";
+import { mainTitle } from "$stores/titles";
 import { get } from "svelte/store";
 
 export function typewriter(node: Element, { speed = 1, text = '' } = {}) {

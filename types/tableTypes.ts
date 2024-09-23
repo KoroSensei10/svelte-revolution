@@ -49,3 +49,11 @@ export interface Side {
 	id: string;
 	name: string;
 }
+
+export interface User {
+	id: string;
+	name?: string;
+	username: string;
+	email: string;
+	avatar?: string;
+}
