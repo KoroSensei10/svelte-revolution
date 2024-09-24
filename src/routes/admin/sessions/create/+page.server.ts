@@ -49,7 +49,8 @@ export const actions = {
 	}
 } satisfies Actions;
 
-export const load = async () => {
+export const load = async ({ parent }) => {
+	await parent();
 	const scenarios = await pb.collection('scenario').getFullList();
 	return {
 		scenarios

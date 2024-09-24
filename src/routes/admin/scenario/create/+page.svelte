@@ -2,9 +2,9 @@
 	import { enhance } from '$app/forms';
 	import toast from 'svelte-french-toast';
 
-	import Stepper from '../../../../components/form/Stepper.svelte';
-	import Radio from '../../../../components/form/Radio.svelte';
-	import MultiField from '../../../../components/form/MultiField.svelte';
+	import Stepper from '$components/form/Stepper.svelte';
+	import Radio from '$components/form/Radio.svelte';
+	import MultiField from '$components/form/MultiField.svelte';
 
 	import type { ActionData } from './$types';
 
@@ -24,7 +24,7 @@
 	$: form?.success && toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
 </script>
 
-<div class="h-screen flex flex-col items-center">
+<div class="flex flex-col items-center h-screen">
 	<h1 class="p-4 text-3xl font-bold">Nouveau scénario</h1>
 	<form
 		bind:this={theForm}
@@ -32,11 +32,11 @@
 		method="POST"
 		use:enhance
 		action="?/createScenario"
-		class="flex flex-col p-4 border-t text-center gap-4 md:w-4/6 w-full"
+		class="flex flex-col w-full gap-4 p-4 text-center border-t md:w-4/6"
 	>
 		<Stepper bind:currentStep {steps}>
 			<!-- Step 1  -->
-			<div slot="step-1" class="flex flex-col p-2 gap-4">
+			<div slot="step-1" class="flex flex-col gap-4 p-2">
 				<label for="title" class="text-xl font-thin">Titre</label>
 				<input
 					required
@@ -55,7 +55,7 @@
 				<Radio langs={[...data.lang]} />
 			</div>
 			<!-- Premier Noeud -->
-			<div slot="step-2" class="flex flex-col p-2 gap-4">
+			<div slot="step-2" class="flex flex-col gap-4 p-2">
 				<div class="flex gap-4">
 					<div class="flex flex-col w-full">
 						<label for="firstNodeTitle" class="text-xl font-thin">Titre du premier noeud</label>
@@ -87,7 +87,7 @@
 				></textarea>
 			</div>
 			<!-- Evenements -->
-			<div slot="step-3" class="flex flex-col p-2 gap-4">
+			<div slot="step-3" class="flex flex-col gap-4 p-2">
 				<MultiField
 					props={{
 						name: 'event',
@@ -97,7 +97,7 @@
 					}}
 					let:item
 				>
-					<span slot="header" class="text-xl font-thin border-b pb-2">Evenement(s)</span>
+					<span slot="header" class="pb-2 text-xl font-thin border-b">Evenement(s)</span>
 					<div class="flex flex-col items-center p-2">
 						<div class="flex gap-4">
 							<div class="w-full">
@@ -133,7 +133,7 @@
 				</MultiField>
 			</div>
 			<!-- Fins -->
-			<div slot="step-4" class="flex flex-col p-2 gap-4">
+			<div slot="step-4" class="flex flex-col gap-4 p-2">
 				<MultiField
 					props={{
 						name: 'end',
@@ -143,7 +143,7 @@
 					}}
 					let:item
 				>
-					<span slot="header" class="text-xl font-thin border-b pb-2">Fin(s)</span>
+					<span slot="header" class="pb-2 text-xl font-thin border-b">Fin(s)</span>
 					<div class="flex flex-col items-center p-2">
 						<div class="w-full">
 							<label for={item.name} class="text-lg font-thin">{item.titleName}</label>

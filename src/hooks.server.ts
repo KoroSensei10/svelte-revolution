@@ -20,7 +20,6 @@ export async function handle({ event, resolve }) {
 	const url = event.request.url.trim().split('__')[0];
 	if (url.endsWith('/admin/') || url.endsWith('/admin')) {
 		return redirect(302, '/admin/sessions/create');
-	} else {
-		return response;
 	}
+	return response;
 }
