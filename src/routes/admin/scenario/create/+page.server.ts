@@ -1,9 +1,7 @@
 import { fail, type Actions } from '@sveltejs/kit';
-
-import { pb } from '$lib/pocketbase';
+import { createEventsAndEnds, createScenario } from '$lib/server/scenario/create';
 
 export const actions = {
-	// TODO - Add validation + split code
 	createScenario: async ({ request }) => {
 		const data = await request.formData();
 
@@ -19,12 +17,12 @@ export const actions = {
 		const ends = data.getAll('end');
 		const endTexts = data.getAll('end-text');
 
-		if (!title || !prologue || !lang || !firstNodeTitle || !firstNodeText || !firstNodeAuthor) {
+		if (!title || !prologue || !lang || !firstNodeTitle || !firstNodeText || !firstNodeAuthor || !events.length || !ends.length) {
 			return fail(400, { error: 'Missing required fields' });
 		}
 
 		try {
-			const scenario = await pb.collection('scenario').create({
+			const scenario = await createScenario({
 				title,
 				prologue,
 				lang,
@@ -33,24 +31,8 @@ export const actions = {
 				firstNodeAuthor
 			});
 
-			const eventPromises = events.map((event, i) =>
-				pb.collection('event').create({
-					title: event,
-					text: eventTexts[i],
-					author: eventAuthors[i],
-					scenario: scenario.id
-				})
-			);
+			await createEventsAndEnds(scenario.id, events, eventTexts, eventAuthors, ends, endTexts);
 
-			const endPromises = ends.map((end, i) =>
-				pb.collection('end').create({
-					title: end,
-					text: endTexts[i],
-					scenario: scenario.id
-				})
-			);
-
-			await Promise.all([...eventPromises, ...endPromises]);
 			return {
 				success: true,
 				status: 201,

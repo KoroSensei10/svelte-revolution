@@ -1,8 +1,8 @@
 import { pb } from '$lib/pocketbase';
+import { createSession, createStartNode, getScenario } from '$lib/server/sessions/create.js';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {
-	// TODO - Add validation + split code
 	createSession: async ({ request }) => {
 		const data = await request.formData();
 
@@ -15,28 +15,13 @@ export const actions = {
 		}
 
 		try {
-			// check if scenario exists
-			const scenario = await pb.collection('scenario').getOne(scenarioId.toString());
+			const scenario = await getScenario(scenarioId.toString());
 			if (!scenario) {
 				return fail(404, { error: 'Scenario not found' });
 			}
 
-			// get number of sessions
-			const sessions = await pb.collection('session').getFullList({ fields: 'id' });
-			const session = await pb.collection('session').create({
-				name,
-				scenario: scenario.id,
-				author,
-				slug: sessions.length + 1
-			});
-
-			await pb.collection('node').create({
-				title: scenario.firstNodeTitle,
-				text: scenario.firstNodeText,
-				author: scenario.firstNodeAuthor,
-				session: session.id,
-				type: 'startNode'
-			});
+			const session = await createSession(name, scenario.id, author);
+			await createStartNode(scenario, session.id);
 
 			return {
 				status: 201,
@@ -44,15 +29,17 @@ export const actions = {
 				session: session
 			};
 		} catch (error) {
-			return fail(500, { error: String(error) });
+			return fail(500, {
+				error: String(error)
+			});
 		}
 	}
 } satisfies Actions;
 
 export const load = async ({ parent }) => {
-	await parent();
 	const scenarios = await pb.collection('scenario').getFullList();
 	return {
+		...(await parent()),
 		scenarios
 	};
 };
