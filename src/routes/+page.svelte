@@ -17,7 +17,7 @@
 		seconds = 0;
 
 	function updateCountdown() {
-		const targetDate = new Date('2024-09-25T09:00:00');
+		const targetDate = new Date('2024-10-04T09:00:00');
 		const now = new Date();
 		const timeDifference = targetDate.getTime() - now.getTime();
 

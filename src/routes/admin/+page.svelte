@@ -8,7 +8,7 @@
 
 <div class="flex flex-col items-center gap-4 py-4">
 	<h1 class="text-4xl font-thin text-center first-letter:capitalize">{$t('sessions.yourSessions')}</h1>
-	{#if data.sessions.length}
+	{#if data?.sessions?.length}
 		<ul class="flex flex-col gap-4 p-4 pt-0 text-black sm:w-2/3">
 			{#each data.sessions as session (session.id)}
 				{@const scenario = session.expand?.scenario}

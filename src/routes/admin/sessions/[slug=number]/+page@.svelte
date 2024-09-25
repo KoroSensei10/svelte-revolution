@@ -7,6 +7,7 @@
 	import { mainTitle } from '$stores/titles';
 	import type { NodeMessage } from '$types/graph';
 	import { t } from 'svelte-i18n';
+	import Filigrane from '$components/graph/Filigrane.svelte';
 
 	export let data;
 
@@ -29,12 +30,12 @@
 	}
 </script>
 
-<div class="bg-gray-950">
-	<GraphUi addnode={addNode} {selectedNode} user={data.user} />
+<GraphUi addnode={addNode} {selectedNode} user={data.user} />
+<Filigrane watermarkText={$t('admin')}>
 	<ForceGraph
 		bind:selectedNode
 		nodes={data.nodesAndLinks.nodes}
 		links={data.nodesAndLinks.links}
 		sessionId={data.sessionData.id}
 	/>
-</div>
+</Filigrane>

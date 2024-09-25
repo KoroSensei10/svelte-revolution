@@ -24,7 +24,7 @@
 	$: form?.success && toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
 </script>
 
-<div class="flex flex-col items-center h-screen">
+<div class="flex flex-col items-center">
 	<h1 class="p-4 text-3xl font-bold">Nouveau scénario</h1>
 	<form
 		bind:this={theForm}
