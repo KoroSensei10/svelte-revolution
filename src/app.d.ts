@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
+import type { MyPocketBase } from '$types/pocketBase';
 import type { User } from '../types/tableTypes';
-import PocketBase from 'pocketbase';
 
 // for information about these interfaces
 declare global {
@@ -11,7 +11,7 @@ declare global {
 			code?: string;
 		}
 		interface Locals {
-			pb: PocketBase;
+			pb: MyPocketBase;
 		}
 		interface ServerLoadEvent {
 			user: User | null;
