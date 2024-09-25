@@ -1,6 +1,11 @@
 {
 	"page_title": "Page d'accueil",
-	"sessions": "Sessions",
+	"sessions": {
+		"session": "Session",
+		"sessions": "Sessions",
+		"yourSessions": "Vos sessions",
+		"createSession": "Démarrer une session"
+	},
 	"scenario": "Scénario ",
 	"join": "Rejoindre",
 	"createSession": "Démarrer une session",

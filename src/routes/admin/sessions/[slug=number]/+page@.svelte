@@ -1,0 +1,40 @@
+<script lang="ts">
+	import { pb } from '$lib/pocketbase';
+	import GraphUi from '$components/graph/GraphUI.svelte';
+	import ForceGraph from '$components/graph/ForceGraph.svelte';
+
+	import toast from 'svelte-french-toast';
+	import { mainTitle } from '$stores/titles';
+	import type { NodeMessage } from '$types/graph';
+	import { t } from 'svelte-i18n';
+
+	export let data;
+
+	mainTitle.set(data.sessionData.name + ' - ' + $t('admin'));
+
+	let selectedNode: NodeMessage | null = null;
+	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
+		await pb.collection('Node').create({
+			title,
+			text,
+			author,
+			type: 'contribution',
+			parent: parentNodeId,
+			session: data.sessionData.id
+		});
+
+		toast.success('Nœud ajouté avec succès', {
+			position: 'bottom-center'
+		});
+	}
+</script>
+
+<div class="bg-gray-950">
+	<GraphUi addnode={addNode} {selectedNode} user={data.user} />
+	<ForceGraph
+		bind:selectedNode
+		nodes={data.nodesAndLinks.nodes}
+		links={data.nodesAndLinks.links}
+		sessionId={data.sessionData.id}
+	/>
+</div>

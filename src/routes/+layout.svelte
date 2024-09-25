@@ -6,7 +6,7 @@
 	import { typewriter } from '$lib/animations';
 	import { Toaster } from 'svelte-french-toast';
 	import { mainTitle } from '$stores/titles';
-	import type { User } from '../../types/tableTypes';
+	import type { User } from '$types/tableTypes';
 	import { enhance } from '$app/forms';
 	import { navigating } from '$app/stores';
 
@@ -48,7 +48,7 @@
 		{/if}
 	</a>
 	<a href="/sessions" class="font-semibold transition-all max-sm:order-first hover:pl-1 dark:text-white">
-		{$t('sessions')}
+		{$t('sessions.sessions')}
 	</a>
 	{#if data.user}
 		<div class="flex justify-end w-full gap-2 sm:justify-start">

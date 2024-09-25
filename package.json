@@ -20,6 +20,7 @@
 		"svelte-i18n": "^4.0.0"
 	},
 	"devDependencies": {
+		"@rollup/plugin-json": "^6.1.0",
 		"@sveltejs/adapter-auto": "^3.2.5",
 		"@sveltejs/adapter-node": "^5.2.4",
 		"@sveltejs/kit": "^2.5.28",

@@ -1,42 +1,7 @@
 import { pb } from '$lib/pocketbase.js';
+import type { Link, SessionData } from '$types/graph/index.js';
 import { error } from '@sveltejs/kit';
-import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
 import { ClientResponseError } from 'pocketbase';
-
-export interface Node extends SimulationNodeDatum {
-	id: string;
-	title: string;
-	text: string;
-	author: string;
-	type: string;
-	session: string;
-	side: string;
-	parent: string | null | 'NULL';
-}
-export type Link = SimulationLinkDatum<Node>;
-
-export interface SessionData {
-	id: string;
-	slug: number;
-	name: string;
-	creatorId: string | null;
-	Nodes: {
-		id: string;
-		title: string;
-		text: string;
-		author: string;
-		type: string;
-		session: string;
-		side: string;
-		parent: string | null | 'NULL';
-	}[];
-	Scenario: {
-		id: string;
-		name: string;
-		prologue: string;
-		creatorId: string | null;
-	};
-}
 
 async function getSession(sessionId: number) {
 	let session: SessionData;
@@ -61,10 +26,10 @@ async function getSession(sessionId: number) {
 }
 
 async function buildNodesAndLinks(session: SessionData) {
-	const nodes = (await pb.collection('Node').getFullList({ filter: `session="${session.id}"` })) as Node[];
+	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` });
 	const links: Link[] = [];
 
-	nodes.forEach((node: Node) => {
+	nodes.forEach((node) => {
 		const parent = !node.parent ? null : String(node.parent);
 		if (parent) {
 			links.push({

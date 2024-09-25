@@ -1,9 +1,13 @@
 {
 	"page_title": "Home page",
-	"sessions": "Sessions",
+	"sessions": {
+		"session": "Session",
+		"sessions": "Sessions",
+		"yourSessions": "Your Sessions",
+		"createSession": "Start Session"
+	},
 	"scenario": "Scenario",
 	"join": "Join",
-	"createSession": "Start Session",
 	"createScenario": "Create Scenario",
 	"createUser": "Create User",
 	"language": "Language",
