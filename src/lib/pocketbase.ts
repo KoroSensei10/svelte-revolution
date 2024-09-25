@@ -10,13 +10,9 @@ interface MyPocketBase extends PocketBase {
 	collection(idOrName: 'Event'): RecordService<Event>;
 	collection(idOrName: 'Session'): RecordService<Session>;
 	collection(idOrName: 'Side'): RecordService<Side>;
-	collection(idOrName: 'User'): RecordService<User>;
+	collection(idOrName: 'Users'): RecordService<User>;
 }
 
 export const pb = new PocketBase('https://db.canard.cc') as MyPocketBase;
 
 export const currentUser: Writable<User | null> = writable(pb.authStore.model as User | null);
-
-pb.authStore.onChange(() => {
-	currentUser.set(pb.authStore.model as User | null);
-});

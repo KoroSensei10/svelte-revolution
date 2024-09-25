@@ -44,6 +44,7 @@ export interface Session {
 	completed: boolean;
 	visible: boolean;
 	public: boolean;
+	expand: Record<string, Scenario>;
 }
 
 export interface Side {

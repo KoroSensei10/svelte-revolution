@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
-
 import type { User } from '../types/tableTypes';
+import PocketBase from 'pocketbase';
 
 // for information about these interfaces
 declare global {

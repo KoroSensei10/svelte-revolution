@@ -1,5 +1,5 @@
 import { pb } from '$lib/pocketbase';
-import { createSession, createStartNode, getScenario } from '$lib/server/sessions/create.js';
+import { createSession, createStartNode, getScenario } from '$lib/server/sessions/create';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {

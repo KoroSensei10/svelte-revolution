@@ -15,7 +15,7 @@
 		use:enhance={async () => {
 			loading = true;
 			return async ({ update }) => {
-				await update();
+				await update({ reset: false });
 				loading = false;
 			};
 		}}
@@ -46,9 +46,9 @@
 					<div></div>
 				{/if}
 			</div>
-			{#if form?.success === false}
+			{#if form?.error}
 				<div class="text-center w-fit alert alert-warning">
-					{form?.message}
+					{form?.error}
 				</div>
 			{/if}
 		</div>

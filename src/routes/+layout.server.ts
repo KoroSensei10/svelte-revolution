@@ -1,25 +1,20 @@
 import '$lib/i18n';
-import { pb } from '$lib/pocketbase.js';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ cookies }) => {
-	const authCookie = cookies.get('pb-auth');
-
-	if (!authCookie) {
+export const load: LayoutServerLoad = async ({ cookies, locals }) => {
+	if (!locals.pb.authStore.isValid) {
 		return {
 			user: null
 		};
 	}
-	pb.authStore.loadFromCookie(authCookie);
-
 	try {
-		pb.authStore.isValid && (await pb.collection('users').authRefresh());
+		await locals.pb.collection('users').authRefresh();
 		return {
-			user: pb.authStore.model
+			user: locals.pb.authStore.model
 		};
 	} catch (_) {
-		pb.authStore.clear();
-		cookies.delete('pb-auth', { path: '/' });
+		locals.pb.authStore.clear();
+		cookies.delete('pb_auth', { path: '/' });
 		return {
 			user: null
 		};
