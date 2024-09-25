@@ -1,6 +1,11 @@
 {
 	"page_title": "ホームページ",
-	"sessions": "セッション",
+	"sessions": {
+		"session": "セッション",
+		"sessions": "セッション",
+		"yourSessions": "あなたのセッション",
+		"createSession": "セッションを開始"
+	},
 	"scenario": "シナリオ",
 	"join": "参加する",
 	"createSession": "セッションを開始",

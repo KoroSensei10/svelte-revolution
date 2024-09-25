@@ -1,11 +1,6 @@
 import PocketBase, { RecordService } from 'pocketbase';
 import { writable, type Writable } from 'svelte/store';
-import type { End, NodeType, Scenario, Session, Side, User } from '../../types/tableTypes';
-
-interface UserAuth {
-	model: RecordService<User> | null;
-	token: string | null;
-}
+import type { End, NodeType, Scenario, Session, Side, User } from '$types/tableTypes';
 
 interface MyPocketBase extends PocketBase {
 	collection(idOrName: string): RecordService; // default fallback for any other collection

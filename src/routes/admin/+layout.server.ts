@@ -1,11 +1,9 @@
-import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from '../$types';
-import type { User } from '../../../types/tableTypes';
 
-export const load: LayoutServerLoad = async ({ parent, request }) => {
-	const data = (await parent()) as { user: User | null };
+export const load: LayoutServerLoad = async ({ url }) => {
+	console.log('layout load', url.pathname);
 
-	if (!data.user) {
-		return redirect(302, '/login');
-	}
+	return {
+		route: url.pathname
+	};
 };

@@ -8,8 +8,8 @@
 		forceSimulation,
 		forceLink,
 		forceManyBody,
-		schemeCategory10,
-		forceRadial
+		forceRadial,
+		type Selection
 	} from 'd3';
 	import type { NodeMessage } from '$types/graph';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
@@ -21,10 +21,10 @@
 	export let selectedNode: NodeMessage | null = null;
 
 	let svg: SVGElement;
-	let svgElement: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let linkLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let labelLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
+	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
+	let nodeLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let linkLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let labelLayer: Selection<SVGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 
@@ -39,30 +39,28 @@
 		labelLayer.style('stroke-width', strokeWidth);
 	});
 
+	const colors = {
+		startNode: '#1b3022',
+		selectedNode: 'red',
+		defaultNode: '#86efac',
+		defaultLink: '#999',
+		hoverLink: 'red',
+		connectedNode: 'purple'
+	};
+	const strokeDashArray = {
+		default: '5, 15',
+		hover: 'none'
+	};
+
+	const nodeRadius = {
+		default: 10,
+		selected: 15,
+		start: 30
+	};
 	function renderGraph() {
 		const currentWidth = window.innerWidth;
 		const currentHeight = window.innerHeight;
 		svgElement.attr('width', currentWidth).attr('height', currentHeight);
-
-		const colors = {
-			startNode: '#1b3022',
-			selectedNode: 'red',
-			defaultNode: '#86efac',
-			defaultLink: '#999',
-			hoverLink: 'red',
-			connectedNode: 'purple'
-		};
-
-		const strokeDashArray = {
-			default: '5, 15',
-			hover: 'none'
-		};
-
-		const nodeRadius = {
-			default: 10,
-			selected: 15,
-			start: 30
-		};
 
 		const link = linkLayer
 			.selectAll('line')
@@ -168,6 +166,7 @@
 		});
 
 		// simulation.force('center', forceCenter(currentWidth / 2, currentHeight / 2));
+		simulation.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2));
 	}
 
 	function updateGraph(node: NodeMessage, parentNodeId: string) {
@@ -200,9 +199,6 @@
 			}
 		);
 
-		const currentWidth = window.innerWidth;
-		const currentHeight = window.innerHeight;
-
 		svgElement = select(svg);
 		linkLayer = svgElement.append('g');
 		nodeLayer = svgElement.append('g');
@@ -225,8 +221,7 @@
 					})
 					.strength(0.7)
 			)
-			.force('charge', forceManyBody().strength(-300))
-			.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2));
+			.force('charge', forceManyBody().strength(-300));
 
 		renderGraph();
 	});

@@ -11,3 +11,17 @@ export interface NodeMessage extends SimulationNodeDatum {
 	parent: string | null | 'NULL';
 }
 export type Link = SimulationLinkDatum<NodeMessage>;
+
+export interface SessionData {
+	id: string;
+	slug: number;
+	name: string;
+	creatorId: string | null;
+	Nodes: NodeMessage[];
+	Scenario: {
+		id: string;
+		name: string;
+		prologue: string;
+		creatorId: string | null;
+	};
+}

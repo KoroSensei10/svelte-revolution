@@ -1,27 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	export let steps: string[] = []; // Liste des étapes
 	export let currentStep: number = 2; // Étape actuelle
 
-	function buildUrl(step: number) {
-		const url = new URL(location.href);
-		url.searchParams.set('step', `${step}`);
-		return url.toString();
-	}
-
 	function next() {
 		if (currentStep < steps.length - 1) {
 			currentStep += 1;
-			goto(buildUrl(currentStep));
 		}
 	}
 
 	function prev() {
 		if (currentStep > 0) {
 			currentStep -= 1;
-			goto(buildUrl(currentStep));
 		}
 	}
 
@@ -43,7 +34,7 @@
 	});
 </script>
 
-<div class="w-full flex flex-col gap-4">
+<div class="flex flex-col w-full gap-4">
 	<!-- Step Indicators -->
 	<div class="grid grid-flow-col">
 		{#each steps as step, index}
@@ -98,7 +89,7 @@
 	</div>
 
 	<!-- Navigation Buttons -->
-	<div class="pt-6 grid grid-cols-3 gap-4 md:gap-14">
+	<div class="grid grid-cols-3 gap-4 pt-6 md:gap-14">
 		<button
 			type="button"
 			class="border rounded text-lg text-white px-4 py-2 {currentStep <= 0
@@ -113,7 +104,7 @@
 			<slot name="submit"></slot>
 		{/if}
 		<button
-			class="col-start-3 rounded border text-black text-lg bg-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+			class="col-start-3 px-4 py-2 text-lg text-black bg-white border rounded disabled:opacity-50 disabled:cursor-not-allowed"
 			on:click={next}
 			type="button"
 			disabled={currentStep === steps.length - 1}

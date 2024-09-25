@@ -2,8 +2,6 @@
 	import { enhance } from '$app/forms';
 	import { t } from 'svelte-i18n';
 
-	import { fade } from 'svelte/transition';
-
 	import type { ActionData } from './$types';
 
 	export let form: ActionData;
@@ -25,7 +23,7 @@
 		method="post"
 		class="flex flex-col items-center gap-4 p-4"
 	>
-		<div class="flex flex-col items-start gap-4 p-4 w-fit text-black">
+		<div class="flex flex-col items-start gap-4 p-4 text-black w-fit">
 			<label class="flex items-center gap-2 input input-bordered input-accent">
 				{$t('username')}
 				<input type="text" class="grow" placeholder="Daisy" autocomplete="username" name="username" />
@@ -43,7 +41,7 @@
 			<div class="flex flex-row items-center self-start justify-between w-full h-12">
 				<button type="submit" class="p-4 font-bold w-fit btn btn-accent">{$t('login')}</button>
 				{#if loading}
-					<div class="w-10 loading loading-ring text-white"></div>
+					<div class="w-10 text-white loading loading-ring"></div>
 				{:else}
 					<div></div>
 				{/if}

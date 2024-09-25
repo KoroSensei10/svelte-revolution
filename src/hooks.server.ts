@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 
 export async function handle({ event, resolve }) {
@@ -17,10 +16,5 @@ export async function handle({ event, resolve }) {
 	// send back the default 'pb_auth' cookie to the client with the latest store state
 	response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
 
-	const url = event.request.url.trim().split('__')[0];
-	if (url.endsWith('/admin/') || url.endsWith('/admin')) {
-		return redirect(302, '/admin/sessions/create');
-	} else {
-		return response;
-	}
+	return response;
 }

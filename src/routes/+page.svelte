@@ -17,7 +17,7 @@
 		seconds = 0;
 
 	function updateCountdown() {
-		const targetDate = new Date('2024-09-25T09:00:00');
+		const targetDate = new Date('2024-10-04T09:00:00');
 		const now = new Date();
 		const timeDifference = targetDate.getTime() - now.getTime();
 
@@ -39,7 +39,7 @@
 		<div>{$t('revolution')}</div>
 	{:else}
 		<h1 class="text-4xl font-thin text-center text-white first-letter:capitalize">Svelte Révolution Roadmap</h1>
-		<div class="grid grid-flow-col gap-5 text-center auto-cols-max text-green-300">
+		<div class="grid grid-flow-col gap-5 text-center text-green-300 auto-cols-max">
 			<div class="flex flex-col">
 				<span class="justify-center font-mono text-5xl countdown">
 					<span style="--value:{days};"></span>

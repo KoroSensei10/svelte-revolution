@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-4 py-4">
-	<h1 class="text-4xl font-thin text-center first-letter:capitalize">{$t('sessions')}</h1>
+	<h1 class="text-4xl font-thin text-center first-letter:capitalize">{$t('sessions.sessions')}</h1>
 	{#if data.sessions.length}
 		<ul class="flex flex-col p-4 pt-0 text-black gap-4 sm:w-2/3">
 			{#each data.sessions as session (session.id)}

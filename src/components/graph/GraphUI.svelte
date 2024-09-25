@@ -2,9 +2,12 @@
 	import { t } from 'svelte-i18n';
 	import { onMount } from 'svelte';
 	import type { NodeMessage } from '$types/graph';
+	import type { User } from '$types/tableTypes';
 
 	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
 	export let selectedNode: NodeMessage | null;
+
+	export let user: User | undefined = undefined;
 
 	let nodeTitle = '';
 	let nodeText = '';
@@ -45,8 +48,7 @@
 </script>
 
 <div
-	class="fixed bottom-0 z-50 w-full bg-black border-t bg-opacity-90 scrollbar-thin scrollbar-thumb-white
-	scrollbar-track-black sm:top-0 sm:bottom-auto sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
+	class="fixed bottom-0 z-50 w-full bg-black border-t bg-opacity-90 scrollbar-thin scrollbar-thumb-white scrollbar-track-black sm:top-0 sm:bottom-auto sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
 >
 	<form
 		class="w-full rounded-none collapse collapse-plus sm:collapse-arrow"
@@ -98,8 +100,7 @@
 				<button
 					type="submit"
 					disabled={!validForm}
-					class="font-light border-none btn disabled:cursor-not-allowed
-						disabled:bg-white disabled:opacity-50 hover:bg-white bg-primary-500"
+					class="font-light border-none btn disabled:cursor-not-allowed disabled:bg-white disabled:opacity-50 hover:bg-white bg-primary-500"
 				>
 					{$t('publish')}
 				</button>
@@ -121,6 +122,15 @@
 			{/if}
 		</div>
 	</div>
+	{#if user}
+		<div class="sticky bottom-0 w-full border-t rounded-none collapse collapse-plus sm:collapse-arrow">
+			<input type="checkbox" class="" name="GraphUI" />
+			<div class="font-bold collapse-title">
+				{$t('admin')}
+			</div>
+			<div class="text-white collapse-content">- ajouter les évents - finir la session</div>
+		</div>
+	{/if}
 </div>
 
 <style lang="postcss">

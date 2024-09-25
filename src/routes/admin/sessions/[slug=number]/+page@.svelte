@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { pb } from '$lib/pocketbase';
 	import GraphUi from '$components/graph/GraphUI.svelte';
-	import ForceGraph from '../../../components/graph/ForceGraph.svelte';
+	import ForceGraph from '$components/graph/ForceGraph.svelte';
 
 	import toast from 'svelte-french-toast';
 	import { mainTitle } from '$stores/titles';
 	import type { NodeMessage } from '$types/graph';
+	import { t } from 'svelte-i18n';
+	import Filigrane from '$components/graph/Filigrane.svelte';
 
 	export let data;
 
-	mainTitle.set(data.sessionData.name);
+	mainTitle.set(data.sessionData.name + ' - ' + $t('admin'));
 
 	let selectedNode: NodeMessage | null = null;
 	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
@@ -28,10 +30,12 @@
 	}
 </script>
 
-<GraphUi addnode={addNode} {selectedNode} />
-<ForceGraph
-	bind:selectedNode
-	nodes={data.nodesAndLinks.nodes}
-	links={data.nodesAndLinks.links}
-	sessionId={data.sessionData.id}
-/>
+<GraphUi addnode={addNode} {selectedNode} user={data.user} />
+<Filigrane watermarkText={$t('admin')}>
+	<ForceGraph
+		bind:selectedNode
+		nodes={data.nodesAndLinks.nodes}
+		links={data.nodesAndLinks.links}
+		sessionId={data.sessionData.id}
+	/>
+</Filigrane>
