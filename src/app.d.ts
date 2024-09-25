@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { User } from "../types/tableTypes";
+import type { User } from '../types/tableTypes';
 
 // for information about these interfaces
 declare global {
@@ -22,4 +22,4 @@ declare global {
 	}
 }
 
-export { };
+export {};

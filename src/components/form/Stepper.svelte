@@ -1,27 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	export let steps: string[] = []; // Liste des étapes
 	export let currentStep: number = 2; // Étape actuelle
 
-	function buildUrl(step: number) {
-		const url = new URL(location.href);
-		url.searchParams.set('step', `${step}`);
-		return url.toString();
-	}
-
 	function next() {
 		if (currentStep < steps.length - 1) {
 			currentStep += 1;
-			// goto(buildUrl(currentStep));
 		}
 	}
 
 	function prev() {
 		if (currentStep > 0) {
 			currentStep -= 1;
-			// goto(buildUrl(currentStep));
 		}
 	}
 

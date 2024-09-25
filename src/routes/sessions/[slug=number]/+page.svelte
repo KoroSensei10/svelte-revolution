@@ -9,7 +9,7 @@
 
 	export let data;
 
-	mainTitle.set(data.name);
+	mainTitle.set(data.sessionData.name);
 
 	let selectedNode: NodeMessage | null = null;
 	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
@@ -19,7 +19,7 @@
 			author,
 			type: 'contribution',
 			parent: parentNodeId,
-			session: data.id
+			session: data.sessionData.id
 		});
 
 		toast.success('Nœud ajouté avec succès', {
@@ -29,4 +29,9 @@
 </script>
 
 <GraphUi addnode={addNode} {selectedNode} />
-<ForceGraph bind:selectedNode nodes={data.nodes} links={data.links} sessionId={data.id} />
+<ForceGraph
+	bind:selectedNode
+	nodes={data.nodesAndLinks.nodes}
+	links={data.nodesAndLinks.links}
+	sessionId={data.sessionData.id}
+/>

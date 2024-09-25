@@ -8,8 +8,8 @@
 		forceSimulation,
 		forceLink,
 		forceManyBody,
-		schemeCategory10,
-		forceRadial
+		forceRadial,
+		type Selection
 	} from 'd3';
 	import type { NodeMessage } from '$types/graph';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
@@ -21,10 +21,10 @@
 	export let selectedNode: NodeMessage | null = null;
 
 	let svg: SVGElement;
-	let svgElement: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let linkLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let labelLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
+	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
+	let nodeLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let linkLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let labelLayer: Selection<SVGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 
