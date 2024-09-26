@@ -6,6 +6,7 @@
 	import toast from 'svelte-french-toast';
 	import { mainTitle } from '$stores/titles';
 	import type { NodeMessage } from '$types/graph';
+	import { onMount } from 'svelte';
 
 	export let data;
 
@@ -26,9 +27,15 @@
 			position: 'bottom-center'
 		});
 	}
+
+	onMount(async () => {
+		await pb.collection('Session').subscribe(data.sessionData.id, (res) => {
+			data.sessionData = res.record;
+		});
+	});
 </script>
 
-<GraphUi addnode={addNode} {selectedNode} />
+<GraphUi addnode={addNode} {selectedNode} session={data.sessionData} />
 <ForceGraph
 	bind:selectedNode
 	nodes={data.nodesAndLinks.nodes}

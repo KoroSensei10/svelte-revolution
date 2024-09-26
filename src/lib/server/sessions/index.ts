@@ -1,10 +1,11 @@
 import { pb } from '$lib/pocketbase.js';
-import type { Link, SessionData } from '$types/graph/index.js';
+import type { Link } from '$types/graph/index.js';
+import type { Session } from '$types/tableTypes';
 import { error } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 
 export async function getSession(sessionId: number) {
-	let session: SessionData;
+	let session: Session;
 	try {
 		session = await pb.collection('session').getFirstListItem('slug=' + sessionId.toString());
 	} catch (e) {
@@ -25,7 +26,7 @@ export async function getSession(sessionId: number) {
 	return session;
 }
 
-export async function buildNodesAndLinks(session: SessionData) {
+export async function buildNodesAndLinks(session: Session) {
 	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` });
 	const links: Link[] = [];
 
