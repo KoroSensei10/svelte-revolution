@@ -1,9 +1,8 @@
-import { pb } from '$lib/pocketbase';
-import { createSession, createStartNode, getScenario } from '$lib/server/sessions/create.js';
+import { createSession, createStartNode, getScenario } from '$lib/server/sessions/create';
 import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {
-	createSession: async ({ request }) => {
+	createSession: async ({ request, locals }) => {
 		const data = await request.formData();
 
 		const name = data.get('name');
@@ -15,13 +14,14 @@ export const actions = {
 		}
 
 		try {
-			const scenario = await getScenario(scenarioId.toString());
+			const pb = locals.pb;
+			const scenario = await getScenario(pb, scenarioId.toString());
 			if (!scenario) {
 				return fail(404, { error: 'Scenario not found' });
 			}
 
-			const session = await createSession(name, scenario.id, author);
-			await createStartNode(scenario, session.id);
+			const session = await createSession(pb, name, scenario.id, author);
+			await createStartNode(pb, scenario, session.id);
 
 			return {
 				status: 201,
@@ -36,8 +36,8 @@ export const actions = {
 	}
 } satisfies Actions;
 
-export const load = async ({ parent }) => {
-	const scenarios = await pb.collection('scenario').getFullList();
+export const load = async ({ parent, locals }) => {
+	const scenarios = await locals.pb.collection('scenario').getFullList();
 	return {
 		...(await parent()),
 		scenarios

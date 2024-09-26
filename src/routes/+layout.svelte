@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 	import { locales, locale } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
@@ -29,10 +29,6 @@
 
 	onMount(() => {
 		visible = true;
-	});
-
-	onDestroy(() => {
-		console.log('Layout destroyed');
 	});
 </script>
 

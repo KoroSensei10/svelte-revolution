@@ -28,9 +28,15 @@
 			position: 'bottom-center'
 		});
 	}
+
+	async function endSession() {
+		await pb.collection('Session').update(data.sessionData.id, {
+			completed: true
+		});
+	}
 </script>
 
-<GraphUi addnode={addNode} {selectedNode} user={data.user} />
+<GraphUi addnode={addNode} {selectedNode} user={data.user} session={data.sessionData} on:endSession={endSession} />
 <Filigrane watermarkText={$t('admin')}>
 	<ForceGraph
 		bind:selectedNode

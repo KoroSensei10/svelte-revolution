@@ -13,7 +13,7 @@
 			{#each data.sessions as session (session.id)}
 				{@const scenario = session.expand?.scenario}
 				{@const imageUrl = pb.files.getUrl(session, session.image)}
-				<li class="w-full rounded-lg bg-primary-300 h-fit">
+				<li class="w-full rounded-lg {session.completed ? 'opacity-80 bg-gray-500' : 'bg-primary-300'} h-fit">
 					<a
 						class="grid w-full grid-cols-3 p-4 transition-all rounded-lg place-items-center hover:px-2 hover:bg-primary-400"
 						href="/admin/sessions/{session.slug}"

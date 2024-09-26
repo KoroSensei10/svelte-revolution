@@ -1,13 +1,16 @@
 <script lang="ts">
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import { onMount } from 'svelte';
 	import type { NodeMessage } from '$types/graph';
-	import type { User } from '$types/tableTypes';
+	import type { Session, User } from '$types/tableTypes';
 
 	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
 	export let selectedNode: NodeMessage | null;
 
 	export let user: User | undefined = undefined;
+	export let session: Session | undefined = undefined;
+
+	const dispatch = createEventDispatcher();
 
 	let nodeTitle = '';
 	let nodeText = '';
@@ -40,6 +43,10 @@
 		nodeTitle = '';
 		nodeText = '';
 		localStorage.setItem('author', nodeAuthor);
+	}
+
+	function endSession() {
+		dispatch('endSession');
 	}
 
 	onMount(() => {
@@ -128,7 +135,17 @@
 			<div class="font-bold collapse-title">
 				{$t('admin')}
 			</div>
-			<div class="text-white collapse-content">- ajouter les évents - finir la session</div>
+			<div class="text-white collapse-content">
+				{#if session?.completed}
+					<div>
+						{$t('sessionEnded')}
+					</div>
+				{:else}
+					<div>
+						<button on:click={endSession}>{$t('endSession')}</button>
+					</div>
+				{/if}
+			</div>
 		</div>
 	{/if}
 </div>

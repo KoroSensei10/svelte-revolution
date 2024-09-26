@@ -1,5 +1,4 @@
-import { pb } from '$lib/pocketbase';
-import { redirect, type Actions } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ parent }) => {
 	const data = await parent();
@@ -9,31 +8,17 @@ export const load = async ({ parent }) => {
 	}
 };
 
-export const actions: Actions = {
-	login: async ({ cookies, request }) => {
+export const actions = {
+	login: async ({ request, locals }) => {
 		const data = await request.formData();
-		const username = data.get('username');
-		const password = data.get('password');
-
-		if (!username || !password) {
-			return {
-				status: 400,
-				success: false,
-				message: 'Missing username or password'
-			};
-		}
+		const username = data.get('username') as string;
+		const password = data.get('password') as string;
 
 		try {
-			await pb.collection('Users').authWithPassword(username.toString(), password.toString());
-			cookies.set('pb-auth', pb.authStore.exportToCookie(), { path: '/' });
-		} catch (e) {
-			return {
-				status: 401,
-				success: false,
-				message: (e as Error).message
-			};
+			await locals.pb.collection('users').authWithPassword(username, password);
+		} catch (err) {
+			return fail(400, { error: 'Invalid username or password' });
 		}
-
-		return redirect(302, '/admin');
+		return redirect(303, '/admin');
 	}
 };
