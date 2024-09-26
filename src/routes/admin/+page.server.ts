@@ -9,7 +9,7 @@ export async function load({ parent }) {
 	}
 	const sessions = await pb.collection('session').getFullList({
 		filter: pb.filter('author = {:user}', { user: data.user.id }),
-		expand: ['scenario']
+		expand: 'scenario'
 	});
 
 	return {

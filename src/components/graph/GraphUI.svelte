@@ -7,7 +7,7 @@
 	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
 	export let selectedNode: NodeMessage | null;
 
-	export let user: User | undefined = undefined;
+	export let user: User | null = null;
 
 	let nodeTitle = '';
 	let nodeText = '';
