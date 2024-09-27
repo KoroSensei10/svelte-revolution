@@ -10,3 +10,28 @@ export async function load({ params }) {
 		nodesAndLinks
 	};
 }
+
+export const actions = {
+	addNode: async ({ request, locals }) => {
+		const data = await request.formData();
+		const title = data.get('title') as string;
+		const text = data.get('text') as string;
+		const author = data.get('author') as string;
+		const parentNodeId = data.get('parentNodeId') as string;
+		const sessionId = data.get('sessionId') as string;
+
+		await locals.pb.collection('Node').create({
+			title,
+			text,
+			author,
+			type: 'contribution',
+			parent: parentNodeId,
+			session: sessionId
+		});
+
+		return {
+			status: 200,
+			body: { message: 'Node added' }
+		};
+	}
+};

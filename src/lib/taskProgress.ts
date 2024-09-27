@@ -1,3 +1,7 @@
+/**
+ * TODO: Remove this file on launch
+ */
+
 export type Task = {
 	taskName: string;
 	duration: number;
@@ -63,7 +67,7 @@ export const tasks: Task[] = [
 			{
 				taskName: 'Link les users aux sessions et aux scénarios',
 				duration: 8,
-				completed: false
+				completed: true
 			}
 		]
 	},
@@ -101,7 +105,7 @@ export const tasks: Task[] = [
 			{
 				taskName: 'Ajouter les dernières sessions',
 				duration: 5,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: 'Design',

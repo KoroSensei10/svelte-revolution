@@ -32,12 +32,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>
-		{$mainTitle}
-	</title>
-</svelte:head>
-
 <!-- UI -->
 <Toaster />
 <select bind:value={$locale} class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl">
@@ -82,14 +76,7 @@
 		</a>
 	{/if}
 </nav>
-<!-- When loading-->
-<!-- {#if $isLoading}
-	<div class="flex items-center justify-center h-screen">
-		<span class="loading loading-infinity text-primary-500 w-52" />
-	</div>
-{:else} -->
-<!-- Actual content -->
-<!-- {/if} -->
+
 <slot />
 
 <style>
