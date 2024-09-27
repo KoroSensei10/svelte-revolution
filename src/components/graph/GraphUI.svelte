@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import type { NodeMessage } from '$types/graph';
 	import type { Session, User } from '$types/tableTypes';
+	import { selectedNodeStore } from '$stores/graph';
 
 	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
-	export let selectedNode: NodeMessage | null;
 
 	export let user: User | null = null;
 	export let session: Session;
@@ -22,7 +21,7 @@
 	let addNodeChecked = false;
 
 	function addNodeHook() {
-		if (!selectedNode?.id) {
+		if (!$selectedNodeStore?.id) {
 			alert("Veuillez sélectionner un nœud d'abord");
 			return;
 		}
@@ -38,7 +37,7 @@
 			alert('Veuillez entrer un auteur pour le nouveau nœud');
 			return;
 		}
-		addnode(nodeTitle, nodeText, nodeAuthor, selectedNode.id);
+		addnode(nodeTitle, nodeText, nodeAuthor, $selectedNodeStore.id);
 
 		nodeTitle = '';
 		nodeText = '';
@@ -136,10 +135,10 @@
 			{$t('nodeInformation')}
 		</div>
 		<div class="text-white collapse-content">
-			{#if selectedNode}
-				<div class="p-4 text-xl font-semibold first-letter:capitalize">{selectedNode?.title}</div>
-				<div>{$t('from')} {selectedNode?.author}</div>
-				<div class="pt-2">{selectedNode?.text}</div>
+			{#if $selectedNodeStore}
+				<div class="p-4 text-xl font-semibold first-letter:capitalize">{$selectedNodeStore.title}</div>
+				<div>{$t('from')} {$selectedNodeStore.author}</div>
+				<div class="pt-2">{$selectedNodeStore.text}</div>
 			{:else}
 				<div class="p-4 pb-0 text-xl text-center first-letter:capitalize">{$t('noNodeSelected')}</div>
 			{/if}
