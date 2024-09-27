@@ -40,7 +40,7 @@
 
 <svelte:head>
 	<title>{data.sessionData.name}</title>
-	<meta name="description" content="" />
+	<meta name="description" content={data.sessionData.expand?.scenario.prologue} />
 	<meta
 		property="og:image"
 		content={data.sessionData.image ? pb.files.getUrl(data.sessionData, data.sessionData.image) : graphe1}

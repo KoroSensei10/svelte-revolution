@@ -4,7 +4,7 @@
 
 <div class="relative">
 	<div
-		class="absolute overflow-hidden inset-0 flex justify-center items-center opacity-10 text-6xl text-white italic font-bold pointer-events-none select-none"
+		class="absolute inset-0 flex items-center justify-center overflow-hidden text-6xl italic font-bold text-white pointer-events-none select-none opacity-10"
 	>
 		{#each Array.from({ length: 10 }, (_, i) => i) as i}
 			<div class="" style="transform: rotate({i * 36}deg);">
