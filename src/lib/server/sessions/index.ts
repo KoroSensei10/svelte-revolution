@@ -7,7 +7,9 @@ import { ClientResponseError } from 'pocketbase';
 export async function getSession(sessionId: number) {
 	let session: Session;
 	try {
-		session = await pb.collection('session').getFirstListItem('slug=' + sessionId.toString());
+		session = await pb
+			.collection('session')
+			.getFirstListItem('slug=' + sessionId.toString(), { expand: 'scenario' });
 	} catch (e) {
 		const err = e as ClientResponseError;
 		if (err.status === 404) {
