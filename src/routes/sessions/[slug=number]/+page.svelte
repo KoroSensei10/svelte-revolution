@@ -9,6 +9,7 @@
 
 	import { mainTitle as mainTitleStore } from '$stores/titles';
 	import { linksStore, nodesStore } from '$stores/graph/index.js';
+	import { page } from '$app/stores';
 
 	export let data;
 
@@ -40,7 +41,7 @@
 
 <svelte:head>
 	<title>{data.sessionData.name}</title>
-	<meta name="description" content={data.sessionData.expand?.scenario.prologue} />
+	<meta property="description" content={data.sessionData.expand?.scenario.prologue} />
 	<meta
 		property="og:image"
 		content={data.sessionData.image ? pb.files.getUrl(data.sessionData, data.sessionData.image) : graphe1}
@@ -48,7 +49,7 @@
 	<meta property="og:title" content={data.sessionData.name} />
 	<meta property="og:description" content={data.sessionData.expand?.scenario.prologue} />
 	<meta property="og:site_name" content="Babel Révolution" />
-	<meta property="og:url" content={`/sessions/${data.sessionData.slug}`} />
+	<meta property="og:url" content={$page.url.href} />
 </svelte:head>
 
 <GraphUi addnode={addNode} session={data.sessionData} />
