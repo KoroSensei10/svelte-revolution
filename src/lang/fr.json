@@ -4,7 +4,11 @@
 		"session": "Session",
 		"sessions": "Sessions",
 		"yourSessions": "Vos sessions",
-		"createSession": "Démarrer une session"
+		"createSession": "Démarrer une session",
+		"endSession": "Terminer la session",
+		"sessionEnded": "Session terminée",
+		"sortByNotCompleted": "Trier par non terminé",
+		"noSessions": "Aucune session"
 	},
 	"scenario": "Scénario ",
 	"join": "Rejoindre",

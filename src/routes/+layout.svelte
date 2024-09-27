@@ -1,8 +1,8 @@
 <script lang="ts">
 	import '../app.css';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import { isLoading, locales, locale } from 'svelte-i18n';
+	import { locales, locale } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
 	import NProgress from 'nprogress';
 	import { typewriter } from '$lib/animations';
@@ -30,17 +30,7 @@
 	onMount(() => {
 		visible = true;
 	});
-
-	onDestroy(() => {
-		console.log('Layout destroyed');
-	});
 </script>
-
-<svelte:head>
-	<title>
-		{$mainTitle}
-	</title>
-</svelte:head>
 
 <!-- UI -->
 <Toaster />
@@ -52,7 +42,7 @@
 	{/each}
 </select>
 <nav
-	class="top-0 bg-opacity-80 sm:w-1/3 md:w-1/4 overflow-hidden w-full bg-black z-50 left-0 grid grid-flow-col p-4 pr-2 font-bold sm:border-b sm:border-r sm:fixed sm:flex sm:flex-col"
+	class="top-0 left-0 z-50 grid w-full grid-flow-col p-4 pr-2 overflow-hidden font-bold bg-black bg-opacity-80 sm:w-1/3 md:w-1/4 sm:border-b sm:border-r sm:fixed sm:flex sm:flex-col"
 >
 	<a
 		href="/"
@@ -86,14 +76,7 @@
 		</a>
 	{/if}
 </nav>
-<!-- When loading-->
-<!-- {#if $isLoading}
-	<div class="flex items-center justify-center h-screen">
-		<span class="loading loading-infinity text-primary-500 w-52" />
-	</div>
-{:else} -->
-<!-- Actual content -->
-<!-- {/if} -->
+
 <slot />
 
 <style>

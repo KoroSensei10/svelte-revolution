@@ -4,7 +4,11 @@
 		"session": "セッション",
 		"sessions": "セッション",
 		"yourSessions": "あなたのセッション",
-		"createSession": "セッションを開始"
+		"createSession": "セッションを開始",
+		"endSession": "セッションを終了",
+		"sessionEnded": "セッションが終了しました",
+		"sortByNotCompleted": "未完了で並べ替え",
+		"noSessions": "セッションがありません"
 	},
 	"scenario": "シナリオ",
 	"join": "参加する",

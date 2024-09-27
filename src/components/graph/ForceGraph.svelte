@@ -8,27 +8,25 @@
 		forceSimulation,
 		forceLink,
 		forceManyBody,
-		schemeCategory10,
-		forceRadial
+		forceRadial,
+		type Selection
 	} from 'd3';
 	import type { NodeMessage } from '$types/graph';
 	import type { Simulation, SimulationLinkDatum } from 'd3';
 	import { pb } from '$lib/pocketbase';
+	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
+	import { colors, nodeRadius, strokeDashArray } from './utils';
 
 	export let sessionId: string;
-	export let nodes: NodeMessage[] = [];
-	export let links: SimulationLinkDatum<NodeMessage>[] = [];
-	export let selectedNode: NodeMessage | null = null;
 
 	let svg: SVGElement;
-	let svgElement: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let linkLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
-	let labelLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>;
+	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
+	let nodeLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let linkLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let labelLayer: Selection<SVGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
-
-	const zoom = d3Zoom().on('zoom', (e) => {
+	export const zoom = d3Zoom().on('zoom', (e) => {
 		const { transform } = e;
 		nodeLayer.attr('transform', transform);
 		linkLayer.attr('transform', transform);
@@ -39,24 +37,6 @@
 		labelLayer.style('stroke-width', strokeWidth);
 	});
 
-	const colors = {
-		startNode: '#1b3022',
-		selectedNode: 'red',
-		defaultNode: '#86efac',
-		defaultLink: '#999',
-		hoverLink: 'red',
-		connectedNode: 'purple'
-	};
-	const strokeDashArray = {
-		default: '5, 15',
-		hover: 'none'
-	};
-
-	const nodeRadius = {
-		default: 10,
-		selected: 15,
-		start: 30
-	};
 	function renderGraph() {
 		const currentWidth = window.innerWidth;
 		const currentHeight = window.innerHeight;
@@ -64,7 +44,7 @@
 
 		const link = linkLayer
 			.selectAll('line')
-			.data(links)
+			.data($linksStore)
 			.join('line')
 			.attr('stroke', '#999')
 			.attr('stroke-opacity', 1)
@@ -76,13 +56,13 @@
 
 		const node = nodeLayer
 			.selectAll('circle')
-			.data(nodes)
+			.data($nodesStore)
 			.join('circle')
 			.attr('draggable', true)
 			.attr('r', (d) =>
 				d.type === 'startNode'
 					? nodeRadius.start
-					: selectedNode && selectedNode.id === d.id
+					: $selectedNodeStore && $selectedNodeStore.id === d.id
 						? nodeRadius.selected
 						: nodeRadius.default
 			)
@@ -90,7 +70,7 @@
 			.attr('fill', (d) =>
 				d.type === 'startNode'
 					? colors.startNode
-					: selectedNode && selectedNode.id === d.id
+					: $selectedNodeStore && $selectedNodeStore.id === d.id
 						? colors.selectedNode
 						: colors.defaultNode
 			)
@@ -102,13 +82,18 @@
 					.attr('stroke-width', (l) => (l.source === d || l.target === d ? 2 : 1));
 				node.attr('fill', (n) => {
 					if (n === d) return colors.selectedNode;
-					if (links.some((l) => (l.source === d && l.target === n) || (l.target === d && l.source === n))) {
+					if (
+						$linksStore.some(
+							(l) => (l.source === d && l.target === n) || (l.target === d && l.source === n)
+						)
+					) {
 						return colors.connectedNode;
 					}
 					return colors.defaultNode;
 				});
 			})
 			.call(
+				// @ts-ignore
 				drag<any, NodeMessage>()
 					.on('start', (event, d) => {
 						if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -133,7 +118,7 @@
 				node.attr('fill', (d) =>
 					d.type === 'startNode'
 						? colors.startNode
-						: selectedNode && selectedNode.id === d.id
+						: $selectedNodeStore && $selectedNodeStore.id === d.id
 							? colors.selectedNode
 							: colors.defaultNode
 				);
@@ -142,7 +127,7 @@
 
 		const labels = labelLayer
 			.selectAll('text')
-			.data(nodes)
+			.data($nodesStore)
 			.join('text')
 			.attr('text-anchor', 'middle')
 			.attr('dy', (d) => {
@@ -156,9 +141,13 @@
 		// TODO: corriger le hover sur le texte pour être comme le hover sur le noeud
 
 		simulation.on('tick', () => {
+			// @ts-ignore
 			link.attr('x1', (d) => d.source.x)
+				// @ts-ignore
 				.attr('y1', (d) => d.source.y)
+				// @ts-ignore
 				.attr('x2', (d) => d.target.x)
+				// @ts-ignore
 				.attr('y2', (d) => d.target.y);
 
 			node.attr('cx', (d) => String(d.x)).attr('cy', (d) => String(d.y));
@@ -169,20 +158,29 @@
 		simulation.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2));
 	}
 
+	/**
+	 * Append a new node and his links to the graph, and update the graph
+	 */
 	function updateGraph(node: NodeMessage, parentNodeId: string) {
-		nodes.push(node);
-		links.push({ source: parentNodeId, target: node.id });
+		nodesStore.update((prev) => [...prev, node]);
+		linksStore.update((prev) => {
+			if (parentNodeId) {
+				return [...prev, { source: parentNodeId, target: node.id }];
+			}
+			return prev;
+		});
 		restartSimulation();
 	}
 
 	function selectNode(node: NodeMessage) {
-		selectedNode = node;
+		selectedNodeStore.set(node);
 		renderGraph();
 	}
 
 	function restartSimulation() {
-		simulation.nodes(nodes);
-		simulation.force('link')?.links(links);
+		simulation.nodes($nodesStore);
+		// @ts-ignore
+		simulation.force('link')?.links($linksStore);
 		simulation.alpha(1).restart();
 		renderGraph();
 	}
@@ -191,7 +189,7 @@
 		await pb.collection('Node').subscribe(
 			'*',
 			({ record }) => {
-				nodes = [...nodes, record];
+				nodesStore.update((prev) => [...prev, record]);
 				updateGraph(record, record.parent);
 			},
 			{
@@ -200,20 +198,27 @@
 		);
 
 		svgElement = select(svg);
+		// @ts-ignore
 		linkLayer = svgElement.append('g');
+		// @ts-ignore
 		nodeLayer = svgElement.append('g');
+		// @ts-ignore
 		labelLayer = svgElement.append('g');
 
+		// @ts-ignore
 		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
 
-		simulation = forceSimulation(nodes)
+		simulation = forceSimulation($nodesStore)
 			.force(
 				'link',
-				forceLink(links)
+				forceLink($linksStore)
+					// @ts-ignore
 					.id((d) => d.id)
 					.distance((d) => {
+						// @ts-ignore
 						if (d.source.type === 'startNode' || d.target.type === 'startNode') {
 							return 30;
+							// @ts-ignore
 						} else if (d.source.type === 'event' || d.target.type === 'event') {
 							return 50;
 						}

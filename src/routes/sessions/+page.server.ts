@@ -1,5 +1,5 @@
 import { pb } from '$lib/pocketbase';
 
 export async function load() {
-	return { sessions: await pb.collection('session').getFullList({ expand: 'scenario' }) };
+	return { sessions: await pb.collection('Session').getFullList({ expand: 'scenario' }) };
 }
