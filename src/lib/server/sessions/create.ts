@@ -9,14 +9,22 @@ export async function createSession(
 	pb: MyPocketBase,
 	name: FormDataEntryValue,
 	scenarioId: string,
-	author: FormDataEntryValue
+	author: FormDataEntryValue,
+	image: File
 ) {
+	if (image.size !== 0) {
+		image = new File([image as Blob], `${name}.png`, { type: 'image/png' });
+	}
 	const sessions = await pb.collection('Session').getFullList({ fields: 'id' });
 	return await pb.collection('Session').create({
 		name,
 		scenario: scenarioId,
 		author,
-		slug: sessions.length + 1
+		slug: sessions.length + 1,
+		public: true,
+		visible: true,
+		completed: false,
+		image
 	});
 }
 
