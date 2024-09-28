@@ -1,7 +1,8 @@
 <script lang="ts">
-	import toast from 'svelte-french-toast';
-	import type { ActionData, PageData } from './$types';
 	import { enhance } from '$app/forms';
+	import toast from 'svelte-french-toast';
+	import nProgress from 'nprogress';
+	import type { ActionData, PageData } from './$types';
 
 	export let form: ActionData;
 	export let data: PageData;
@@ -17,9 +18,16 @@
 	<form
 		action="?/createSession"
 		method="POST"
+		enctype="multipart/form-data"
 		bind:this={theForm}
 		on:input={() => (validForm = theForm?.checkValidity())}
-		use:enhance
+		use:enhance={() => {
+			nProgress.start();
+			return async ({ update }) => {
+				await update();
+				nProgress.done();
+			};
+		}}
 		class="flex flex-col gap-4 p-4 text-center border-t shadow-md"
 	>
 		<div class="flex gap-4">
@@ -35,12 +43,12 @@
 				</div>
 			</div>
 			<div>
-				<label for={'author'} class="text-lg font-thin">Auteur</label>
+				<label for="image">Image</label>
 				<input
-					required
-					name={'author'}
-					placeholder="Auteur"
-					class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+					type="file"
+					name="image"
+					accept="image/*"
+					class="p-4 border-b appearance-none focus-within:bg-transparent"
 				/>
 			</div>
 		</div>
@@ -65,9 +73,11 @@
 	{#if form?.success}
 		<a
 			class="self-center px-4 py-2 mt-4 text-lg font-light text-white border rounded"
-			href="/sessions/{form?.session?.id}"
+			href="/sessions/{form?.session.slug}"
 		>
 			Aller à la session</a
 		>
+	{:else if form?.error}
+		<p class="p-4 text-red-500">{form.error}</p>
 	{/if}
 </div>
