@@ -45,16 +45,18 @@
 		>
 			<!-- Step 1  -->
 			<div slot="step-1" class="flex flex-col gap-4 p-2">
-				<label for="title" class="text-xl font-thin">{$t('scenario.form.title')}</label>
+				<label for="title" class="text-xl font-thin">{$t('scenario.title')}</label>
 				<input
 					required
+					id="title"
 					name="title"
 					class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 					placeholder="Votre super Scénario"
 				/>
-				<label for="prologue" class="text-xl font-thin">{$t('scenario.form.prologue')}</label>
+				<label for="prologue" class="text-xl font-thin">{$t('scenario.prologue')}</label>
 				<textarea
 					required
+					id="prologue"
 					name="prologue"
 					class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 					rows="3"
@@ -66,11 +68,10 @@
 			<div slot="step-2" class="flex flex-col gap-4 p-2">
 				<div class="flex gap-4">
 					<div class="flex flex-col w-full">
-						<label for="firstNodeTitle" class="text-xl font-thin"
-							>{$t('scenario.form.firstNodeTitle')}</label
-						>
+						<label for="firstNodeTitle" class="text-xl font-thin">{$t('scenario.firstNodeTitle')}</label>
 						<input
 							required
+							id="firstNodeTitle"
 							name="firstNodeTitle"
 							class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 							placeholder="Génialisime titre"
@@ -78,20 +79,20 @@
 					</div>
 
 					<div>
-						<label for="firstNodeAuthor" class="text-xl font-thin"
-							>{$t('scenario.form.firstNodeAuthor')}</label
-						>
+						<label for="firstNodeAuthor" class="text-xl font-thin">{$t('scenario.firstNodeAuthor')}</label>
 						<input
 							required
+							id="firstNodeAuthor"
 							name="firstNodeAuthor"
 							class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 							placeholder="Snoup"
 						/>
 					</div>
 				</div>
-				<label for="firstNodeText" class="text-xl font-thin">{$t('scenario.form.firstNodeText')}</label>
+				<label for="firstNodeText" class="text-xl font-thin">{$t('scenario.firstNodeText')}</label>
 				<textarea
 					required
+					id="firstNodeText"
 					name="firstNodeText"
 					class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 					rows="3"
@@ -103,19 +104,20 @@
 				<MultiField
 					props={{
 						name: 'event',
-						title: 'Evenement',
-						placeholderTitle: "Titre de l'evenement",
-						placeholderText: "Texte de l'evenement"
+						title: $t('scenario.events'),
+						placeholderTitle: $t('scenario.eventTitle'),
+						placeholderText: $t('scenario.eventText')
 					}}
 					let:item
 				>
-					<span slot="header" class="pb-2 text-xl font-thin border-b">{$t('scenario.form.events')}</span>
+					<span slot="header" class="pb-2 text-xl font-thin border-b">{$t('scenario.events')}</span>
 					<div class="flex flex-col items-center p-2">
 						<div class="flex gap-4">
 							<div class="w-full">
 								<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
 								<input
 									required
+									id={item.name}
 									name={item.name}
 									placeholder={item.placeholderTitle}
 									class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
@@ -123,10 +125,11 @@
 							</div>
 							<div>
 								<label for={item.name + '-author'} class="text-lg font-thin"
-									>{$t('scenario.form.events')}</label
+									>{$t('scenario.author')}</label
 								>
 								<input
 									required
+									id={item.name + '-author'}
 									name={item.name + '-author'}
 									placeholder="Auteur"
 									class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
@@ -138,6 +141,7 @@
 							<textarea
 								rows="3"
 								required
+								id={item.name + '-text'}
 								name={item.name + '-text'}
 								placeholder={item.placeholderText}
 								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
@@ -151,18 +155,19 @@
 				<MultiField
 					props={{
 						name: 'end',
-						title: 'Fin',
-						placeholderTitle: 'Titre de la fin',
-						placeholderText: 'Texte de la fin'
+						title: $t('scenario.ends'),
+						placeholderTitle: $t('scenario.endTitle'),
+						placeholderText: $t('scenario.endText')
 					}}
 					let:item
 				>
-					<span slot="header" class="pb-2 text-xl font-thin border-b">{$t('scenario.form.ends')}</span>
+					<span slot="header" class="pb-2 text-xl font-thin border-b">{$t('scenario.ends')}</span>
 					<div class="flex flex-col items-center p-2">
 						<div class="w-full">
 							<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
 							<input
 								required
+								id={item.name}
 								name={item.name}
 								placeholder={item.placeholderTitle}
 								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
@@ -173,6 +178,7 @@
 							<textarea
 								rows="3"
 								required
+								id={item.name + '-text'}
 								name={item.name + '-text'}
 								placeholder={item.placeholderText}
 								class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"

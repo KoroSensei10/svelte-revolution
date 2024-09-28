@@ -22,17 +22,19 @@
 		"delete": "Delete",
 		"essentials": "Essentials",
 		"firstNode": "First Node",
+		"title": "Title",
+		"text": "Text",
+		"prologue": "Prologue",
+		"eventTitle": "Event Title",
+		"eventText": "Event Text",
+		"endTitle": "End Title",
+		"endText": "End Text",
+		"firstNodeTitle": "First Node Title",
+		"firstNodeText": "First Node Text",
+		"firstNodeAuthor": "First Node Author",
 		"events": "Events",
-		"ends": "Ends",
-		"form": {
-			"title": "Title",
-			"prologue": "Prologue",
-			"firstNodeTitle": "First Node Title",
-			"firstNodeText": "First Node Text",
-			"firstNodeAuthor": "First Node Author",
-			"events": "Events",
-			"ends": "Ends"
-		}
+		"author": "Author",
+		"ends": "Ends"
 	},
 	"form": {
 		"submit": "Submit",

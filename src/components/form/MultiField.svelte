@@ -20,8 +20,8 @@
 					item={{
 						name: props.name,
 						title: props.title,
-						titleName: `${props.title} ${i + 1} - Titre`,
-						textName: `${props.title} ${i + 1} - Texte`,
+						titleName: `${props.title} ${i + 1} - ${$t('scenario.title')}`,
+						textName: `${props.title} ${i + 1} - ${$t('scenario.text')}`,
 						placeholderTitle: props.placeholderTitle,
 						placeholderText: props.placeholderText
 					}}
