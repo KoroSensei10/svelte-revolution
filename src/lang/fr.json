@@ -10,7 +10,27 @@
 		"sortByNotCompleted": "Trier par non terminé",
 		"noSessions": "Aucune session"
 	},
-	"scenario": "Scénario ",
+	"scenario": {
+		"scenarios": "Scénarios",
+		"yourScenarios": "Vos scénarios",
+		"createScenario": "Créer un scénario",
+		"editScenario": "Modifier un scénario",
+		"deleteScenario": "Supprimer un scénario",
+		"noScenarios": "Aucun scénario",
+		"add": "Ajouter",
+		"delete": "Supprimer",
+		"essentials": "Essentiel",
+		"firstNode": "Premier nœud",
+		"events": "Événements",
+		"ends": "Fins"
+	},
+	"form": {
+		"submit": "Soumettre",
+		"save": "Sauvegarder",
+		"cancel": "Annuler",
+		"next": "Suivant",
+		"previous": "Précédent"
+	},
 	"join": "Rejoindre",
 	"createSession": "Démarrer une session",
 	"createScenario": "Créer un scénario",

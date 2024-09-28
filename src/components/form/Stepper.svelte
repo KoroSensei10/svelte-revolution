@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { t } from 'svelte-i18n';
 
 	export let steps: string[] = []; // Liste des étapes
-	export let currentStep: number = 2; // Étape actuelle
+	export let currentStep: number; // Étape actuelle
 
 	function next() {
 		if (currentStep < steps.length - 1) {
@@ -21,23 +21,12 @@
 			currentStep = index;
 		}
 	}
-
-	onMount(() => {
-		const params = new URLSearchParams(location.search);
-		const step = params.get('step');
-		if (step) {
-			currentStep = steps.indexOf(step);
-			if (currentStep === -1) {
-				currentStep = 0;
-			}
-		}
-	});
 </script>
 
 <div class="flex flex-col w-full gap-4">
 	<!-- Step Indicators -->
 	<div class="grid grid-flow-col">
-		{#each steps as step, index}
+		{#each steps as step, index (step)}
 			<button
 				disabled={index > currentStep}
 				type="button"
@@ -98,7 +87,7 @@
 			on:click={prev}
 			disabled={currentStep <= 0}
 		>
-			Précédent
+			{$t('form.previous')}
 		</button>
 		{#if $$slots['submit']}
 			<slot name="submit"></slot>
@@ -109,7 +98,7 @@
 			type="button"
 			disabled={currentStep === steps.length - 1}
 		>
-			Suivant
+			{$t('form.next')}
 		</button>
 	</div>
 </div>

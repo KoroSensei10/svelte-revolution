@@ -10,7 +10,27 @@
 		"sortByNotCompleted": "未完了で並べ替え",
 		"noSessions": "セッションがありません"
 	},
-	"scenario": "シナリオ",
+	"scenario": {
+		"scenarios": "シナリオ",
+		"yourScenarios": "あなたのシナリオ",
+		"createScenario": "シナリオを作成",
+		"editScenario": "シナリオを編集",
+		"deleteScenario": "シナリオを削除",
+		"noScenarios": "シナリオがありません",
+		"add": "追加",
+		"delete": "削除",
+		"essentials": "基本",
+		"firstNode": "最初のノード",
+		"events": "イベント",
+		"ends": "終了"
+	},
+	"form": {
+		"submit": "提出する",
+		"save": "保存",
+		"cancel": "キャンセル",
+		"next": "次",
+		"previous": "前"
+	},
 	"join": "参加する",
 	"createSession": "セッションを開始",
 	"createScenario": "シナリオを作成",

@@ -2,7 +2,7 @@ import { fail, type Actions } from '@sveltejs/kit';
 import { createEventsAndEnds, createScenario } from '$lib/server/scenario/create';
 
 export const actions = {
-	createScenario: async ({ request }) => {
+	createScenario: async ({ request, locals }) => {
 		const data = await request.formData();
 
 		const title = data.get('title');
@@ -17,12 +17,22 @@ export const actions = {
 		const ends = data.getAll('end');
 		const endTexts = data.getAll('end-text');
 
-		if (!title || !prologue || !lang || !firstNodeTitle || !firstNodeText || !firstNodeAuthor || !events.length || !ends.length) {
+		if (
+			!title ||
+			!prologue ||
+			!lang ||
+			!firstNodeTitle ||
+			!firstNodeText ||
+			!firstNodeAuthor ||
+			!events.length ||
+			!ends.length
+		) {
 			return fail(400, { error: 'Missing required fields' });
 		}
 
 		try {
-			const scenario = await createScenario({
+			const pb = locals.pb;
+			const scenario = await createScenario(pb, {
 				title,
 				prologue,
 				lang,
@@ -31,7 +41,12 @@ export const actions = {
 				firstNodeAuthor
 			});
 
-			await createEventsAndEnds(scenario.id, events, eventTexts, eventAuthors, ends, endTexts);
+			try {
+				await createEventsAndEnds(pb, scenario.id, events, eventTexts, eventAuthors, ends, endTexts);
+			} catch (error) {
+				pb.collection('scenario').delete(scenario.id);
+				return fail(500, { error: String(error) });
+			}
 
 			return {
 				success: true,

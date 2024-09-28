@@ -10,7 +10,37 @@
 		"sortByNotCompleted": "Sort by not completed",
 		"noSessions": "No sessions"
 	},
-	"scenario": "Scenario",
+	"scenario": {
+		"scenarios": "Scenarios",
+		"yourScenarios": "Your Scenarios",
+		"createScenario": "Create Scenario",
+		"newScenario": "New Scenario",
+		"editScenario": "Edit Scenario",
+		"deleteScenario": "Delete Scenario",
+		"noScenarios": "No scenarios",
+		"add": "Add",
+		"delete": "Delete",
+		"essentials": "Essentials",
+		"firstNode": "First Node",
+		"events": "Events",
+		"ends": "Ends",
+		"form": {
+			"title": "Title",
+			"prologue": "Prologue",
+			"firstNodeTitle": "First Node Title",
+			"firstNodeText": "First Node Text",
+			"firstNodeAuthor": "First Node Author",
+			"events": "Events",
+			"ends": "Ends"
+		}
+	},
+	"form": {
+		"submit": "Submit",
+		"save": "Save",
+		"cancel": "Cancel",
+		"next": "Next",
+		"previous": "Previous"
+	},
 	"join": "Join",
 	"createScenario": "Create Scenario",
 	"createUser": "Create User",

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { t } from 'svelte-i18n';
+
 	export let props: {
 		name: string;
 		title: string;
@@ -32,7 +34,7 @@
 						: ''}"
 					on:click={() => (values = values.filter((_, index) => index !== i))}
 				>
-					Supprimer | {props.title} <span class="font-bold">#{i + 1}</span>
+					{$t('scenario.delete')} | {props.title} <span class="font-bold">#{i + 1}</span>
 				</button>
 			</div>
 		{/each}
@@ -45,6 +47,6 @@
 			: ''}"
 		on:click={() => (values = [...values, values.length + 1])}
 	>
-		Ajouter
+		{$t('scenario.add')}
 	</button>
 </div>
