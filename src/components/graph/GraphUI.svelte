@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 	import type { Session, User } from '$types/tableTypes';
 	import { selectedNodeStore } from '$stores/graph';
@@ -10,6 +10,8 @@
 	export let session: Session;
 
 	const dispatch = createEventDispatcher();
+
+	let nodeInfoChecked = false;
 
 	let nodeTitle = '';
 	let nodeText = '';
@@ -52,8 +54,20 @@
 		dispatch('addEvent');
 	}
 
+	const selectedNodeUnsubscribe = selectedNodeStore.subscribe((value) => {
+		if (value) {
+			nodeInfoChecked = true;
+		} else {
+			nodeInfoChecked = false;
+		}
+	});
+
 	onMount(() => {
 		nodeAuthor = localStorage.getItem('author') || '';
+	});
+
+	onDestroy(() => {
+		selectedNodeUnsubscribe();
 	});
 </script>
 
@@ -130,7 +144,7 @@
 	{/if}
 	<!-- NODE INFOS -->
 	<div class="sticky bottom-0 border-t rounded-none collapse collapse-plus sm:collapse-arrow">
-		<input type="checkbox" class="" name="GraphUI" />
+		<input type="checkbox" class="" name="GraphUI" bind:checked={nodeInfoChecked} />
 		<div class="font-bold collapse-title">
 			{$t('nodeInformation')}
 		</div>
