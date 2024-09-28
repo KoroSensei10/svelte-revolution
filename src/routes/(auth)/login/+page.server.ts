@@ -17,7 +17,7 @@ export const actions = {
 		try {
 			await locals.pb.collection('users').authWithPassword(username, password);
 		} catch (err) {
-			return fail(400, { error: 'Invalid username or password' });
+			return fail(400, { err });
 		}
 		return redirect(303, '/admin');
 	}

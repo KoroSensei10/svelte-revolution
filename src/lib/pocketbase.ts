@@ -1,4 +1,6 @@
 import PocketBase from 'pocketbase';
 import type { MyPocketBase } from '$types/pocketBase';
 
-export const pb = new PocketBase('https://db.canard.cc') as MyPocketBase;
+const dbUrl = import.meta.env.VITE_DB_URL as string;
+
+export const pb = new PocketBase(dbUrl) as MyPocketBase;
