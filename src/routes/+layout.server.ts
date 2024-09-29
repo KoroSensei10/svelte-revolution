@@ -14,6 +14,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 			user: locals.pb.authStore.model as User
 		};
 	} catch (_) {
+		console.warn(_);
 		locals.pb.authStore.clear();
 		cookies.delete('pb_auth', { path: '/' });
 		return {

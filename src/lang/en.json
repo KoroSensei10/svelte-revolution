@@ -11,6 +11,7 @@
 		"noSessions": "No sessions"
 	},
 	"scenario": {
+		"scenario": "Scenario",
 		"scenarios": "Scenarios",
 		"yourScenarios": "Your Scenarios",
 		"createScenario": "Create Scenario",

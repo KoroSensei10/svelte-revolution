@@ -1,6 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, type Actions, type ServerLoad } from '@sveltejs/kit';
 
-export const load = async ({ parent }) => {
+export const load: ServerLoad = async ({ parent }) => {
 	const data = await parent();
 
 	if (data.user) {
@@ -8,7 +8,7 @@ export const load = async ({ parent }) => {
 	}
 };
 
-export const actions = {
+export const actions: Actions = {
 	login: async ({ request, locals }) => {
 		const data = await request.formData();
 		const username = data.get('username') as string;

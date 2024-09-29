@@ -5,15 +5,17 @@
 	import { t } from 'svelte-i18n';
 	import type { Session, User } from '$types/tableTypes';
 	import { selectedNodeStore } from '$stores/graph';
+	import { enhance } from '$app/forms';
+	import nProgress from 'nprogress';
+	import toast from 'svelte-french-toast';
+	import type { ActionResult } from '@sveltejs/kit';
 
 	interface Props {
-		addnode: (title: string, text: string, author: string, parentId: string) => void;
-		endSession: () => void;
-		addEvent: () => void;
 		user?: User | null;
 		session: Session;
+		admin?: boolean;
 	}
-	let { addnode, user = null, session, endSession, addEvent }: Props = $props();
+	let { user = null, session, admin }: Props = $props();
 
 	let nodeInfoChecked = $state(false);
 
@@ -26,36 +28,26 @@
 
 	let addNodeChecked = $state(false);
 
-	function addNodeHook() {
-		if (!$selectedNodeStore?.id) {
-			alert("Veuillez sélectionner un nœud d'abord");
-			return;
+	function handleAddNodeActionResult(result: ActionResult) {
+		nProgress.done();
+		switch (result.type) {
+			case 'failure':
+				toast.error(result.data?.error, { duration: 3000, position: 'bottom-center' });
+				break;
+			case 'success':
+				toast.success(result.data?.body.message, { duration: 3000, position: 'top-center' });
+				addNodeChecked = false;
+				nodeTitle = '';
+				nodeText = '';
+				localStorage.setItem('author', nodeAuthor);
+				break;
+			default:
+				break;
 		}
-		if (nodeTitle.trim() === '') {
-			alert('Veuillez entrer un nom pour le nouveau nœud');
-			return;
-		}
-		if (nodeText.trim() === '') {
-			alert('Veuillez entrer un texte pour le nouveau nœud');
-			return;
-		}
-		if (nodeAuthor.trim() === '') {
-			alert('Veuillez entrer un auteur pour le nouveau nœud');
-			return;
-		}
-		addnode(nodeTitle, nodeText, nodeAuthor, $selectedNodeStore.id);
-
-		nodeTitle = '';
-		nodeText = '';
-		localStorage.setItem('author', nodeAuthor);
 	}
 
 	const selectedNodeUnsubscribe = selectedNodeStore.subscribe((value) => {
-		if (value) {
-			nodeInfoChecked = true;
-		} else {
-			nodeInfoChecked = false;
-		}
+		nodeInfoChecked = !!value;
 	});
 
 	onMount(() => {
@@ -75,10 +67,17 @@
 		<form
 			class="w-full rounded-none collapse collapse-plus sm:collapse-arrow"
 			bind:this={theForm}
+			method="post"
+			action="/sessions/{session.id}?/addNode"
 			onsubmit={(e) => {
 				e.preventDefault();
-				addNodeChecked = false;
-				addNodeHook();
+			}}
+			use:enhance={() => {
+				nProgress.start();
+				return async ({ update, result }) => {
+					await update({ reset: false });
+					handleAddNodeActionResult(result);
+				};
 			}}
 			oninput={() => (validForm = !!theForm?.checkValidity())}
 		>
@@ -93,7 +92,7 @@
 							required
 							autocomplete="off"
 							bind:value={nodeTitle}
-							name={'name'}
+							name="title"
 							placeholder={$t('yourTitle')}
 							class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 						/>
@@ -104,7 +103,7 @@
 						required
 						autocomplete="off"
 						bind:value={nodeText}
-						name={'text'}
+						name="text"
 						placeholder={$t('yourMessage')}
 						class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
 					></textarea>
@@ -128,6 +127,8 @@
 						{$t('publish')}
 					</button>
 				</div>
+				<input type="hidden" name="session" value={session.id} />
+				<input type="hidden" name="parent" value={$selectedNodeStore?.id} />
 			</div>
 		</form>
 	{:else}
@@ -156,7 +157,7 @@
 		</div>
 	</div>
 	<!-- ADMIN -->
-	{#if user && !session?.completed}
+	{#if admin && user && !session?.completed}
 		<div class="sticky bottom-0 w-full border-t rounded-none collapse collapse-plus sm:collapse-arrow">
 			<input type="checkbox" class="" name="GraphUI" />
 			<div class="font-bold collapse-title">
@@ -164,9 +165,9 @@
 			</div>
 			<div class="text-white collapse-content">
 				<div>
-					<button onclick={endSession}>{$t('sessions.endSession')}</button>
+					<button>{$t('sessions.endSession')}</button>
 					<!-- TODO ADD EVENT -->
-					<button onclick={addEvent}>{$t('addEvent')}</button>
+					<button>{$t('addEvent')}</button>
 				</div>
 			</div>
 		</div>

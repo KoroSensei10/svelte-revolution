@@ -3,7 +3,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { pb } from '$lib/pocketbase';
-	import toast from 'svelte-french-toast';
 	import GraphUi from '$components/graph/GraphUI.svelte';
 	import ForceGraph from '$components/graph/ForceGraph.svelte';
 
@@ -12,27 +11,27 @@
 	import { mainTitle as mainTitleStore } from '$stores/titles';
 	import { linksStore, nodesStore } from '$stores/graph/index.js';
 	import { page } from '$app/stores';
+	import Filigrane from '$components/graph/Filigrane.svelte';
+	import type { PageServerData } from './$types.js';
+	import type { LayoutServerData } from '../../$types.js';
 
-	let { data } = $props();
+	let admin = $derived.by(() => {
+		const url = new URL($page.url);
+		return url.searchParams.get('admin') === 'true';
+	});
+
+	interface Props {
+		data: PageServerData & LayoutServerData;
+	}
+	let { data }: Props = $props();
+
+	let title = $derived.by(() => {
+		return (admin ? 'ADMIN - ' : '') + data.sessionData.name;
+	});
 
 	mainTitleStore.set(data.sessionData.name);
 	nodesStore.set(data.nodesAndLinks.nodes);
 	linksStore.set(data.nodesAndLinks.links);
-
-	async function addNode(title: string, text: string, author: string, parentNodeId: string) {
-		await pb.collection('Node').create({
-			title,
-			text,
-			author,
-			type: 'contribution',
-			parent: parentNodeId,
-			session: data.sessionData.id
-		});
-
-		toast.success('Nœud ajouté avec succès', {
-			position: 'bottom-center'
-		});
-	}
 
 	onMount(async () => {
 		await pb.collection('Session').subscribe(data.sessionData.id, (res) => {
@@ -42,7 +41,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.sessionData.name}</title>
+	<title>{title}</title>
 	<meta property="description" content={data.sessionData.expand?.scenario.prologue} />
 	<meta
 		property="og:image"
@@ -54,5 +53,11 @@
 	<meta property="og:url" content={$page.url.href} />
 </svelte:head>
 
-<GraphUi addnode={addNode} session={data.sessionData} addEvent={() => {}} endSession={() => {}} />
-<ForceGraph sessionId={data.sessionData.id} />
+<GraphUi {admin} session={data.sessionData} />
+{#if admin && data.user}
+	<Filigrane watermarkText="Admin">
+		<ForceGraph sessionId={data.sessionData.id} />
+	</Filigrane>
+{:else}
+	<ForceGraph sessionId={data.sessionData.id} />
+{/if}

@@ -11,6 +11,7 @@
 		"noSessions": "セッションがありません"
 	},
 	"scenario": {
+		"scenario": "シナリオ",
 		"scenarios": "シナリオ",
 		"yourScenarios": "あなたのシナリオ",
 		"createScenario": "シナリオを作成",

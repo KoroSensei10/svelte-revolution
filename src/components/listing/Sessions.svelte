@@ -13,6 +13,10 @@
 
 	sessions = sessions?.sort((a) => (a.completed ? 1 : -1));
 
+	function getSessionUrl(session: Session) {
+		return `/sessions/${session.slug}?${admin ? 'admin=true' : ''}`;
+	}
+
 	function completedSessionsFilter(e: Event) {
 		// @ts-ignore
 		if (e.target?.checked) {
@@ -55,11 +59,11 @@
 			>
 				<a
 					class="grid w-full grid-cols-3 p-4 transition-all rounded-lg place-items-center hover:px-2 hover:bg-primary-400"
-					href="/{admin ? 'admin/' : ''}sessions/{session.slug}"
+					href={getSessionUrl(session)}
 				>
 					<h2 class="text-lg font-semibold capitalize justify-self-start">{session.name}</h2>
 					<div class="text-center">
-						{$t('scenario')}:
+						{$t('scenario.scenario')}:
 						<span
 							data-tip={scenario.prologue}
 							class="italic font-light cursor-default tooltip tooltip-bottom hover:underline"
