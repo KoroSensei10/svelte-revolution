@@ -1,6 +1,7 @@
 import { buildNodesAndLinks, getSession } from '$lib/server/sessions';
+import type { Actions, ServerLoad } from '@sveltejs/kit';
 
-export async function load({ params }) {
+export const load: ServerLoad = async ({ params }) => {
 	const sessionData = await getSession(Number(params.slug));
 
 	const nodesAndLinks = await buildNodesAndLinks(sessionData);
@@ -9,9 +10,9 @@ export async function load({ params }) {
 		sessionData,
 		nodesAndLinks
 	};
-}
+};
 
-export const actions = {
+export const actions: Actions = {
 	addNode: async ({ request, locals }) => {
 		const data = await request.formData();
 		const title = data.get('title') as string;

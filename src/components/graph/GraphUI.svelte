@@ -1,26 +1,30 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 	import type { Session, User } from '$types/tableTypes';
 	import { selectedNodeStore } from '$stores/graph';
 
-	export let addnode: (title: string, text: string, author: string, parentId: string) => void;
+	interface Props {
+		addnode: (title: string, text: string, author: string, parentId: string) => void;
+		endSession: () => void;
+		addEvent: () => void;
+		user?: User | null;
+		session: Session;
+	}
+	let { addnode, user = null, session, endSession, addEvent }: Props = $props();
 
-	export let user: User | null = null;
-	export let session: Session;
+	let nodeInfoChecked = $state(false);
 
-	const dispatch = createEventDispatcher();
+	let nodeTitle = $state('');
+	let nodeText = $state('');
+	let nodeAuthor = $state('');
 
-	let nodeInfoChecked = false;
+	let theForm: HTMLFormElement | undefined = $state();
+	let validForm = $state(false);
 
-	let nodeTitle = '';
-	let nodeText = '';
-	let nodeAuthor = '';
-
-	let theForm: HTMLFormElement;
-	let validForm = false;
-
-	let addNodeChecked = false;
+	let addNodeChecked = $state(false);
 
 	function addNodeHook() {
 		if (!$selectedNodeStore?.id) {
@@ -44,14 +48,6 @@
 		nodeTitle = '';
 		nodeText = '';
 		localStorage.setItem('author', nodeAuthor);
-	}
-
-	function endSession() {
-		dispatch('endSession');
-	}
-
-	function addEvent() {
-		dispatch('addEvent');
 	}
 
 	const selectedNodeUnsubscribe = selectedNodeStore.subscribe((value) => {
@@ -79,11 +75,12 @@
 		<form
 			class="w-full rounded-none collapse collapse-plus sm:collapse-arrow"
 			bind:this={theForm}
-			on:submit|preventDefault={() => {
+			onsubmit={(e) => {
+				e.preventDefault();
 				addNodeChecked = false;
 				addNodeHook();
 			}}
-			on:input={() => (validForm = theForm?.checkValidity())}
+			oninput={() => (validForm = !!theForm?.checkValidity())}
 		>
 			<input type="checkbox" class="" name="GraphUI" bind:checked={addNodeChecked} />
 			<div class="w-full font-semibold collapse-title">
@@ -110,7 +107,7 @@
 						name={'text'}
 						placeholder={$t('yourMessage')}
 						class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-					/>
+					></textarea>
 				</div>
 				<div class="w-full">
 					<input
@@ -167,9 +164,9 @@
 			</div>
 			<div class="text-white collapse-content">
 				<div>
-					<button on:click={endSession}>{$t('sessions.endSession')}</button>
+					<button onclick={endSession}>{$t('sessions.endSession')}</button>
 					<!-- TODO ADD EVENT -->
-					<button on:click={addEvent}>{$t('addEvent')}</button>
+					<button onclick={addEvent}>{$t('addEvent')}</button>
 				</div>
 			</div>
 		</div>

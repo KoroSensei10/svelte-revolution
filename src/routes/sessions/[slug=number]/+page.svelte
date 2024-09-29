@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { pb } from '$lib/pocketbase';
@@ -11,7 +13,7 @@
 	import { linksStore, nodesStore } from '$stores/graph/index.js';
 	import { page } from '$app/stores';
 
-	export let data;
+	let { data } = $props();
 
 	mainTitleStore.set(data.sessionData.name);
 	nodesStore.set(data.nodesAndLinks.nodes);
@@ -52,5 +54,5 @@
 	<meta property="og:url" content={$page.url.href} />
 </svelte:head>
 
-<GraphUi addnode={addNode} session={data.sessionData} />
+<GraphUi addnode={addNode} session={data.sessionData} addEvent={() => {}} endSession={() => {}} />
 <ForceGraph sessionId={data.sessionData.id} />
