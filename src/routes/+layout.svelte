@@ -34,7 +34,11 @@
 
 <!-- UI -->
 <Toaster />
-<select bind:value={$locale} class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl">
+<select
+	id="langSelect"
+	bind:value={$locale}
+	class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl"
+>
 	{#each $locales as l (l)}
 		<option selected={String($locale).toUpperCase() === l.toUpperCase()} value={l}>
 			{l.split('-')[0].toLocaleUpperCase()}
