@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import {
@@ -16,7 +18,10 @@
 	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
 	import { updateLabelsInGraph, updateLinksInGraph, updateNodesInGraph } from './utils';
 
-	export let sessionId: string;
+	interface Props {
+		sessionId: string;
+	}
+	let { sessionId }: Props = $props();
 
 	let svg: SVGElement;
 	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
