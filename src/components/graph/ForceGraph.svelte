@@ -3,31 +3,37 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import {
-		select,
-		zoom as d3Zoom,
-		zoomIdentity,
-		forceSimulation,
 		forceLink,
 		forceManyBody,
 		forceRadial,
-		type Selection
+		forceSimulation,
+		forceX,
+		forceY,
+		select,
+		type Selection,
+		type Simulation,
+		type SimulationLinkDatum,
+		zoom as d3Zoom,
+		zoomIdentity
 	} from 'd3';
-	import type { NodeMessage } from '$types/graph';
-	import type { Simulation, SimulationLinkDatum } from 'd3';
+	import type { LinkMessage, NodeMessage } from '$types/graph';
 	import { pb } from '$lib/pocketbase';
 	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
 	import { updateLabelsInGraph, updateLinksInGraph, updateNodesInGraph } from './utils';
+	import toast from 'svelte-french-toast';
+	import MessageToast from '$components/graph/MessageToast.svelte';
 
 	interface Props {
 		sessionId: string;
 	}
+
 	let { sessionId }: Props = $props();
 
 	let svg: SVGElement;
 	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: Selection<SVGElement, NodeMessage, null, undefined>;
-	let linkLayer: Selection<SVGElement, NodeMessage, null, undefined>;
-	let labelLayer: Selection<SVGElement, NodeMessage, null, undefined>;
+	let nodeLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let linkLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let labelLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 	const zoom = d3Zoom().on('zoom', (e) => {
@@ -47,29 +53,29 @@
 		svgElement.attr('width', currentWidth).attr('height', currentHeight);
 
 		const linksInGraph = updateLinksInGraph(linkLayer);
-		// @ts-ignore
+
 		const nodesInGraph = updateNodesInGraph(nodeLayer, linksInGraph, simulation);
-		// @ts-ignore
-		const labelsInGraph = updateLabelsInGraph(labelLayer, linksInGraph, nodesInGraph);
+
+		const labelsInGraph = updateLabelsInGraph(labelLayer, linksInGraph, nodesInGraph, simulation);
 
 		simulation.on('tick', () => {
-			// @ts-ignore
+			if (!linksInGraph || !nodesInGraph || !labelsInGraph) {
+				return;
+			}
 			linksInGraph
-				// @ts-ignore
-				.attr('x1', (d) => d.source.x)
-				// @ts-ignore
-				.attr('y1', (d) => d.source.y)
-				// @ts-ignore
-				.attr('x2', (d) => d.target.x)
-				// @ts-ignore
-				.attr('y2', (d) => d.target.y);
+				.attr('x1', (d) => String(d.source.x))
+				.attr('y1', (d) => String(d.source.y))
+				.attr('x2', (d) => String(d.target.x))
+				.attr('y2', (d) => String(d.target.y));
 
 			nodesInGraph.attr('cx', (d) => String(d.x)).attr('cy', (d) => String(d.y));
 			labelsInGraph.attr('x', (d) => String(d.x)).attr('y', (d) => String(d.y));
 		});
 
-		// simulation.force('center', forceCenter(currentWidth / 2, currentHeight / 2));
-		simulation.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2));
+		// simulation.force('center', forceCenter(currentWidth / 2, currentHeight / 2).strength(0.8))
+		simulation.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2).strength(0.02))
+			.force('x', forceX(currentWidth / 2).strength(d => d.type === 'startNode' ? 1 : 0))
+			.force('y', forceY(currentHeight / 2).strength(d => d.type === 'startNode' ? 1 : 0));
 	}
 
 	/**
@@ -89,7 +95,7 @@
 
 	function restartSimulation() {
 		simulation.nodes($nodesStore);
-		// @ts-ignore
+		// @ts-expect-error d3...
 		simulation.force('link')?.links($linksStore);
 		simulation.alpha(1).restart();
 		renderGraph();
@@ -99,7 +105,8 @@
 	const unsubscribe = selectedNodeStore.subscribe(() => {
 		// hack to avoid the error "Cannot read property 'innerWidth' of undefined" on first render
 		try {
-			const _ = window;
+			// eslint-disable-next-line
+			window.innerWidth;
 			renderGraph();
 		} catch (error) {
 			return error;
@@ -109,8 +116,24 @@
 	onMount(async () => {
 		await pb.collection('Node').subscribe(
 			'*',
-			({ record }) => {
+			async ({ record }) => {
 				updateGraph(record, record.parent);
+
+				const currentUser = localStorage.getItem('author');
+
+				if (record.author !== currentUser) {
+					// @ts-expect-error Svelte 5 problem I guess
+					toast(MessageToast, {
+						props: {
+							author: record.author,
+							record
+						},
+						duration: 4000,
+						position: 'top-left',
+						style: '{backgroundColor: \'rgba(0, 0, 0, 0.8)\', color: \'white\'}',
+						icon: '📩'
+					});
+				}
 			},
 			{
 				filter: `session="${sessionId}"`
@@ -118,35 +141,33 @@
 		);
 
 		svgElement = select(svg);
-		// @ts-ignore
 		linkLayer = svgElement.append('g');
-		// @ts-ignore
 		nodeLayer = svgElement.append('g');
-		// @ts-ignore
 		labelLayer = svgElement.append('g');
 
-		// @ts-ignore
+
 		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
 
 		simulation = forceSimulation($nodesStore)
 			.force(
 				'link',
-				forceLink($linksStore)
-					// @ts-ignore
+				forceLink<NodeMessage, LinkMessage>($linksStore)
 					.id((d) => d.id)
 					.distance((d) => {
-						// @ts-ignore
-						if (d.source.type === 'startNode' || d.target.type === 'startNode') {
-							return 50;
-							// @ts-ignore
-						} else if (d.source.type === 'event' || d.target.type === 'event') {
-							return 80;
+						if (typeof d.source !== 'object' || typeof d.target !== 'object') {
+							return 100;
 						}
-						return 130;
+						if (d.source.type === 'startNode' || d.target.type === 'startNode') {
+							return 80;
+						} else if (d.source.type === 'event' || d.target.type === 'event') {
+							return 100;
+						}
+						return 100;
 					})
 					.strength(1)
 			)
 			.force('charge', forceManyBody().strength(-300));
+
 
 		renderGraph();
 	});
@@ -158,4 +179,4 @@
 
 <svelte:window on:resize={() => restartSimulation()} />
 
-<svg class="w-full h-full cursor-grab" bind:this={svg}></svg>
+<svg bind:this={svg} class="w-full h-full cursor-grab"></svg>

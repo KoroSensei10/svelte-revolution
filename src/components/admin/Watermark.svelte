@@ -1,5 +1,11 @@
-<script>
-	export let watermarkText = 'Filigrane';
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		watermarkText: string;
+		children: () => Snippet;
+	}
+	let { watermarkText, children }: Props = $props();
 </script>
 
 <div class="relative">
@@ -13,6 +19,6 @@
 		{/each}
 	</div>
 	<div class="relative z-10">
-		<slot />
+		{@render children()}
 	</div>
 </div>

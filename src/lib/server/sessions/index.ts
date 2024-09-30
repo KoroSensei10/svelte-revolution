@@ -1,6 +1,6 @@
 import { pb } from '$lib/pocketbase.js';
-import type { Link } from '$types/graph/index.js';
-import type { Session } from '$types/tableTypes';
+import type { LinkMessage } from '$types/graph/index.js';
+import type { Session } from '$types/pocketBase/TableTypes';
 import { error } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 
@@ -30,7 +30,7 @@ export async function getSession(sessionId: number) {
 
 export async function buildNodesAndLinks(session: Session) {
 	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` });
-	const links: Link[] = [];
+	const links: LinkMessage[] = [];
 
 	nodes.forEach((node) => {
 		const parent = !node.parent ? null : String(node.parent);

@@ -3,7 +3,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import type { Session, User } from '$types/tableTypes';
+	import type { End, GraphEvent, Session, User } from '$types/pocketBase/TableTypes';
 	import { selectedNodeStore } from '$stores/graph';
 	import { enhance } from '$app/forms';
 	import nProgress from 'nprogress';
@@ -14,8 +14,11 @@
 		user?: User | null;
 		session: Session;
 		admin?: boolean;
+		events?: GraphEvent[];
+		ends?: End[];
 	}
-	let { user = null, session, admin }: Props = $props();
+
+	let { user = null, session, admin = false, events = [], ends = [] }: Props = $props();
 
 	let nodeInfoChecked = $state(false);
 
@@ -29,7 +32,6 @@
 	let addNodeChecked = $state(false);
 
 	function handleAddNodeActionResult(result: ActionResult) {
-		nProgress.done();
 		switch (result.type) {
 			case 'failure':
 				toast.error(result.data?.error, { duration: 3000, position: 'bottom-center' });
@@ -44,6 +46,7 @@
 			default:
 				break;
 		}
+		nProgress.done();
 	}
 
 	const selectedNodeUnsubscribe = selectedNodeStore.subscribe((value) => {
@@ -60,7 +63,7 @@
 </script>
 
 <div
-	class="fixed bottom-0 z-50 w-full bg-black border-t bg-opacity-90 scrollbar-thin scrollbar-thumb-white scrollbar-track-black sm:top-0 sm:bottom-auto sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
+	class="fixed flex flex-col max-sm:bottom-0 z-50 w-full bg-black border-t bg-opacity-90 sm:top-0 sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
 >
 	{#if !session?.completed}
 		<!-- ADD NODE -->
@@ -137,45 +140,78 @@
 			<div class="font-semibold collapse-title">
 				{$t('sessions.sessionEnded')}
 			</div>
-			<div class="collapse-content">snoup</div>
+			<div class="collapse-content">
+				<!-- TODO ADD END -->
+			</div>
 		</div>
 	{/if}
 	<!-- NODE INFOS -->
-	<div class="sticky bottom-0 border-t rounded-none collapse collapse-plus sm:collapse-arrow">
-		<input type="checkbox" class="" name="GraphUI" bind:checked={nodeInfoChecked} />
+	<div
+		class="border-t rounded-none collapse collapse-plus sm:collapse-arrow">
+		<input bind:checked={nodeInfoChecked} class="" name="GraphUI" type="checkbox" />
 		<div class="font-bold collapse-title">
 			{$t('nodeInformation')}
 		</div>
-		<div class="text-white collapse-content">
+		<div class=" text-white collapse-content">
 			{#if $selectedNodeStore}
-				<div class="p-4 text-xl font-semibold first-letter:capitalize">{$selectedNodeStore.title}</div>
+				<div class="text-xl font-semibold first-letter:capitalize">{$selectedNodeStore.title}</div>
 				<div>{$t('from')} {$selectedNodeStore.author}</div>
-				<div class="pt-2">{$selectedNodeStore.text}</div>
+				<div class="pl-1 max-h-44 overflow-auto">{$selectedNodeStore.text}</div>
 			{:else}
-				<div class="p-4 pb-0 text-xl text-center first-letter:capitalize">{$t('noNodeSelected')}</div>
+				<div class="pb-0 text-xl text-center first-letter:capitalize">{$t('noNodeSelected')}</div>
 			{/if}
 		</div>
 	</div>
 	<!-- ADMIN -->
 	{#if admin && user && !session?.completed}
-		<div class="sticky bottom-0 w-full border-t rounded-none collapse collapse-plus sm:collapse-arrow">
+		<div class="border-t rounded-none collapse collapse-plus sm:collapse-arrow">
 			<input type="checkbox" class="" name="GraphUI" />
 			<div class="font-bold collapse-title">
 				{$t('admin')}
 			</div>
-			<div class="text-white collapse-content">
-				<div>
-					<button>{$t('sessions.endSession')}</button>
-					<!-- TODO ADD EVENT -->
-					<button>{$t('addEvent')}</button>
-				</div>
+			<div class="text-white collapse-content flex flex-col gap-4">
+				{@render formTemplate(events, 'addEvent', 'eventId', $t('sessions.addEvent'), true)}
+				{@render formTemplate(ends, 'endSession', 'endId', $t('sessions.endSession'))}
 			</div>
 		</div>
 	{/if}
 </div>
 
+{#snippet formTemplate(values: { id: string; title: string }[],
+					   action: string,
+					   name: string,
+					   trad: string,
+					   needDisabled: boolean = false)}
+	<form
+		method="post"
+		action="/sessions/{session.id}?/{action}"
+		onsubmit={(e) => e.preventDefault()}
+		use:enhance={() => {
+			nProgress.start();
+			return async ({ update, result }) => {
+				await update();
+				handleAddNodeActionResult(result);
+			};
+		}}
+		class="p-x-4 flex flex-col gap-4"
+	>
+		<select {name} id={name} class="w-full border rounded">
+			<option disabled selected>{trad}</option>
+			{#each values as value}
+				{@const alreadySelected = needDisabled && events.some((event) => event.id === value.id)}
+				<option disabled={alreadySelected} value={value.id}>{value.title}</option>
+			{/each}
+		</select>
+		<input type="hidden" name="session" value={session.id} />
+
+		<button type="submit" class="w-fit self-center rounded p-4 bg-primary-500 text-white">
+			{trad}
+		</button>
+	</form>
+{/snippet}
+
 <style lang="postcss">
-	.snoup {
-		@apply py-0;
-	}
+    .snoup {
+        @apply py-0;
+    }
 </style>

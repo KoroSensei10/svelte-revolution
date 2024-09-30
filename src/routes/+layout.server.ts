@@ -1,5 +1,5 @@
 import '$lib/i18n';
-import type { User } from '$types/tableTypes';
+import type { User } from '$types/pocketBase/TableTypes';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ cookies, locals }) => {

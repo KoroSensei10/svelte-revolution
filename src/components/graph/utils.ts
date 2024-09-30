@@ -1,11 +1,13 @@
 import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
-import type { Link, NodeMessage } from '$types/graph';
-import { drag } from 'd3';
+import type { LinkMessage, NodeMessage } from '$types/graph';
+import type { BaseType } from 'd3';
+import * as d3 from 'd3';
 import { get } from 'svelte/store';
 
 export const colors = {
 	startNode: '#1b3022',
 	selectedNode: 'red',
+	eventNode: '#f7b32b',
 	defaultNode: '#86efac',
 	defaultLink: '#999',
 	hoverLink: 'red',
@@ -20,7 +22,8 @@ export const strokeDashArray = {
 export const nodeRadius = {
 	default: 10,
 	selected: 15,
-	start: 30
+	start: 30,
+	event: 20
 };
 
 function selectNode(node: NodeMessage) {
@@ -28,9 +31,10 @@ function selectNode(node: NodeMessage) {
 }
 
 export const updateLabelsInGraph = (
-	labelLayer: d3.Selection<SVGElement, NodeMessage, SVGElement, NodeMessage>,
-	linksInGraph: any,
-	updatedNodes: any
+	labelLayer: d3.Selection<SVGGElement, NodeMessage, SVGElement, unknown>,
+	linksInGraph: d3.Selection<SVGGElement, LinkMessage, SVGElement, unknown>,
+	updatedNodes: d3.Selection<SVGGElement, NodeMessage, SVGElement, unknown>,
+	simulation: d3.Simulation<NodeMessage, LinkMessage>
 ) => {
 	const links = get(linksStore);
 	const selectedNode = get(selectedNodeStore);
@@ -48,10 +52,19 @@ export const updateLabelsInGraph = (
 		.on('click', (_, d) => selectNode(d))
 		.style('cursor', 'pointer')
 		.on('mouseover', (_, d) => handleMouseOver(d, linksInGraph, updatedNodes, links))
-		.on('mouseout', () => handleMouseOut(linksInGraph, updatedNodes, selectedNode));
+		.on('mouseout', () => handleMouseOut(linksInGraph, updatedNodes, selectedNode))
+		.call(
+			// @ts-expect-error d3....
+			d3
+				.drag<never, NodeMessage>()
+				.on('start', (event, d) => handleDragStart(event, d, simulation))
+				.on('drag', (event, d) => handleDrag(event, d))
+				.on('end', (event, d) => handleDragEnd(event, d, simulation)),
+			null
+		);
 };
 
-export const updateLinksInGraph = (linkLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>) => {
+export const updateLinksInGraph = (linkLayer: d3.Selection<SVGGElement, NodeMessage, null, undefined>) => {
 	return linkLayer
 		.selectAll('line')
 		.data(get(linksStore))
@@ -66,9 +79,9 @@ export const updateLinksInGraph = (linkLayer: d3.Selection<SVGElement, NodeMessa
 };
 
 export const updateNodesInGraph = (
-	nodeLayer: d3.Selection<SVGElement, NodeMessage, null, undefined>,
-	linksInGraph: d3.Selection<SVGElement, NodeMessage, null, undefined>,
-	simulation: d3.Simulation<NodeMessage, Link>
+	nodeLayer: d3.Selection<SVGGElement, NodeMessage, SVGElement, unknown>,
+	linksInGraph: d3.Selection<SVGGElement, LinkMessage, SVGElement, unknown>,
+	simulation: d3.Simulation<NodeMessage, LinkMessage>
 ) => {
 	const nodes = get(nodesStore);
 	const selectedNode = get(selectedNodeStore);
@@ -85,11 +98,11 @@ export const updateNodesInGraph = (
 		.on('mouseover', (_, d) => handleMouseOver(d, linksInGraph, updatedNodes, links))
 		.on('mouseout', () => handleMouseOut(linksInGraph, updatedNodes, selectedNode))
 		.call(
-			drag<any, NodeMessage>()
+			d3
+				.drag<BaseType | SVGCircleElement, NodeMessage>()
 				.on('start', (event, d) => handleDragStart(event, d, simulation))
 				.on('drag', (event, d) => handleDrag(event, d))
-				.on('end', (event, d) => handleDragEnd(event, d, simulation)),
-			null
+				.on('end', (event, d) => handleDragEnd(event, d, simulation))
 		)
 		.on('click', (_, d) => selectNode(d));
 
@@ -99,6 +112,8 @@ export const updateNodesInGraph = (
 const getNodeRadius = (d: NodeMessage, selectedNode: NodeMessage | null) => {
 	if (d.type === 'startNode') {
 		return nodeRadius.start;
+	} else if (d.type === 'event') {
+		return nodeRadius.event;
 	} else if (selectedNode && selectedNode.id === d.id) {
 		return nodeRadius.selected;
 	} else {
@@ -109,8 +124,9 @@ const getNodeRadius = (d: NodeMessage, selectedNode: NodeMessage | null) => {
 const getNodeColor = (d: NodeMessage, selectedNode: NodeMessage | null) => {
 	if (d.type === 'startNode') {
 		return colors.startNode;
-	}
-	if (selectedNode && selectedNode.id === d.id) {
+	} else if (d.type === 'event') {
+		return colors.eventNode;
+	} else if (selectedNode && selectedNode.id === d.id) {
 		return colors.selectedNode;
 	}
 	return colors.defaultNode;
@@ -118,9 +134,9 @@ const getNodeColor = (d: NodeMessage, selectedNode: NodeMessage | null) => {
 
 const handleMouseOver = (
 	d: NodeMessage,
-	linksInGraph: d3.Selection<SVGElement, NodeMessage, null, Link>,
-	updatedNodes: d3.Selection<SVGElement, NodeMessage, null, Link>,
-	links: Link[]
+	linksInGraph: d3.Selection<SVGGElement, LinkMessage, SVGElement, unknown>,
+	updatedNodes: d3.Selection<BaseType | SVGCircleElement, NodeMessage, SVGElement, NodeMessage>,
+	links: LinkMessage[]
 ) => {
 	linksInGraph
 		.attr('stroke-dasharray', (l) =>
@@ -141,8 +157,8 @@ const handleMouseOver = (
 };
 
 const handleMouseOut = (
-	linksInGraph: d3.Selection<SVGElement, NodeMessage, null, undefined>,
-	updatedNodes: d3.Selection<SVGElement, NodeMessage, null, undefined>,
+	linksInGraph: d3.Selection<SVGGElement, LinkMessage, SVGElement, unknown>,
+	updatedNodes: d3.Selection<BaseType | SVGCircleElement, NodeMessage, SVGElement, unknown>,
 	selectedNode: NodeMessage | null
 ) => {
 	linksInGraph

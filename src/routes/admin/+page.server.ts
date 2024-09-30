@@ -1,5 +1,5 @@
 import { pb } from '$lib/pocketbase.js';
-import type { User } from '$types/tableTypes.js';
+import type { User } from '$types/pocketBase/TableTypes.js';
 import { redirect, type ServerLoad } from '@sveltejs/kit';
 
 export const load: ServerLoad = async ({ parent }) => {

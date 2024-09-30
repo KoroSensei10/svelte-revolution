@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
-	import { mainTitle } from '$stores/titles';
+	import { mainTitleStore } from '$stores/titles';
 	import { onDestroy } from 'svelte';
 
 	export let data;
@@ -9,10 +9,10 @@
 
 	$: containSessions = activeTab.includes('sessions');
 
-	mainTitle.set('Admin');
+	mainTitleStore.set('Admin');
 
 	onDestroy(() => {
-		mainTitle.set('Babel Révolution');
+		mainTitleStore.set('Babel Révolution');
 	});
 </script>
 

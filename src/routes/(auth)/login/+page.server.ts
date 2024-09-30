@@ -1,4 +1,4 @@
-import { fail, redirect, type Actions, type ServerLoad } from '@sveltejs/kit';
+import { type Actions, fail, redirect, type ServerLoad } from '@sveltejs/kit';
 
 export const load: ServerLoad = async ({ parent }) => {
 	const data = await parent();
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		try {
 			await locals.pb.collection('users').authWithPassword(username, password);
 		} catch (err) {
-			return fail(400, { err });
+			return fail(400, { err: JSON.stringify(err) });
 		}
 		return redirect(303, '/admin');
 	}

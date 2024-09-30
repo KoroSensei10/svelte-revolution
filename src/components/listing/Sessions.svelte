@@ -3,7 +3,7 @@
 	import { pb } from '$lib/pocketbase';
 	import graphe1 from '$lib/assets/graphe1.png';
 
-	import type { Session } from '$types/tableTypes';
+	import type { Session } from '$types/pocketBase/TableTypes';
 	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 
@@ -18,7 +18,7 @@
 	}
 
 	function completedSessionsFilter(e: Event) {
-		// @ts-ignore
+		// @ts-expect-error checked is a valid property
 		if (e.target?.checked) {
 			sessions = sessions?.sort((a) => (a.completed ? 1 : -1));
 		} else {
@@ -67,7 +67,7 @@
 						<span
 							data-tip={scenario.prologue}
 							class="italic font-light cursor-default tooltip tooltip-bottom hover:underline"
-							>{scenario.title}</span
+						>{scenario.title}</span
 						>
 					</div>
 					<figure class="w-12 p-0 justify-self-end">
