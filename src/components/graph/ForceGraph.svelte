@@ -31,9 +31,9 @@
 
 	let svg: SVGElement;
 	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
-	let linkLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
-	let labelLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let nodeLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
+	let linkLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
+	let labelLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 	const zoom = d3Zoom().on('zoom', (e) => {
@@ -73,9 +73,16 @@
 		});
 
 		// simulation.force('center', forceCenter(currentWidth / 2, currentHeight / 2).strength(0.8))
-		simulation.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2).strength(0.02))
-			.force('x', forceX(currentWidth / 2).strength(d => d.type === 'startNode' ? 1 : 0))
-			.force('y', forceY(currentHeight / 2).strength(d => d.type === 'startNode' ? 1 : 0));
+		simulation
+			.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2).strength(0.02))
+			.force(
+				'x',
+				forceX(currentWidth / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
+			)
+			.force(
+				'y',
+				forceY(currentHeight / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
+			);
 	}
 
 	/**
@@ -130,7 +137,7 @@
 						},
 						duration: 4000,
 						position: 'top-left',
-						style: '{backgroundColor: \'rgba(0, 0, 0, 0.8)\', color: \'white\'}',
+						style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
 						icon: '📩'
 					});
 				}
@@ -144,7 +151,6 @@
 		linkLayer = svgElement.append('g');
 		nodeLayer = svgElement.append('g');
 		labelLayer = svgElement.append('g');
-
 
 		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
 
@@ -167,7 +173,6 @@
 					.strength(1)
 			)
 			.force('charge', forceManyBody().strength(-300));
-
 
 		renderGraph();
 	});

@@ -50,7 +50,11 @@ declare module '$types/pocketBase/TableTypes' {
 		scenario: string;
 		events: string[];
 		end?: string;
-		expand: Record<string, Scenario | GraphEvent | End>;
+		expand: {
+			scenario: Scenario;
+			end: End;
+			event: GraphEvent[];
+		};
 	}
 
 	export interface Side {

@@ -1,5 +1,5 @@
-import { pb } from '$lib/pocketbase.js';
-import type { LinkMessage } from '$types/graph/index.js';
+import { pb } from '$lib/pocketbase';
+import type { LinkMessage } from '$types/graph';
 import type { Session } from '$types/pocketBase/TableTypes';
 import { error } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';

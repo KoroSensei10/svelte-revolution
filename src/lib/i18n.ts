@@ -1,4 +1,3 @@
-// src/i18n.js
 import { getLocaleFromNavigator, init, register, waitLocale } from 'svelte-i18n';
 
 register('fr-FR', () => import('../lang/fr.json'));

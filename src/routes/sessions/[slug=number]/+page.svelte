@@ -10,9 +10,9 @@
 	import graph1 from '$lib/assets/graphe1.png';
 
 	import { page } from '$app/stores';
-	import { initStores } from './utils.js';
-	import type { PageServerData } from './$types.js';
-	import type { LayoutServerData } from '../../$types.js';
+	import { initStores } from './utils';
+	import type { PageServerData } from './$types';
+	import type { LayoutServerData } from '../../$types';
 
 	interface Props {
 		data: PageServerData & LayoutServerData;
@@ -53,7 +53,7 @@
 </svelte:head>
 
 {#if admin && user}
-	<GraphUi {admin} session={sessionData} user={user} {events} />
+	<GraphUi {admin} session={sessionData} {user} {events} />
 	<Watermark watermarkText="Admin">
 		<ForceGraph sessionId={sessionData.id} />
 	</Watermark>
