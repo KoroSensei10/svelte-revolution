@@ -1,8 +1,23 @@
 import type { MyPocketBase } from '$types/pocketBase';
-import type { Scenario } from '$types/tableTypes';
+import type { GraphNode, NodeType, Scenario } from '$types/pocketBase/TableTypes';
 
-export async function getScenario(pb: MyPocketBase, scenarioId: string) {
-	return await pb.collection('Scenario').getOne(scenarioId);
+export async function createNode(
+	pb: MyPocketBase,
+	title: string,
+	text: string,
+	author: string,
+	session: string,
+	firstNode: GraphNode,
+	type: NodeType = 'contribution'
+) {
+	return await pb.collection('Node').create({
+		title,
+		text,
+		author,
+		session,
+		type,
+		parent: firstNode.id
+	});
 }
 
 export async function createSession(

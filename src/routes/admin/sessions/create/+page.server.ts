@@ -1,6 +1,7 @@
-import { createSession, createStartNode, getScenario } from '$lib/server/sessions/create';
+import { createSession, createStartNode } from '$lib/server/sessions/create';
+import { getScenario } from '$lib/server/scenario';
+import { type Actions, fail } from '@sveltejs/kit';
 import type { MyPocketBase } from '$types/pocketBase';
-import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions = {
 	createSession: async ({ request, locals }) => {

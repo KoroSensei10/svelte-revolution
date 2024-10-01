@@ -1,8 +1,8 @@
-import { pb } from '$lib/pocketbase.js';
-import type { User } from '$types/tableTypes.js';
-import { redirect } from '@sveltejs/kit';
+import { pb } from '$lib/pocketbase';
+import type { User } from '$types/pocketBase/TableTypes';
+import { redirect, type ServerLoad } from '@sveltejs/kit';
 
-export async function load({ parent }) {
+export const load: ServerLoad = async ({ parent }) => {
 	const data = (await parent()) as { user: User | null };
 	if (!data.user) {
 		return redirect(302, '/login');
@@ -15,4 +15,4 @@ export async function load({ parent }) {
 	return {
 		sessions
 	};
-}
+};

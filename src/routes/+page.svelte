@@ -3,9 +3,9 @@
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 
-	import { mainTitle } from '$stores/titles';
+	import { mainTitleStore } from '$stores/titles';
 
-	mainTitle.set('Babel Révolution');
+	mainTitleStore.set('Babel Révolution');
 
 	tasks.sort((a, b) => Number(a.order) - Number(b.order));
 
@@ -17,7 +17,7 @@
 		seconds = 0;
 
 	function updateCountdown() {
-		const targetDate = new Date('2024-10-04T09:00:00');
+		const targetDate = new Date('2024-10-07T09:00:00');
 		const now = new Date();
 		const timeDifference = targetDate.getTime() - now.getTime();
 
@@ -67,7 +67,7 @@
 		</div>
 	{/if}
 	<div class="flex flex-col items-center gap-2">
-		<progress class="w-56 border progress progress-accent" value={completed} max={total} />
+		<progress class="w-56 border progress progress-accent" value={completed} max={total}></progress>
 		<span class="text-white">
 			{completed} / {total}
 			{$t('points')}
