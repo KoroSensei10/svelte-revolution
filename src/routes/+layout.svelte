@@ -1,14 +1,13 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { t } from 'svelte-i18n';
-	import { locales, locale } from 'svelte-i18n';
+	import { locale, locales, t } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
 	import NProgress from 'nprogress';
 	import { typewriter } from '$lib/animations';
 	import { Toaster } from 'svelte-french-toast';
-	import { mainTitle } from '$stores/titles';
-	import type { User } from '$types/tableTypes';
+	import { mainTitleStore } from '$stores/titles';
+	import type { User } from '$types/pocketBase/TableTypes';
 	import { enhance } from '$app/forms';
 	import { navigating } from '$app/stores';
 
@@ -34,7 +33,11 @@
 
 <!-- UI -->
 <Toaster />
-<select bind:value={$locale} class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl">
+<select
+	bind:value={$locale}
+	class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl"
+	id="langSelect"
+>
 	{#each $locales as l (l)}
 		<option selected={String($locale).toUpperCase() === l.toUpperCase()} value={l}>
 			{l.split('-')[0].toLocaleUpperCase()}
@@ -45,18 +48,18 @@
 	class="top-0 left-0 z-50 grid w-full grid-flow-col p-4 pr-2 overflow-hidden font-bold bg-black bg-opacity-80 sm:w-1/3 md:w-1/4 sm:border-b sm:border-r sm:fixed sm:flex sm:flex-col"
 >
 	<a
-		href="/"
 		class="col-span-1 overflow-hidden text-xl font-semibold text-center transition-all sm:text-start hover:pl-1 whitespace-nowrap dark:text-white"
+		href="/"
 	>
 		{#if visible}
-			{#key $mainTitle}
-				<span in:typewriter|global={{ text: $mainTitle }} class=""></span><span class="blinking-underscore"
-					>_</span
-				>
+			{#key $mainTitleStore}
+				<span in:typewriter|global={{ text: $mainTitleStore }} class=""></span><span class="blinking-underscore"
+			>_</span
+			>
 			{/key}
 		{/if}
 	</a>
-	<a href="/sessions" class="font-semibold transition-all max-sm:order-first hover:pl-1 dark:text-white">
+	<a class="font-semibold transition-all max-sm:order-first hover:pl-1 dark:text-white" href="/sessions">
 		{$t('sessions.sessions')}
 	</a>
 	{#if data.user}
@@ -80,13 +83,13 @@
 <slot />
 
 <style>
-	.blinking-underscore {
-		animation: blink 1s step-start infinite 2s;
-	}
+    .blinking-underscore {
+        animation: blink 1s step-start infinite 2s;
+    }
 
-	@keyframes blink {
-		50% {
-			opacity: 0;
-		}
-	}
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
 </style>

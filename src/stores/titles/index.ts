@@ -1,11 +1,11 @@
 import { dev } from '$app/environment';
 import { writable } from 'svelte/store';
 
-export const mainTitle = writable('Babel Révolution');
+export const mainTitleStore = writable('Babel Révolution');
 
-mainTitle.subscribe((value) => {
+mainTitleStore.subscribe((value) => {
 	if (dev && !value.includes('DEV - ')) {
-		return mainTitle.set('DEV - ' + value);
+		return mainTitleStore.set('DEV - ' + value);
 	}
 	return value;
 });

@@ -3,7 +3,7 @@
 	import { pb } from '$lib/pocketbase';
 	import graphe1 from '$lib/assets/graphe1.png';
 
-	import type { Session } from '$types/tableTypes';
+	import type { Session } from '$types/pocketBase/TableTypes';
 	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 
@@ -13,8 +13,12 @@
 
 	sessions = sessions?.sort((a) => (a.completed ? 1 : -1));
 
+	function getSessionUrl(session: Session) {
+		return `/sessions/${session.slug}?${admin ? 'admin=true' : ''}`;
+	}
+
 	function completedSessionsFilter(e: Event) {
-		// @ts-ignore
+		// @ts-expect-error checked is a valid property
 		if (e.target?.checked) {
 			sessions = sessions?.sort((a) => (a.completed ? 1 : -1));
 		} else {
@@ -55,15 +59,15 @@
 			>
 				<a
 					class="grid w-full grid-cols-3 p-4 transition-all rounded-lg place-items-center hover:px-2 hover:bg-primary-400"
-					href="/{admin ? 'admin/' : ''}sessions/{session.slug}"
+					href={getSessionUrl(session)}
 				>
 					<h2 class="text-lg font-semibold capitalize justify-self-start">{session.name}</h2>
 					<div class="text-center">
-						{$t('scenario')}:
+						{$t('scenario.scenario')}:
 						<span
 							data-tip={scenario.prologue}
 							class="italic font-light cursor-default tooltip tooltip-bottom hover:underline"
-							>{scenario.title}</span
+						>{scenario.title}</span
 						>
 					</div>
 					<figure class="w-12 p-0 justify-self-end">

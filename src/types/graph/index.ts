@@ -1,27 +1,9 @@
 import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
+import type { GraphNode } from '$types/pocketBase/TableTypes';
 
-export interface NodeMessage extends SimulationNodeDatum {
-	id: string;
-	title: string;
-	text: string;
-	author: string;
-	type: string;
-	session: string;
-	side: string;
-	parent: string | null | 'NULL';
-}
-export type Link = SimulationLinkDatum<NodeMessage>;
+export type NodeMessage = GraphNode & SimulationNodeDatum;
 
-export interface SessionData {
-	id: string;
-	slug: number;
-	name: string;
-	creatorId: string | null;
-	Nodes: NodeMessage[];
-	Scenario: {
-		id: string;
-		name: string;
-		prologue: string;
-		creatorId: string | null;
-	};
-}
+export type LinkMessage = SimulationLinkDatum<NodeMessage> & {
+	source: NodeMessage;
+	target: NodeMessage;
+};

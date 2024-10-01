@@ -1,6 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { type Actions, fail, redirect, type ServerLoad } from '@sveltejs/kit';
 
-export const load = async ({ parent }) => {
+export const load: ServerLoad = async ({ parent }) => {
 	const data = await parent();
 
 	if (data.user) {
@@ -8,7 +8,7 @@ export const load = async ({ parent }) => {
 	}
 };
 
-export const actions = {
+export const actions: Actions = {
 	login: async ({ request, locals }) => {
 		const data = await request.formData();
 		const username = data.get('username') as string;
@@ -17,7 +17,7 @@ export const actions = {
 		try {
 			await locals.pb.collection('users').authWithPassword(username, password);
 		} catch (err) {
-			return fail(400, { error: 'Invalid username or password' });
+			return fail(400, { err: JSON.stringify(err) });
 		}
 		return redirect(303, '/admin');
 	}

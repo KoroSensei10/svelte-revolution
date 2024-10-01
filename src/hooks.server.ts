@@ -1,8 +1,10 @@
 import type { Handle } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 
+const dbUrl = import.meta.env.VITE_DB_URL as string;
+
 export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.pb = new PocketBase('https://db.canard.cc');
+	event.locals.pb = new PocketBase(dbUrl);
 
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 	if (event.locals.pb.authStore.isValid) {
