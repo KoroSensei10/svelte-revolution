@@ -6,7 +6,7 @@
 
 	$: activeTab = data?.route;
 
-	$: containSessions = activeTab.includes('sessions');
+	$: containSessions = activeTab?.includes('sessions');
 
 	titles.setMainTitle('Admin');
 </script>

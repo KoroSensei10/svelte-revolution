@@ -31,9 +31,9 @@
 
 	let svg: SVGElement;
 	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
-	let linkLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
-	let labelLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
+	let nodeLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let linkLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let labelLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 	const zoom = d3Zoom().on('zoom', (e) => {
@@ -124,23 +124,18 @@
 		await pb.collection('Node').subscribe(
 			'*',
 			async ({ record }) => {
+				// @ts-expect-error Svelte 5 problem I guess
+				toast(MessageToast, {
+					props: {
+						author: record.author,
+						record
+					},
+					duration: 4000,
+					position: 'top-left',
+					style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
+					icon: '📩'
+				});
 				updateGraph(record, record.parent);
-
-				const currentUser = localStorage.getItem('author');
-
-				if (record.author !== currentUser) {
-					// @ts-expect-error Svelte 5 problem I guess
-					toast(MessageToast, {
-						props: {
-							author: record.author,
-							record
-						},
-						duration: 4000,
-						position: 'top-left',
-						style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
-						icon: '📩'
-					});
-				}
 			},
 			{
 				filter: `session="${sessionId}"`

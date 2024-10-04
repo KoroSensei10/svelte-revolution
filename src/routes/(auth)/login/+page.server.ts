@@ -1,12 +1,4 @@
-import { type Actions, fail, redirect, type ServerLoad } from '@sveltejs/kit';
-
-export const load: ServerLoad = async ({ parent }) => {
-	const data = await parent();
-
-	if (data.user) {
-		return redirect(302, '/admin');
-	}
-};
+import { type Actions, fail, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	login: async ({ request, locals }) => {

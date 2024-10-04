@@ -1,9 +1,8 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { page } from '$app/stores';
-	import { replaceState } from '$app/navigation';
 	import { pb } from '$lib/pocketbase';
 	import { initStores } from './utils';
 	import GraphUi from '$components/graph/GraphUI.svelte';
@@ -12,6 +11,7 @@
 	import graph1 from '$lib/assets/graphe1.png';
 	import type { PageServerData } from './$types';
 	import type { LayoutServerData } from '../../$types';
+	import { titles } from '$stores/titles/index.svelte';
 
 	interface Props {
 		data: PageServerData & LayoutServerData;
@@ -28,8 +28,14 @@
 	let title = $derived.by(() => {
 		return (admin ? 'ADMIN - ' : '') + data.sessionData.name;
 	});
+	$effect(() => {
+		const newTitle = title;
+		untrack(() => {
+			titles.setMainTitle(newTitle);
+		});
+	});
 
-	initStores(data.sessionData.name, nodesAndLinks.nodes, nodesAndLinks.links);
+	initStores(nodesAndLinks.nodes, nodesAndLinks.links);
 	onMount(async () => {
 		// Listen for session completion
 		await pb.collection('Session').subscribe(data.sessionData.id, async (res) => {
