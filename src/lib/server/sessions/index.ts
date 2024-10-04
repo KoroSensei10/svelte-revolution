@@ -9,7 +9,7 @@ export async function getSession(sessionId: number) {
 	try {
 		session = await pb
 			.collection('session')
-			.getFirstListItem('slug=' + sessionId.toString(), { expand: 'scenario' });
+			.getFirstListItem('slug=' + sessionId.toString(), { expand: 'end, scenario' });
 	} catch (e) {
 		const err = e as ClientResponseError;
 		if (err.status === 404) {
