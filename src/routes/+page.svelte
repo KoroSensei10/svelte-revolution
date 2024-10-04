@@ -3,9 +3,9 @@
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
 
-	import { mainTitleStore } from '$stores/titles';
+	import { titles } from '$stores/titles/index.svelte';
 
-	mainTitleStore.set('Babel Révolution');
+	titles.setMainTitle('Svelte Révolution Roadmap');
 
 	tasks.sort((a, b) => Number(a.order) - Number(b.order));
 

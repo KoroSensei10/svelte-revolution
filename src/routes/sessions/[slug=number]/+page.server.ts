@@ -1,17 +1,22 @@
 import { buildNodesAndLinks, getSession } from '$lib/server/sessions';
 import { createNode } from '$lib/server/sessions/create';
 import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
-import type { GraphEvent } from '$types/pocketBase/TableTypes';
+import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
 
 export const load: ServerLoad = async ({ params, parent, locals }) => {
 	const sessionData = await getSession(Number(params.slug));
-
 	const nodesAndLinks = await buildNodesAndLinks(sessionData);
 
 	let events: GraphEvent[] = [];
+	let ends: End[] = [];
+
 	if (locals.pb.authStore.isValid) {
+		const scenario = sessionData.expand.scenario.id;
 		events = await locals.pb.collection('Event').getFullList({
-			filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData.expand.scenario.id })
+			filter: locals.pb.filter('scenario = {:scenario}', { scenario })
+		});
+		ends = await locals.pb.collection('End').getFullList({
+			filter: locals.pb.filter('scenario = {:scenario}', { scenario })
 		});
 	}
 
@@ -19,7 +24,8 @@ export const load: ServerLoad = async ({ params, parent, locals }) => {
 		...(await parent()),
 		sessionData,
 		nodesAndLinks,
-		events
+		events,
+		ends
 	};
 };
 
@@ -59,6 +65,7 @@ export const actions: Actions = {
 			body: { message: 'Node added', node: JSON.stringify(node) }
 		};
 	},
+	// Admin only
 	addEvent: async ({ request, locals }) => {
 		const data = await request.formData();
 
@@ -92,6 +99,34 @@ export const actions: Actions = {
 			status: 200,
 			success: true,
 			body: { message: 'Event added', event: JSON.stringify(createdEventNode) }
+		};
+	},
+	endSession: async ({ request, locals }) => {
+		const data = await request.formData();
+		const sessionId = data.get('session') as string;
+		const endId = data.get('endId') as string;
+
+		if (!sessionId) {
+			return fail(500, { success: false, error: 'Not in a session' });
+		}
+		if (!endId) {
+			return fail(422, { success: false, error: 'Missing required fields' });
+		}
+
+		try {
+			await locals.pb.collection('Session').update(sessionId, {
+				completed: true,
+				end: endId
+			});
+		} catch (error) {
+			console.error('Error ending session:', JSON.stringify(error));
+			return fail(500, { success: false, error: 'Error while ending session' });
+		}
+
+		return {
+			status: 200,
+			success: true,
+			body: { message: 'Session ended' }
 		};
 	}
 };

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import { enhance } from '$app/forms';
+	import { navigating } from '$app/stores';
 	import { locale, locales, t } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
 	import NProgress from 'nprogress';
 	import { typewriter } from '$lib/animations';
 	import { Toaster } from 'svelte-french-toast';
-	import { mainTitleStore } from '$stores/titles';
 	import type { User } from '$types/pocketBase/TableTypes';
-	import { enhance } from '$app/forms';
-	import { navigating } from '$app/stores';
+	import { titles } from '$stores/titles/index.svelte';
 
 	export let data: { user: User | null };
 
@@ -52,10 +52,10 @@
 		href="/"
 	>
 		{#if visible}
-			{#key $mainTitleStore}
-				<span in:typewriter|global={{ text: $mainTitleStore }} class=""></span><span class="blinking-underscore"
-			>_</span
-			>
+			{#key titles.mainTitle}
+				<span in:typewriter|global={{ text: titles.mainTitle }} class=""></span><span
+					class="blinking-underscore">_</span
+				>
 			{/key}
 		{/if}
 	</a>
@@ -83,13 +83,13 @@
 <slot />
 
 <style>
-    .blinking-underscore {
-        animation: blink 1s step-start infinite 2s;
-    }
+	.blinking-underscore {
+		animation: blink 1s step-start infinite 2s;
+	}
 
-    @keyframes blink {
-        50% {
-            opacity: 0;
-        }
-    }
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
 </style>
