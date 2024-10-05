@@ -4,13 +4,20 @@
 	import nProgress from 'nprogress';
 	import type { ActionData, PageData } from './$types';
 
-	export let form: ActionData;
-	export let data: PageData;
+	interface Props {
+		form: ActionData;
+		data: PageData;
+	}
+	let { form, data }: Props = $props();
 
 	let theForm: HTMLFormElement;
-	let validForm = false;
+	let validForm = $state(false);
 
-	$: form?.success && toast.success('Session créée avec succès', { duration: 5000, position: 'bottom-center' });
+	$effect(() => {
+		if (form?.success) {
+			toast.success('Session créée avec succès', { duration: 5000, position: 'bottom-center' });
+		}
+	});
 </script>
 
 <div class="flex flex-col items-center">
@@ -20,7 +27,7 @@
 		method="POST"
 		enctype="multipart/form-data"
 		bind:this={theForm}
-		on:input={() => (validForm = theForm?.checkValidity())}
+		oninput={() => (validForm = theForm?.checkValidity())}
 		use:enhance={() => {
 			nProgress.start();
 			return async ({ update }) => {

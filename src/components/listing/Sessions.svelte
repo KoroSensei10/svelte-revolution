@@ -7,9 +7,11 @@
 	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 
-	export let sessions: Session[] | undefined = undefined;
-
-	export let admin = false;
+	interface Props {
+		sessions: Session[];
+		admin?: boolean;
+	}
+	let { sessions, admin = false }: Props = $props();
 
 	sessions = sessions?.sort((a) => (a.completed ? 1 : -1));
 
@@ -46,7 +48,7 @@
 
 {#if sessions?.length}
 	<label>
-		<input type="checkbox" checked on:change={completedSessionsFilter} />
+		<input type="checkbox" checked onchange={completedSessionsFilter} />
 		{$t('sessions.sortByNotCompleted')}
 	</label>
 	<ul class="flex flex-col gap-4 p-4 pt-0 text-black sm:w-2/3">
@@ -67,7 +69,7 @@
 						<span
 							data-tip={scenario.prologue}
 							class="italic font-light cursor-default tooltip tooltip-bottom hover:underline"
-						>{scenario.title}</span
+							>{scenario.title}</span
 						>
 					</div>
 					<figure class="w-12 p-0 justify-self-end">

@@ -1,12 +1,14 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 	import { titles } from '$stores/titles/index.svelte.js';
 
-	export let data;
+	let { data, children } = $props();
 
-	$: activeTab = data?.route;
+	let activeTab = $derived(data?.route);
 
-	$: containSessions = activeTab?.includes('sessions');
+	let containSessions = $derived(activeTab?.includes('sessions'));
 
 	titles.setMainTitle('Admin');
 </script>
@@ -46,4 +48,4 @@
 	</div>
 {/if}
 
-<slot />
+{@render children()}

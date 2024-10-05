@@ -2,7 +2,6 @@
 	import { sumTaskDuration, tasks } from '$lib/taskProgress';
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-
 	import { titles } from '$stores/titles/index.svelte';
 
 	titles.setMainTitle('Svelte Révolution Roadmap');
@@ -11,10 +10,10 @@
 
 	let [completed, total] = sumTaskDuration(tasks);
 
-	let days = 0,
-		hours = 0,
-		minutes = 0,
-		seconds = 0;
+	let days = $state(0),
+		hours = $state(0),
+		minutes = $state(0),
+		seconds = $state(0);
 
 	function updateCountdown() {
 		const targetDate = new Date('2024-10-07T09:00:00');

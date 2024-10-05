@@ -1,14 +1,11 @@
-import { dev } from '$app/environment';
-
 class Titles {
 	mainTitle = $state('Babel Révolution');
 
 	setMainTitle(title: string) {
-		if (dev && !this.mainTitle.includes('DEV -')) {
-			this.mainTitle = 'DEV - ' + title;
-		} else {
-			this.mainTitle = title;
+		if (import.meta.env.VITE_BRANCH_NAME) {
+			title += ` (${import.meta.env.VITE_BRANCH_NAME})`;
 		}
+		this.mainTitle = title;
 	}
 }
 

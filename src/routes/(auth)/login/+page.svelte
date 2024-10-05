@@ -5,7 +5,10 @@
 	import type { ActionData } from './$types';
 	import nProgress from 'nprogress';
 
-	export let form: ActionData;
+	interface Props {
+		form: ActionData;
+	}
+	let { form }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-4 py-4">

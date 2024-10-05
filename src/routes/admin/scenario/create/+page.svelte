@@ -8,14 +8,17 @@
 	import Radio from '$components/form/Radio.svelte';
 	import MultiField from '$components/form/MultiField.svelte';
 
-	import type { ActionData } from './$types';
+	import type { ActionData, PageData } from './$types';
 
-	export let form: ActionData;
-	export let data;
+	interface Props {
+		form: ActionData;
+		data: PageData;
+	}
+	let { form, data }: Props = $props();
 
-	let currentStep = 0;
+	let currentStep = $state(0);
 	let theForm: HTMLFormElement;
-	let validForm = false;
+	let validForm = $state(false);
 
 	function checkValidity() {
 		validForm = theForm?.checkValidity();
@@ -26,7 +29,7 @@
 	<h1 class="p-4 text-3xl font-bold">{$t('scenario.newScenario')}</h1>
 	<form
 		bind:this={theForm}
-		on:input={() => checkValidity()}
+		oninput={() => checkValidity()}
 		method="POST"
 		use:enhance={() => {
 			nProgress.start();

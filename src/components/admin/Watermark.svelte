@@ -3,7 +3,7 @@
 
 	interface Props {
 		watermarkText: string;
-		children: () => Snippet;
+		children: Snippet;
 	}
 	let { watermarkText, children }: Props = $props();
 </script>

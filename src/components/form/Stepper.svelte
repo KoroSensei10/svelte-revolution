@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 
-	export let steps: string[] = []; // Liste des étapes
-	export let currentStep: number; // Étape actuelle
+	interface Props {
+		steps: string[];
+		currentStep: number;
+	}
+	let { steps, currentStep }: Props = $props();
 
 	function next() {
 		if (currentStep < steps.length - 1) {
@@ -31,7 +34,7 @@
 				disabled={index > currentStep}
 				type="button"
 				class="flex flex-col items-center col-span-1"
-				on:click={() => handleClick(index)}
+				onclick={() => handleClick(index)}
 			>
 				<div class="flex items-center justify-center">
 					<div
@@ -84,7 +87,7 @@
 			class="border rounded text-lg text-white px-4 py-2 {currentStep <= 0
 				? 'opacity-50 cursor-not-allowed'
 				: ''}"
-			on:click={prev}
+			onclick={prev}
 			disabled={currentStep <= 0}
 		>
 			{$t('form.previous')}
@@ -94,7 +97,7 @@
 		{/if}
 		<button
 			class="col-start-3 px-4 py-2 text-lg text-black bg-white border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-			on:click={next}
+			onclick={next}
 			type="button"
 			disabled={currentStep === steps.length - 1}
 		>

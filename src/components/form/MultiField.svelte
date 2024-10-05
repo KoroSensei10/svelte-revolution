@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 
-	export let props: {
-		name: string;
-		title: string;
-		placeholderTitle: string;
-		placeholderText: string;
-	};
+	interface Props {
+		props: { name: string; title: string; placeholderTitle: string; placeholderText: string };
+	}
+	let { props }: Props = $props();
 
-	let values = [1];
+	let values = $state([1]);
 </script>
 
 <slot name="header"></slot>
@@ -32,7 +30,7 @@
 					class="border rounded py-2 px-4 self-start text-white {values.length <= 1
 						? 'opacity-50 cursor-not-allowed'
 						: ''}"
-					on:click={() => (values = values.filter((_, index) => index !== i))}
+					onclick={() => (values = values.filter((_, index) => index !== i))}
 				>
 					{$t('scenario.delete')} | {props.title} <span class="font-bold">#{i + 1}</span>
 				</button>
@@ -45,7 +43,7 @@
 		class="border self-end py-2 px-4 rounded bg-white text-black {values.length === 5
 			? 'opacity-50 cursor-not-allowed'
 			: ''}"
-		on:click={() => (values = [...values, values.length + 1])}
+		onclick={() => (values = [...values, values.length + 1])}
 	>
 		{$t('scenario.add')}
 	</button>
