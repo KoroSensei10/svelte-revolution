@@ -20,11 +20,16 @@ export const load: ServerLoad = async ({ params, parent, locals }) => {
 		});
 	}
 
+	const sides = await locals.pb.collection('Side').getFullList({
+		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData.expand.scenario.id })
+	});
+
 	return {
 		...(await parent()),
 		sessionData,
 		nodesAndLinks,
 		events,
+		sides,
 		ends
 	};
 };
@@ -38,6 +43,7 @@ export const actions: Actions = {
 		const author = data.get('author') as string;
 		const parent = data.get('parent') as string;
 		const session = data.get('session') as string;
+		const side = data.get('side') as string;
 
 		if (!parent) {
 			return fail(422, { success: false, error: 'No selected node' });
@@ -56,7 +62,8 @@ export const actions: Actions = {
 			author,
 			type: 'contribution',
 			parent,
-			session
+			session,
+			side
 		});
 
 		return {

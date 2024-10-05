@@ -36,7 +36,14 @@
     "firstNodeAuthor": "Auteur du premier nœud",
     "events": "Événements",
     "author": "Auteur",
-    "ends": "Fins"
+    "ends": "Fins",
+    "side": "Côté",
+    "sides": "Côtés"
+  },
+  "side": {
+    "side": "Côté",
+    "sides": "Côtés",
+    "chooseSide": "Choisir un côté"
   },
   "form": {
     "submit": "Soumettre",

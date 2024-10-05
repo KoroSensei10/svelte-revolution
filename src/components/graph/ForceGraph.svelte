@@ -124,17 +124,23 @@
 		await pb.collection('Node').subscribe(
 			'*',
 			async ({ record }) => {
-				// @ts-expect-error Svelte 5 problem I guess
-				toast(MessageToast, {
-					props: {
-						author: record.author,
-						record
-					},
-					duration: 4000,
-					position: 'top-left',
-					style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
-					icon: '📩'
-				});
+				const currentUser = localStorage.getItem('author');
+				if (record.author !== currentUser) {
+					// @ts-expect-error Svelte 5 problem I guess
+					toast(MessageToast, {
+						props: {
+							author: record.author,
+							record
+						},
+						duration: 4000,
+						position: 'top-left',
+						style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
+						icon: '📩'
+					});
+				}
+				const side = await pb.collection('Side').getOne(record.side);
+				record.expand = {};
+				record.expand.side = side;
 				updateGraph(record, record.parent);
 			},
 			{
@@ -147,6 +153,7 @@
 		nodeLayer = svgElement.append('g');
 		labelLayer = svgElement.append('g');
 
+		// @ts-expect-error d3...
 		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
 
 		simulation = forceSimulation($nodesStore)

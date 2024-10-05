@@ -3,7 +3,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import type { End, GraphEvent, Session, User } from '$types/pocketBase/TableTypes';
+	import type { End, GraphEvent, Session, Side, User } from '$types/pocketBase/TableTypes';
 	import { selectedNodeStore } from '$stores/graph';
 	import { enhance } from '$app/forms';
 	import nProgress from 'nprogress';
@@ -16,9 +16,10 @@
 		admin?: boolean;
 		events?: GraphEvent[];
 		ends?: End[];
+		sides?: Side[];
 	}
 
-	let { user = null, session, admin = false, events = [], ends = [] }: Props = $props();
+	let { user = null, session, admin = false, events = [], ends = [], sides = [] }: Props = $props();
 
 	let nodeInfoChecked = $state(false);
 
@@ -88,7 +89,7 @@
 			<div class="w-full font-semibold collapse-title">
 				{$t('writeMessage')}
 			</div>
-			<div class="z-50 flex flex-col py-0 collapse-content snoup">
+			<div class="z-50 flex flex-col py-0 overflow-auto collapse-content snoup">
 				<div class="w-full">
 					<div class="w-full">
 						<input
@@ -116,10 +117,18 @@
 						required
 						autocomplete="username"
 						bind:value={nodeAuthor}
-						name={'author'}
+						name="author"
 						placeholder={$t('yourName')}
-						class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+						class="w-full py-4 placeholder:font-thin placeholder:italic focus:border-white"
 					/>
+				</div>
+				<div>
+					<select name="side" class="w-full p-4 border rounded">
+						<option disabled selected>{$t('side.chooseSide')}</option>
+						{#each sides as side}
+							<option value={side.id}>{side.name}</option>
+						{/each}
+					</select>
 				</div>
 				<div class="w-full py-4 text-center">
 					<button
@@ -159,6 +168,7 @@
 		<div class="text-white collapse-content">
 			{#if $selectedNodeStore}
 				<div class="text-xl font-semibold first-letter:capitalize">{$selectedNodeStore.title}</div>
+				<div class="text-lg">{$t('side.side')}: {$selectedNodeStore.expand?.side?.name ?? $t('neutral')}</div>
 				<div>{$t('from')} {$selectedNodeStore.author}</div>
 				<div class="pl-1 overflow-auto max-h-44">{$selectedNodeStore.text}</div>
 			{:else}

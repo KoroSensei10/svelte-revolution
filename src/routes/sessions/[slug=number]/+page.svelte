@@ -18,7 +18,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { events = [], user = null, nodesAndLinks, ends = [] } = data;
+	let { events = [], user = null, nodesAndLinks, ends = [], sides = [] } = data;
 	let sessionData = $state(data.sessionData);
 
 	let admin = $derived.by(() => {
@@ -62,11 +62,11 @@
 </svelte:head>
 
 {#if admin && user}
-	<GraphUi {admin} session={sessionData} {user} {events} {ends} />
+	<GraphUi {admin} session={sessionData} {user} {events} {ends} {sides} />
 	<Watermark watermarkText="Admin">
 		<ForceGraph sessionId={sessionData.id} />
 	</Watermark>
 {:else}
-	<GraphUi session={sessionData} />
+	<GraphUi session={sessionData} {sides} />
 	<ForceGraph sessionId={sessionData.id} />
 {/if}

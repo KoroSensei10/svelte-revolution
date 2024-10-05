@@ -3,7 +3,9 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		props: { name: string; title: string; placeholderTitle: string; placeholderText: string };
+		props: { name: string; title: string; placeholderTitle: string; placeholderText?: string };
+		min?: number;
+		max?: number;
 		header: Snippet;
 		main: Snippet<
 			[
@@ -11,16 +13,18 @@
 					name: string;
 					title: string;
 					titleName: string;
-					textName: string;
+					textName?: string;
 					placeholderTitle: string;
-					placeholderText: string;
+					placeholderText?: string;
 				}
 			]
 		>;
 	}
-	let { props, header, main: children }: Props = $props();
+	let { props, header, main: children, min = 1, max = 5 }: Props = $props();
 
-	let values = $state([1]);
+	// Array that represents the number of fields
+	let array = Array.from({ length: min }, (_, i) => i);
+	let values = $state(array);
 </script>
 
 {@render header()}
@@ -39,8 +43,8 @@
 				})}
 				<button
 					type="button"
-					disabled={values.length <= 1}
-					class="border rounded py-2 px-4 self-start text-white {values.length <= 1
+					disabled={values.length <= min}
+					class="border rounded py-2 px-4 self-start text-white {values.length <= min
 						? 'opacity-50 cursor-not-allowed'
 						: ''}"
 					onclick={() => (values = values.filter((_, index) => index !== i))}
@@ -51,12 +55,12 @@
 		{/each}
 	</div>
 	<button
-		disabled={values.length === 5}
+		disabled={values.length >= max}
 		type="button"
-		class="border self-end py-2 px-4 rounded bg-white text-black {values.length === 5
+		class="border self-end py-2 px-4 rounded bg-white text-black {values.length >= max
 			? 'opacity-50 cursor-not-allowed'
 			: ''}"
-		onclick={() => (values = [...values, values.length + 1])}
+		onclick={() => values.push(values.length + 1)}
 	>
 		{$t('scenario.add')}
 	</button>

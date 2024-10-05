@@ -67,6 +67,35 @@
 						placeholder="La nuit était sombre..."
 					></textarea>
 					<Radio langs={[...data.lang]} />
+					<MultiField
+						props={{
+							name: 'side',
+							title: $t('scenario.side'),
+							placeholderTitle: $t('scenario.side')
+						}}
+						min={2}
+						max={5}
+					>
+						{#snippet header()}
+							<span class="pb-2 text-xl font-thin border-b">{$t('scenario.sides')}</span>
+						{/snippet}
+						{#snippet main(item)}
+							<div class="flex flex-col items-center p-2">
+								<div class="flex gap-4">
+									<div class="w-full">
+										<label for={item.name} class="text-lg font-thin">{item.titleName}</label>
+										<input
+											required
+											id={item.name}
+											name={item.name}
+											placeholder={item.placeholderTitle}
+											class="w-full p-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
+										/>
+									</div>
+								</div>
+							</div>
+						{/snippet}
+					</MultiField>
 				</div>
 			{/snippet}
 			<!-- Premier Noeud -->

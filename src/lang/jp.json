@@ -36,7 +36,14 @@
     "firstNodeAuthor": "最初のノードの著者",
     "events": "イベント",
     "author": "著者",
-    "ends": "終了"
+    "ends": "終了",
+    "side": "側",
+    "sides": "側"
+  },
+  "side": {
+    "side": "側",
+    "sides": "側",
+    "chooseSide": "側を選択"
   },
   "form": {
     "submit": "提出する",

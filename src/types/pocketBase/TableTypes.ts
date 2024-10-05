@@ -14,6 +14,9 @@ declare module '$types/pocketBase/TableTypes' {
 		type: NodeType;
 		parent: string;
 		side: string;
+		expand?: {
+			side?: Side;
+		};
 	}
 
 	export interface Scenario {

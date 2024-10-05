@@ -29,7 +29,7 @@ export async function getSession(sessionId: number) {
 }
 
 export async function buildNodesAndLinks(session: Session) {
-	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` });
+	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"`, expand: 'Side' });
 	const links: LinkMessage[] = [];
 
 	nodes.forEach((node) => {
