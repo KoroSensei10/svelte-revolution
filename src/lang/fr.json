@@ -45,10 +45,17 @@
     "next": "Suivant",
     "previous": "Précédent"
   },
+  "user": {
+    "user": "Utilisateur",
+    "users": "Utilisateurs",
+    "createUser": "Créer un utilisateur",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "creationSuccess": "Utilisateur créé avec succès"
+  },
   "join": "Rejoindre",
   "createSession": "Démarrer une session",
   "createScenario": "Créer un scénario",
-  "createUser": "Créer un utilisateur",
   "language": "Langue",
   "days": "jours",
   "hours": "heures",

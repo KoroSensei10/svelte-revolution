@@ -47,7 +47,14 @@
   },
   "join": "Join",
   "createScenario": "Create Scenario",
-  "createUser": "Create User",
+  "user": {
+    "user": "User",
+    "users": "Users",
+    "createUser": "Create User",
+    "username": "Username",
+    "password": "Password",
+    "creationSuccess": "User created successfully"
+  },
   "language": "Language",
   "days": "days",
   "hours": "hours",

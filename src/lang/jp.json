@@ -45,10 +45,17 @@
     "next": "次",
     "previous": "前"
   },
+  "user": {
+    "user": "ユーザー",
+    "users": "ユーザー",
+    "createUser": "ユーザーを作成",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "creationSuccess": "ユーザーが正常に作成されました"
+  },
   "join": "参加する",
   "createSession": "セッションを開始",
   "createScenario": "シナリオを作成",
-  "createUser": "ユーザーを作成",
   "language": "言語",
   "days": "日",
   "hours": "時間",
