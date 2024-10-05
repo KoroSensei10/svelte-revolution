@@ -1,11 +1,17 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { t } from 'svelte-i18n';
 
 	interface Props {
 		steps: string[];
 		currentStep: number;
+		step1: Snippet;
+		step2: Snippet;
+		step3: Snippet;
+		step4: Snippet;
+		submit?: Snippet;
 	}
-	let { steps, currentStep = $bindable() }: Props = $props();
+	let { steps, currentStep = $bindable(), step1, step2, step3, step4, submit }: Props = $props();
 
 	function next() {
 		if (currentStep < steps.length - 1) {
@@ -64,19 +70,19 @@
 		{/each}
 	</div>
 
-	<!-- Slot for Step Content -->
+	<!-- Snippet for Step Content -->
 	<div class="">
 		<div class={currentStep === 0 ? 'block' : 'hidden'}>
-			<slot name="step-1"></slot>
+			{@render step1()}
 		</div>
 		<div class={currentStep === 1 ? 'block' : 'hidden'}>
-			<slot name="step-2"></slot>
+			{@render step2()}
 		</div>
 		<div class={currentStep === 2 ? 'block' : 'hidden'}>
-			<slot name="step-3"></slot>
+			{@render step3()}
 		</div>
 		<div class={currentStep === 3 ? 'block' : 'hidden'}>
-			<slot name="step-4"></slot>
+			{@render step4()}
 		</div>
 	</div>
 
@@ -92,8 +98,8 @@
 		>
 			{$t('form.previous')}
 		</button>
-		{#if $$slots['submit']}
-			<slot name="submit"></slot>
+		{#if submit}
+			{@render submit()}
 		{/if}
 		<button
 			class="col-start-3 px-4 py-2 text-lg text-black bg-white border rounded disabled:opacity-50 disabled:cursor-not-allowed"
