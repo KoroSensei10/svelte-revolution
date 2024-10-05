@@ -5,7 +5,7 @@
 		steps: string[];
 		currentStep: number;
 	}
-	let { steps, currentStep }: Props = $props();
+	let { steps, currentStep = $bindable() }: Props = $props();
 
 	function next() {
 		if (currentStep < steps.length - 1) {
