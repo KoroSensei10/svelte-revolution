@@ -16,6 +16,7 @@ export const actions = {
 		const eventAuthors = data.getAll('event-author');
 		const ends = data.getAll('end');
 		const endTexts = data.getAll('end-text');
+		const sides = data.getAll('sides');
 
 		if (
 			!title ||
@@ -25,7 +26,8 @@ export const actions = {
 			!firstNodeText ||
 			!firstNodeAuthor ||
 			!events.length ||
-			!ends.length
+			!ends.length ||
+			!sides.length
 		) {
 			return fail(400, { error: 'Missing required fields' });
 		}
@@ -43,6 +45,7 @@ export const actions = {
 
 			try {
 				await createEventsAndEnds(pb, scenario.id, events, eventTexts, eventAuthors, ends, endTexts);
+				await pb.collection('Side').create(sides.map((side) => ({ scenario: scenario.id, name: side })));
 			} catch (error) {
 				pb.collection('scenario').delete(scenario.id);
 				return fail(500, { error: String(error) });

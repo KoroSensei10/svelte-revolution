@@ -36,7 +36,14 @@
     "firstNodeAuthor": "最初のノードの著者",
     "events": "イベント",
     "author": "著者",
-    "ends": "終了"
+    "ends": "終了",
+    "side": "側",
+    "sides": "側"
+  },
+  "side": {
+    "side": "側",
+    "sides": "側",
+    "chooseSide": "側を選択"
   },
   "form": {
     "submit": "提出する",
@@ -45,10 +52,17 @@
     "next": "次",
     "previous": "前"
   },
+  "user": {
+    "user": "ユーザー",
+    "users": "ユーザー",
+    "createUser": "ユーザーを作成",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "creationSuccess": "ユーザーが正常に作成されました"
+  },
   "join": "参加する",
   "createSession": "セッションを開始",
   "createScenario": "シナリオを作成",
-  "createUser": "ユーザーを作成",
   "language": "言語",
   "days": "日",
   "hours": "時間",

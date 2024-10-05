@@ -1,30 +1,38 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import '../app.css';
-	import { onMount } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
+	import { enhance } from '$app/forms';
+	import { navigating } from '$app/stores';
 	import { locale, locales, t } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
 	import NProgress from 'nprogress';
 	import { typewriter } from '$lib/animations';
 	import { Toaster } from 'svelte-french-toast';
-	import { mainTitleStore } from '$stores/titles';
 	import type { User } from '$types/pocketBase/TableTypes';
-	import { enhance } from '$app/forms';
-	import { navigating } from '$app/stores';
+	import { titles } from '$stores/titles/index.svelte';
 
-	export let data: { user: User | null };
+	type Props = {
+		data: { user: User };
+		children: Snippet;
+	};
+	let { data, children }: Props = $props();
 
-	let visible = false;
+	let visible = $state(false);
 
 	NProgress.configure({
 		// Full list: https://github.com/rstacruz/nprogress#configuration
 		minimum: 0.16
 	});
 
-	$: {
+	$effect.pre(() => {
 		if ($navigating) {
 			NProgress.start();
-		} else NProgress.done();
-	}
+		} else {
+			NProgress.done();
+		}
+	});
 
 	onMount(() => {
 		visible = true;
@@ -52,10 +60,10 @@
 		href="/"
 	>
 		{#if visible}
-			{#key $mainTitleStore}
-				<span in:typewriter|global={{ text: $mainTitleStore }} class=""></span><span class="blinking-underscore"
-			>_</span
-			>
+			{#key titles.mainTitle}
+				<span in:typewriter|global={{ text: titles.mainTitle }} class=""></span><span
+					class="blinking-underscore">_</span
+				>
 			{/key}
 		{/if}
 	</a>
@@ -80,16 +88,16 @@
 	{/if}
 </nav>
 
-<slot />
+{@render children()}
 
 <style>
-    .blinking-underscore {
-        animation: blink 1s step-start infinite 2s;
-    }
+	.blinking-underscore {
+		animation: blink 1s step-start infinite 2s;
+	}
 
-    @keyframes blink {
-        50% {
-            opacity: 0;
-        }
-    }
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
 </style>

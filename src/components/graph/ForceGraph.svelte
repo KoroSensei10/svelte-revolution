@@ -31,9 +31,9 @@
 
 	let svg: SVGElement;
 	let svgElement: Selection<SVGElement, NodeMessage, null, undefined>;
-	let nodeLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
-	let linkLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
-	let labelLayer: Selection<SVGGElement, NodeMessage, SVGElement, unknown>;
+	let nodeLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let linkLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
+	let labelLayer: Selection<SVGGElement, NodeMessage, null, undefined>;
 
 	let simulation: Simulation<NodeMessage, SimulationLinkDatum<NodeMessage>>;
 	const zoom = d3Zoom().on('zoom', (e) => {
@@ -124,10 +124,7 @@
 		await pb.collection('Node').subscribe(
 			'*',
 			async ({ record }) => {
-				updateGraph(record, record.parent);
-
 				const currentUser = localStorage.getItem('author');
-
 				if (record.author !== currentUser) {
 					// @ts-expect-error Svelte 5 problem I guess
 					toast(MessageToast, {
@@ -141,6 +138,10 @@
 						icon: '📩'
 					});
 				}
+				const side = await pb.collection('Side').getOne(record.side);
+				record.expand = {};
+				record.expand.side = side;
+				updateGraph(record, record.parent);
 			},
 			{
 				filter: `session="${sessionId}"`
@@ -152,6 +153,7 @@
 		nodeLayer = svgElement.append('g');
 		labelLayer = svgElement.append('g');
 
+		// @ts-expect-error d3...
 		svgElement.call(zoom).call(zoom.transform, zoomIdentity);
 
 		simulation = forceSimulation($nodesStore)

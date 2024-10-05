@@ -1,8 +1,11 @@
 <script lang="ts">
-	export let langs: string[];
+	interface Props {
+		langs: string[];
+	}
+	let { langs }: Props = $props();
 </script>
 
-<div class="flex gap-4 justify-center">
+<div class="flex justify-center gap-4">
 	{#each langs as lang}
 		<button
 			type="button"
@@ -10,12 +13,12 @@
                 border rounded-lg"
 		>
 			<label class="flex flex-col" for="lang-{lang}">
-				<span class="uppercase cursor-pointer p-4 px-5">{lang}</span>
+				<span class="p-4 px-5 uppercase cursor-pointer">{lang}</span>
 				<input
 					id="lang-{lang}"
 					type="radio"
 					name="lang"
-					class="collapse w-0 h-0"
+					class="w-0 h-0 collapse"
 					checked={lang === 'fr'}
 					value={lang}
 				/>

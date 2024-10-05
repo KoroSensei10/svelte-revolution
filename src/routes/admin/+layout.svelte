@@ -1,19 +1,16 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { t } from 'svelte-i18n';
-	import { mainTitleStore } from '$stores/titles';
-	import { onDestroy } from 'svelte';
+	import { titles } from '$stores/titles/index.svelte.js';
 
-	export let data;
+	let { data, children } = $props();
 
-	$: activeTab = data?.route;
+	let activeTab = $derived(data?.route);
 
-	$: containSessions = activeTab.includes('sessions');
+	let containSessions = $derived(activeTab?.includes('sessions'));
 
-	mainTitleStore.set('Admin');
-
-	onDestroy(() => {
-		mainTitleStore.set('Babel Révolution');
-	});
+	titles.setMainTitle('Admin');
 </script>
 
 {#if !containSessions}
@@ -41,7 +38,7 @@
 				role="tab"
 				class="tab {activeTab === '/admin/user/create' ? 'tab-active' : 'text-white'}"
 			>
-				{$t('createUser')}
+				{$t('user.createUser')}
 			</a>
 		</div>
 	</div>
@@ -51,4 +48,4 @@
 	</div>
 {/if}
 
-<slot />
+{@render children()}

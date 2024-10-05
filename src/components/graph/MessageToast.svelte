@@ -1,4 +1,5 @@
 <svelte:options runes={true} />
+
 <script lang="ts">
 	import toast_, { type Toast } from 'svelte-french-toast';
 	import { selectedNodeStore } from '$stores/graph';
@@ -11,8 +12,8 @@
 	}
 
 	let { toast }: Props = $props();
-
 </script>
+
 <span class="flex flex-col items-center">
 	<!-- TODO: translate -->
 	<button onclick={() => selectedNodeStore.set(toast.props.record)}>New message by: {toast.props.author}</button>

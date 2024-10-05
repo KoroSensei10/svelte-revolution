@@ -9,7 +9,7 @@ export async function getSession(sessionId: number) {
 	try {
 		session = await pb
 			.collection('session')
-			.getFirstListItem('slug=' + sessionId.toString(), { expand: 'scenario' });
+			.getFirstListItem('slug=' + sessionId.toString(), { expand: 'end, scenario' });
 	} catch (e) {
 		const err = e as ClientResponseError;
 		if (err.status === 404) {
@@ -29,7 +29,7 @@ export async function getSession(sessionId: number) {
 }
 
 export async function buildNodesAndLinks(session: Session) {
-	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"` });
+	const nodes = await pb.collection('Node').getFullList({ filter: `session="${session.id}"`, expand: 'Side' });
 	const links: LinkMessage[] = [];
 
 	nodes.forEach((node) => {

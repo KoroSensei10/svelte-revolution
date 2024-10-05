@@ -36,7 +36,14 @@
     "firstNodeAuthor": "First Node Author",
     "events": "Events",
     "author": "Author",
-    "ends": "Ends"
+    "ends": "Ends",
+    "side": "Side",
+    "sides": "Sides"
+  },
+  "side": {
+    "side": "Side",
+    "sides": "Sides",
+    "chooseSide": "Choose Side"
   },
   "form": {
     "submit": "Submit",
@@ -47,7 +54,14 @@
   },
   "join": "Join",
   "createScenario": "Create Scenario",
-  "createUser": "Create User",
+  "user": {
+    "user": "User",
+    "users": "Users",
+    "createUser": "Create User",
+    "username": "Username",
+    "password": "Password",
+    "creationSuccess": "User created successfully"
+  },
   "language": "Language",
   "days": "days",
   "hours": "hours",
