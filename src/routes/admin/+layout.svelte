@@ -38,7 +38,7 @@
 				role="tab"
 				class="tab {activeTab === '/admin/user/create' ? 'tab-active' : 'text-white'}"
 			>
-				{$t('createUser')}
+				{$t('user.createUser')}
 			</a>
 		</div>
 	</div>
