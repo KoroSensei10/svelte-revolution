@@ -14,7 +14,7 @@
 	import { titles } from '$stores/titles/index.svelte';
 
 	type Props = {
-		data: { user: User };
+		data: { user: User; isAdmin: boolean };
 		children: Snippet;
 	};
 	let { data, children }: Props = $props();
@@ -72,9 +72,14 @@
 	</a>
 	{#if data.user}
 		<div class="flex justify-end w-full gap-2 sm:justify-start">
-			<a href="/admin" class="pr-2 font-semibold transition-all border-r hover:pl-1 hover:pr-1 dark:text-white">
-				{$t('admin')}
-			</a>
+			{#if data.isAdmin}
+				<a
+					href="/admin"
+					class="pr-2 font-semibold transition-all border-r hover:pl-1 hover:pr-1 dark:text-white"
+				>
+					{$t('admin')}
+				</a>
+			{/if}
 			<form class="inline" action="/logout?/logout" use:enhance method="POST">
 				<button type="submit" class="font-semibold transition-all hover:pl-1 dark:text-white">
 					{$t('logout')}

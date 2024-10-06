@@ -3,6 +3,7 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 	import { page } from '$app/stores';
+	import { replaceState } from '$app/navigation';
 	import { pb } from '$lib/pocketbase';
 	import { initStores } from './utils';
 	import GraphUi from '$components/graph/GraphUI.svelte';
@@ -29,18 +30,6 @@
 
 	initStores(nodesAndLinks.nodes, nodesAndLinks.links);
 
-	$effect.pre(() => {
-		// update query params with admin status
-		const url = new URL(location.href);
-		if (admin) {
-			url.searchParams.set('admin', admin.toString());
-			history.replaceState(null, '', url.toString());
-		} else {
-			url.searchParams.delete('admin');
-			history.replaceState(null, '', url.toString());
-		}
-	});
-
 	onMount(async () => {
 		// Listen for session completion
 		await pb.collection('Session').subscribe(data.sessionData.id, async (res) => {
@@ -53,6 +42,15 @@
 				console.error(e);
 			}
 		});
+		// update query params with admin status
+		const url = new URL(location.href);
+		if (admin) {
+			url.searchParams.set('admin', admin.toString());
+			replaceState(url.toString(), '');
+		} else {
+			url.searchParams.delete('admin');
+			replaceState(url.toString(), '');
+		}
 	});
 
 	$effect.pre(() => {

@@ -5,6 +5,7 @@
 	import type { ActionData } from './$types';
 	import nProgress from 'nprogress';
 	import toast from 'svelte-french-toast';
+	import { pb } from '$lib/pocketbase';
 
 	interface Props {
 		form: ActionData;
@@ -30,9 +31,9 @@
 		}}
 		action="?/login"
 		method="post"
-		class="flex flex-col items-center self-center w-full gap-4 p-4 sm:w-1/2"
+		class="flex flex-col items-center self-center w-full gap-4 sm:w-1/2"
 	>
-		<div class="flex flex-col items-start w-full gap-4 p-4 text-black">
+		<div class="flex flex-col items-start w-full gap-4 text-black">
 			<label class="flex items-center w-full gap-2 input input-bordered input-accent">
 				{$t('username')}
 				<input type="text" class="grow" placeholder="Daisy" autocomplete="username" name="username" />
@@ -52,4 +53,44 @@
 			</div>
 		</div>
 	</form>
+	<div class="flex flex-col gap-4">
+		<h3 class="">
+			{$t('or')}
+		</h3>
+		{@render authWithOAuth2('github')}
+		{@render authWithOAuth2('discord')}
+	</div>
 </div>
+
+{#snippet authWithOAuth2(provider: 'github' | 'discord')}
+	<form
+		action="?/loginWithProvider"
+		method="post"
+		onsubmit={async (e) => {
+			e.preventDefault();
+		}}
+		use:enhance={async (e) => {
+			nProgress.start();
+			let authData;
+			try {
+				authData = await pb.collection('users').authWithOAuth2({
+					provider,
+					createData: {
+						role: 'user'
+					}
+				});
+			} catch (error) {
+				console.error(error);
+				nProgress.done();
+				return;
+			}
+			e.formData.set('cookie', pb.authStore.exportToCookie());
+			return async ({ update }) => {
+				await update({ reset: false });
+				nProgress.done();
+			};
+		}}
+	>
+		<button type="submit" class="btn btn-primary">Or connect with {provider}</button>
+	</form>
+{/snippet}

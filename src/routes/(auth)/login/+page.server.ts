@@ -18,5 +18,17 @@ export const actions: Actions = {
 			return fail(400, { error: error.message });
 		}
 		return redirect(303, '/admin');
+	},
+	loginWithProvider: async ({ request, locals }) => {
+		/* @see ./+page.svelte#loginWithDiscord */
+		const data = await request.formData();
+		const cookie = data.get('cookie') as string;
+		try {
+			locals.pb.authStore.loadFromCookie(cookie);
+		} catch (err) {
+			const error = err as ClientResponseError;
+			return fail(400, { error: error.message });
+		}
+		return redirect(303, '/admin');
 	}
 };
