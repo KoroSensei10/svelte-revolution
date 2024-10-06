@@ -6,6 +6,9 @@ export const load: LayoutServerLoad = async ({ url, locals }) => {
 	if (!locals.pb.authStore.isValid) {
 		return redirect(303, '/login');
 	}
+	if (!['superAdmin', 'admin'].includes(locals.pb.authStore.model?.role)) {
+		return redirect(303, '/sessions');
+	}
 
 	return {
 		user: locals.pb.authStore.model,
