@@ -9,7 +9,8 @@
     "endSession": "End Session",
     "sessionEnded": "Session Ended",
     "sortByNotCompleted": "Sort by not completed",
-    "noSessions": "No sessions"
+    "noSessions": "No sessions",
+    "otherSessions": "Other Sessions"
   },
   "scenario": {
     "scenario": "Scenario",

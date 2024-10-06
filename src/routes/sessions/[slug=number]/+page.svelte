@@ -16,26 +16,31 @@
 	interface Props {
 		data: PageServerData & LayoutServerData;
 	}
-
 	let { data }: Props = $props();
-	let { events = [], user = null, nodesAndLinks, ends = [], sides = [] } = data;
+	let { events = [], user = null, nodesAndLinks, ends = [], sides = [], isAdmin = false } = data;
+
 	let sessionData = $state(data.sessionData);
 
-	let admin = $derived.by(() => {
-		const url = new URL($page.url);
-		return url.searchParams.get('admin') === 'true' || !!user;
-	});
+	let admin = $derived($page.data.isAdmin as boolean);
+
 	let title = $derived.by(() => {
 		return (admin ? 'ADMIN - ' : '') + data.sessionData.name;
 	});
-	$effect(() => {
-		const newTitle = title;
-		untrack(() => {
-			titles.setMainTitle(newTitle);
-		});
-	});
 
 	initStores(nodesAndLinks.nodes, nodesAndLinks.links);
+
+	$effect.pre(() => {
+		// update query params with admin status
+		const url = new URL(location.href);
+		if (admin) {
+			url.searchParams.set('admin', admin.toString());
+			history.replaceState(null, '', url.toString());
+		} else {
+			url.searchParams.delete('admin');
+			history.replaceState(null, '', url.toString());
+		}
+	});
+
 	onMount(async () => {
 		// Listen for session completion
 		await pb.collection('Session').subscribe(data.sessionData.id, async (res) => {
@@ -47,6 +52,13 @@
 			} catch (e) {
 				console.error(e);
 			}
+		});
+	});
+
+	$effect.pre(() => {
+		const newTitle = title;
+		untrack(() => {
+			titles.setMainTitle(newTitle);
 		});
 	});
 </script>

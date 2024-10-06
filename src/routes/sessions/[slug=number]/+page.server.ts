@@ -3,34 +3,39 @@ import { createNode } from '$lib/server/sessions/create';
 import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
 import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
 
-export const load: ServerLoad = async ({ params, parent, locals }) => {
+export const load: ServerLoad = async ({ params, locals }) => {
 	const sessionData = await getSession(Number(params.slug));
 	const nodesAndLinks = await buildNodesAndLinks(sessionData);
 
+	// Admin only
 	let events: GraphEvent[] = [];
 	let ends: End[] = [];
-
-	if (locals.pb.authStore.isValid) {
-		const scenario = sessionData.expand.scenario.id;
-		events = await locals.pb.collection('Event').getFullList({
-			filter: locals.pb.filter('scenario = {:scenario}', { scenario })
-		});
-		ends = await locals.pb.collection('End').getFullList({
-			filter: locals.pb.filter('scenario = {:scenario}', { scenario })
-		});
+	if (sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin') {
+		if (locals.pb.authStore.isValid) {
+			const scenario = sessionData.expand.scenario.id;
+			events = await locals.pb.collection('Event').getFullList({
+				filter: locals.pb.filter('scenario = {:scenario}', { scenario })
+			});
+			ends = await locals.pb.collection('End').getFullList({
+				filter: locals.pb.filter('scenario = {:scenario}', { scenario })
+			});
+		}
 	}
+	// ---
 
 	const sides = await locals.pb.collection('Side').getFullList({
 		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData.expand.scenario.id })
 	});
 
 	return {
-		...(await parent()),
 		sessionData,
 		nodesAndLinks,
 		events,
 		sides,
-		ends
+		ends,
+		// Admin onlys
+		isAdmin:
+			sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin'
 	};
 };
 
@@ -75,9 +80,16 @@ export const actions: Actions = {
 	// Admin only
 	addEvent: async ({ request, locals }) => {
 		const data = await request.formData();
-
 		const eventId = data.get('eventId') as string;
 		const sessionId = data.get('session') as string;
+
+		// check if user is superAdmin or author
+		if (locals.pb.authStore.model?.role !== 'superAdmin') {
+			const session = await locals.pb.collection('Session').getOne(sessionId, { fields: 'author' });
+			if (session.author !== locals.pb.authStore.model?.id) {
+				return fail(401, { success: false, error: 'Unauthorized' });
+			}
+		}
 
 		if (!sessionId) {
 			return fail(500, { success: false, error: 'Not in a session' });
@@ -112,6 +124,14 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const sessionId = data.get('session') as string;
 		const endId = data.get('endId') as string;
+
+		// check if user is superAdmin or author
+		if (locals.pb.authStore.model?.role !== 'superAdmin') {
+			const session = await locals.pb.collection('Session').getOne(sessionId, { fields: 'author' });
+			if (session.author !== locals.pb.authStore.model?.id) {
+				return fail(401, { success: false, error: 'Unauthorized' });
+			}
+		}
 
 		if (!sessionId) {
 			return fail(500, { success: false, error: 'Not in a session' });

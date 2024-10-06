@@ -9,7 +9,8 @@
     "endSession": "セッションを終了",
     "sessionEnded": "セッションが終了しました",
     "sortByNotCompleted": "未完了で並べ替え",
-    "noSessions": "セッションがありません"
+    "noSessions": "セッションがありません",
+    "otherSessions": "他のセッション"
   },
   "scenario": {
     "scenario": "シナリオ",

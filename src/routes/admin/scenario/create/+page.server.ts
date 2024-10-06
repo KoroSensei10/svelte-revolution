@@ -1,8 +1,16 @@
 import { fail, type Actions } from '@sveltejs/kit';
 import { createEventsAndEnds, createScenario } from '$lib/server/scenario/create';
+import type { MyPocketBase } from '$types/pocketBase';
 
 export const actions = {
 	createScenario: async ({ request, locals }) => {
+		const pb = locals.pb as MyPocketBase;
+		if (!pb || !pb.authStore) {
+			return fail(500, { error: 'Database not connected' });
+		} else if (!pb.authStore.isValid || !pb.authStore.model) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
 		const data = await request.formData();
 
 		const title = data.get('title');
@@ -33,7 +41,6 @@ export const actions = {
 		}
 
 		try {
-			const pb = locals.pb;
 			const scenario = await createScenario(pb, {
 				title,
 				prologue,

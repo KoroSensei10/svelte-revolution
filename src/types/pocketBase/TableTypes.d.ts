@@ -1,9 +1,7 @@
 declare module '$types/pocketBase/TableTypes' {
 	export type NodeType = 'contribution' | 'event' | 'startNode';
-
-	export interface Lang {
-		name: 'fr' | 'en' | 'jp';
-	}
+	export type Lang = 'fr' | 'en' | 'jp';
+	export type Role = 'admin' | 'user' | 'superAdmin'; // see in the database
 
 	export interface GraphNode {
 		id: string;
@@ -52,6 +50,7 @@ declare module '$types/pocketBase/TableTypes' {
 		public: boolean;
 		scenario: string;
 		events: string[];
+		author: string;
 		end?: string;
 		expand: {
 			scenario: Scenario;
@@ -67,9 +66,10 @@ declare module '$types/pocketBase/TableTypes' {
 
 	export interface User {
 		id: string;
-		name?: string;
 		username: string;
-		email: string;
+		role: Role;
+		email?: string;
+		name?: string;
 		avatar?: string;
 	}
 }

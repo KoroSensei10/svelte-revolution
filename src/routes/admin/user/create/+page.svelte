@@ -20,6 +20,9 @@
 				position: 'bottom-center'
 			});
 		}
+		if (form?.error) {
+			toast.error(form.error, { duration: 5000, position: 'bottom-center' });
+		}
 	});
 </script>
 
@@ -69,8 +72,4 @@
 			{$t('user.createUser')}
 		</button>
 	</form>
-
-	{#if form?.err}
-		<p class="p-4 text-red-500">{form.err}</p>
-	{/if}
 </div>
