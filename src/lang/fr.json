@@ -9,7 +9,8 @@
     "endSession": "Terminer la session",
     "sessionEnded": "Session terminée",
     "sortByNotCompleted": "Trier par non terminé",
-    "noSessions": "Aucune session"
+    "noSessions": "Aucune session",
+    "otherSessions": "Autres sessions"
   },
   "scenario": {
     "scenario": "Scénario",

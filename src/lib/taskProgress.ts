@@ -45,24 +45,24 @@ export const tasks: Task[] = [
 	{
 		taskName: 'Admin',
 		duration: 0,
-		completed: false,
+		completed: true,
 		inCharge: 'Mathis',
 		order: 5,
 		subTasks: [
 			{
 				taskName: 'Création de compte',
 				duration: 5,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: 'Terminer une session',
 				duration: 2,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: 'Ajouter un événement dans une session',
 				duration: 8,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: 'Link les users aux sessions et aux scénarios',
@@ -86,12 +86,12 @@ export const tasks: Task[] = [
 			{
 				taskName: 'Ajouter les sides aux messages',
 				duration: 2,
-				completed: false
+				completed: true
 			},
 			{
 				taskName: 'Couleur des noeuds',
 				duration: 2,
-				completed: true
+				completed: false
 			}
 		]
 	},
