@@ -1,5 +1,5 @@
-// import adapter from '@sveltejs/adapter-auto';
-import adapter from 'svelte-adapter-bun';
+import adapter from '@sveltejs/adapter-auto';
+// import adapter from 'svelte-adapter-bun';
 const config = {
 	compilerOptions: {
 		runes: true,
