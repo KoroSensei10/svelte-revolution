@@ -4,56 +4,74 @@
 
 ### Prérequis
 
--   [Node.js](https://nodejs.org/en/)
+- [Git](https://git-scm.com/) : Gestionnaire de versions
+- [Docker](https://www.docker.com/) : Conteneurisation & Déploiement
+    - [Docker Desktop](https://www.docker.com/products/docker-desktop) : Version Desktop
+    - [Docker Compose](https://docs.docker.com/compose/) : Outil de gestion de conteneurs
+- [Bun](https://bun.sh/) : Gestionnaire de packet & Runtime \
+  ou
+- [Node.js](https://nodejs.org/en/) Environnement d'exécution JavaScript (version > 20)
 
 ### Installation des dépendances
 
+Windows : `powershell -c "irm bun.sh/install.ps1 | iex"`
+Mac & Linux : `curl -fsSL https://bun.sh/install | bash`
+
+Clone du projet :
+`git clone https://github.com/KoroSensei10/svelte-revolution.git`
+
 ```bash
-npm install
+bun install
 ```
 
 ### Lancer le projet en mode développement
 
+Lancer le serveur de développement :
+
 ```bash
-npm run dev
+bun dev
+```
+
+### Tester la production
+
+Lancer le serveur de production :
+
+```bash
+bun run build
+bun run preview
 ```
 
 ## Structure du projet
 
--   `src/` : code source
-    -   `lib/` : fonctions utilitaires
-    -   `components/` : composants
-    -   `routes/` : Toutes les routes de l'application
-        -   `admin/` : pages d'administration
--   `public/` : fichiers statiques
--   `build/` : fichiers générés
--   `node_modules/` : dépendances
+- `src/` : code source
+    - `lib/` : fonctions utilitaires
+    - `components/` : composants
+    - `routes/` : Toutes les routes de l'application
+        - `admin/` : pages d'administration
+- `public/` : fichiers statiques
+- `build/` : fichiers générés
+- `node_modules/` : dépendances
 
 ## Technologies utilisées
 
 ### Frontend
 
--   [Svelte](https://svelte.dev/)
--   [Tailwind CSS](https://tailwindcss.com/)
-
-Svelte est un framework JavaScript qui permet de créer des applications web en générant du code optimisé.
-
-Tailwind CSS est un framework CSS qui permet de créer des interfaces rapidement en utilisant des classes utilitaires.
+- [Svelte](https://svelte.dev/) : Framework JavaScript
+- [Tailwind CSS](https://tailwindcss.com/) : Framework CSS
+    - [DaisyUI](https://daisyui.com/) : Composants Tailwind CSS
 
 ### Backend
 
--   [SvelteKit](https://kit.svelte.dev/)
-
-SvelteKit est un framework basé sur Svelte qui permet de créer des applications web avec un backend intégré.
-
-Sert pour le rendu côté serveur, la gestion des routes, etc.
+- [Vite](https://vitejs.dev/) : Bundler et Runner pour le développement
+- [SvelteKit](https://kit.svelte.dev/) : Meta-Framework pour Svelte
+- [Docker](https://www.docker.com/) : Conteneurisation & Déploiement
+- [PocketBase](https://pocketbase.io/) : Base de données et API auto-hébergée
 
 ### Outils
 
--   [TypeScript](https://www.typescriptlang.org/)
--   [Vite](https://vitejs.dev/)
--   [ESLint](https://eslint.org/)
--   [Prettier](https://prettier.io/)
+- [TypeScript](https://www.typescriptlang.org/) : Langage de programmation apportant des types à JavaScript
+- [Prettier](https://prettier.io/) : Formateur de code
+- [ESLint](https://eslint.org/) : Linter de code
 
 ## Styler avec Tailwind CSS
 
@@ -64,24 +82,48 @@ Similaire à Bootstrap, mais plus minimaliste. Simplemement ajouter des classes 
 
 La manière la plus simple est d'ajouter les classes directement dans le code HTML. C'est aussi la méthode recommandée.
 
-```svelte
-<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"> Button </button>
+```html
+
+<button class="px-4 py-2 font-bold text-white bg-blue-500
+ rounded hover:bg-blue-700"> Button
+</button>
 ```
 
-### Exemple avec postcss
+## Déploiement
 
-Il est aussi possible d'utiliser les classes Tailwind CSS dans un fichier `.svelte` en utilisant le langage `postcss`.
+#### Environnement
 
-```svelte
-<button> Button </button>
+##### Adapter
 
-<style class="postcss">
-	button {
-		@apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
-	}
-</style>
+Voir cette ligne dans ce fichier : [svelte.config.js:1](svelte.config.js:1)
+
+##### Variables d'environnement
+
+Variable d'envrionnement dans le fichier [.env.production](.env.production)
+
+### Vercel
+
+Utiliser l'adapter auto (ou vercel).
+
+**Auto déploiement sur Vercel à chaque push.**
+
+La branche de déploiement est `main`.\
+La branche de test est `staging`.
+
+### Docker
+
+Utiliser l'adapter Bun.
+
+
+```bash
+docker-compose up --build
 ```
 
 ### Documentation
 
--   [Tailwind CSS](https://tailwindcss.com/docs)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [DaisyUI](https://daisyui.com/docs)
+- [Svelte](https://svelte.dev/docs)
+- [SvelteKit](https://kit.svelte.dev/docs)
+- [PocketBase](https://pocketbase.io/docs)
+
