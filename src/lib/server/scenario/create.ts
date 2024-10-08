@@ -31,7 +31,7 @@ export async function createEventsAndEnds(
 				author: eventAuthors[i],
 				scenario: scenarioId
 			},
-			{ requestKey: null } // See https://github.com/pocketbase/js-sdk#auto-cancellation
+			{ requestKey: null } // Auto cancel See https://github.com/pocketbase/js-sdk#auto-cancellation
 		)
 	);
 

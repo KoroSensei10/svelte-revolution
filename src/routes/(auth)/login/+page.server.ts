@@ -12,7 +12,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await locals.pb.collection('users').authWithPassword(username, password);
+			await locals.pb.collection('Users').authWithPassword(username, password);
 		} catch (err) {
 			const error = err as ClientResponseError;
 			return fail(400, { error: error.message });
@@ -24,6 +24,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const cookie = data.get('cookie') as string;
 		try {
+			locals.pb.authStore.clear();
 			locals.pb.authStore.loadFromCookie(cookie);
 		} catch (err) {
 			const error = err as ClientResponseError;

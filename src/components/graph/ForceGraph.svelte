@@ -1,5 +1,3 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import {
@@ -17,7 +15,7 @@
 		zoomIdentity
 	} from 'd3';
 	import type { LinkMessage, NodeMessage } from '$types/graph';
-	import { pb } from '$lib/pocketbase';
+	import { pb } from '$lib/client/pocketbase';
 	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
 	import { updateLabelsInGraph, updateLinksInGraph, updateNodesInGraph } from './utils';
 	import toast from 'svelte-french-toast';
@@ -138,9 +136,6 @@
 						icon: '📩'
 					});
 				}
-				const side = await pb.collection('Side').getOne(record.side);
-				record.expand = {};
-				record.expand.side = side;
 				updateGraph(record, record.parent);
 			},
 			{

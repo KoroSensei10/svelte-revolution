@@ -55,7 +55,7 @@ declare module '$types/pocketBase/TableTypes' {
 		expand: {
 			scenario: Scenario;
 			end: End;
-			event: GraphEvent[];
+			events: GraphEvent[];
 		};
 	}
 
