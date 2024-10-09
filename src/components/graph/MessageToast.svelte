@@ -1,5 +1,3 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import toast_, { type Toast } from 'svelte-french-toast';
 	import { selectedNodeStore } from '$stores/graph';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
-	import { pb } from '$lib/pocketbase';
+	import { pb } from '$lib/client/pocketbase';
 	import graphe1 from '$lib/assets/graphe1.png';
 
 	import type { Session } from '$types/pocketBase/TableTypes';

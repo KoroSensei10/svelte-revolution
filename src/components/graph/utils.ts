@@ -1,8 +1,8 @@
 import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
+import { get } from 'svelte/store';
 import type { LinkMessage, NodeMessage } from '$types/graph';
 import type { BaseType } from 'd3';
 import * as d3 from 'd3';
-import { get } from 'svelte/store';
 
 export const colors = {
 	startNode: '#1b3022',

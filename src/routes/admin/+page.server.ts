@@ -1,9 +1,13 @@
-import type { Session, User } from '$types/pocketBase/TableTypes';
-import { type ServerLoad } from '@sveltejs/kit';
+import type { Session } from '$types/pocketBase/TableTypes';
+import { redirect, type ServerLoad } from '@sveltejs/kit';
 
 export const load: ServerLoad = async ({ locals }) => {
 	const pb = locals.pb;
-	const user = pb.authStore.model as User;
+	const user = pb.authStore.model;
+	if (!user) {
+		pb.authStore.clear();
+		redirect(303, '/login');
+	}
 	const sessions = await pb.collection('Session').getFullList({
 		filter: pb.filter('author = {:user}', { user: user.id }),
 		expand: 'scenario'

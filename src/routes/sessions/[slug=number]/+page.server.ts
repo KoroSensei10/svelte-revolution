@@ -4,8 +4,9 @@ import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
 import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
 
 export const load: ServerLoad = async ({ params, locals }) => {
-	const sessionData = await getSession(Number(params.slug));
-	const nodesAndLinks = await buildNodesAndLinks(sessionData);
+	const pb = locals.pb;
+	const sessionData = await getSession(pb, Number(params.slug));
+	const nodesAndLinks = await buildNodesAndLinks(pb, sessionData);
 
 	// Admin only
 	let events: GraphEvent[] = [];
@@ -31,8 +32,8 @@ export const load: ServerLoad = async ({ params, locals }) => {
 		sessionData,
 		nodesAndLinks,
 		events,
-		sides,
 		ends,
+		sides,
 		// Admin onlys
 		isAdmin:
 			sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin'
@@ -98,7 +99,7 @@ export const actions: Actions = {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 
-		let createdEventNode: GraphEvent;
+		let createdEventNode: GraphEvent | null = null;
 		try {
 			const { title, text, author } = await locals.pb.collection('Event').getOne(eventId);
 			const firstNode = await locals.pb.collection('Node').getFirstListItem(
@@ -108,16 +109,19 @@ export const actions: Actions = {
 				})
 			);
 			createdEventNode = await createNode(locals.pb, title, text, author, sessionId, firstNode, 'event');
-			await locals.pb.collection('Session').update(sessionId, { events: createdEventNode.id });
+			await locals.pb.collection('Session').update(sessionId, { events: eventId });
 		} catch (error) {
 			console.error('Error creating event:', JSON.stringify(error));
+			if (createdEventNode) {
+				await locals.pb.collection('Node').delete(createdEventNode.id);
+			}
 			return fail(500, { success: false, error: 'Error while creating event' });
 		}
 
 		return {
 			status: 200,
 			success: true,
-			body: { message: 'Event added', event: JSON.stringify(createdEventNode) }
+			body: { message: 'Event added', event: createdEventNode }
 		};
 	},
 	endSession: async ({ request, locals }) => {
