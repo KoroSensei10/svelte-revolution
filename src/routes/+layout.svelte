@@ -70,6 +70,9 @@
 	<a class="font-semibold transition-all max-sm:order-first hover:pl-1 dark:text-white" href="/sessions">
 		{$t('sessions.sessions')}
 	</a>
+	<a class="font-semibold transition-all hover:pl-1 dark:text-white" href="/home">
+		{$t('home')}
+	</a>
 	{#if data.user}
 		<div class="flex justify-end w-full gap-2 sm:justify-start">
 			{#if data.isAdmin}

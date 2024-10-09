@@ -1,5 +1,3 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 	import Sessions from '$components/listing/Sessions.svelte';
