@@ -15,6 +15,7 @@ export const actions: Actions = {
 			await locals.pb.collection('Users').authWithPassword(username, password);
 		} catch (err) {
 			const error = err as ClientResponseError;
+			console.log('Error:', error);
 			return fail(400, { error: error.message });
 		}
 		return redirect(303, '/admin');

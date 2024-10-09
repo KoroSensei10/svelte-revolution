@@ -2,7 +2,7 @@ import adapter from '@sveltejs/adapter-auto';
 // import adapter from 'svelte-adapter-bun';
 const config = {
 	compilerOptions: {
-		runes: true,
+		runes: true
 	},
 	vitePlugin: {
 		dynamicCompileOptions({ filename }) {
