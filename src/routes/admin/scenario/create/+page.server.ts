@@ -52,7 +52,9 @@ export const actions = {
 
 			try {
 				await createEventsAndEnds(pb, scenario.id, events, eventTexts, eventAuthors, ends, endTexts);
-				await pb.collection('Side').create(sides.map((side) => ({ scenario: scenario.id, name: side })));
+				sides.forEach(async (side) => {
+					await pb.collection('Side').create({ scenario: scenario.id, name: side }, { requestKey: null });
+				});
 			} catch (error) {
 				pb.collection('scenario').delete(scenario.id);
 				return fail(500, { error: String(error) });

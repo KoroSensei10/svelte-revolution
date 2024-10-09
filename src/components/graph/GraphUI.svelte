@@ -1,5 +1,3 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
@@ -43,6 +41,10 @@
 				nodeTitle = '';
 				nodeText = '';
 				localStorage.setItem('author', nodeAuthor);
+
+				if (result.data?.body?.event) {
+					session.expand.events.push(result.data.body.event);
+				}
 				break;
 			default:
 				break;
@@ -214,7 +216,8 @@
 		<select {name} id={name} class="w-full border rounded">
 			<option disabled selected>{trad}</option>
 			{#each values as value}
-				{@const alreadySelected = needDisabled && events.some((event) => event.id === value.id)}
+				{@const alreadySelected =
+					needDisabled && session.expand.events?.filter((event) => event.id === value.id).length > 0}
 				<option disabled={alreadySelected} value={value.id}>{value.title}</option>
 			{/each}
 		</select>
