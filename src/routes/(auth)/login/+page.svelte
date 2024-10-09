@@ -5,7 +5,7 @@
 	import type { ActionData } from './$types';
 	import nProgress from 'nprogress';
 	import toast from 'svelte-french-toast';
-	import { pb } from '$lib/pocketbase';
+	import { pb } from '$lib/client/pocketbase';
 
 	interface Props {
 		form: ActionData;

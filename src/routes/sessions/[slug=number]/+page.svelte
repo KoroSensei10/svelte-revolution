@@ -4,7 +4,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { page } from '$app/stores';
 	import { replaceState } from '$app/navigation';
-	import { pb } from '$lib/pocketbase';
+	import { pb } from '$lib/client/pocketbase';
 	import { initStores } from './utils';
 	import GraphUi from '$components/graph/GraphUI.svelte';
 	import ForceGraph from '$components/graph/ForceGraph.svelte';
