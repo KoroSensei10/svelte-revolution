@@ -27,7 +27,7 @@
 		"@sveltejs/adapter-node": "^5.2.6",
 		"@sveltejs/adapter-vercel": "^5.4.5",
 		"@sveltejs/kit": "^2.6.4",
-		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.7",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.8",
 		"@types/bcrypt": "^5.0.2",
 		"@types/d3": "^7.4.3",
 		"@types/eslint": "^9.6.1",

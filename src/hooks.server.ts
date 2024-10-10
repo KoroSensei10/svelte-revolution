@@ -1,8 +1,13 @@
 import { dev } from '$app/environment';
 import { createPocketBase } from '$lib/server/pocketbase';
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
+
+	if (event.request.url.endsWith('__data.json')) {
+		redirect(300, event.request.url.replace(/__data.json$/, ''));
+	}
+
 	event.locals.pb = createPocketBase();
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
