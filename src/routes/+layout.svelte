@@ -10,8 +10,9 @@
 	import NProgress from 'nprogress';
 	import { typewriter } from '$lib/animations';
 	import { Toaster } from 'svelte-french-toast';
-	import type { User } from '$types/pocketBase/TableTypes';
 	import { titles } from '$stores/titles/index.svelte';
+	import type { User } from '$types/pocketBase/TableTypes';
+	import { viewportStore } from '$stores/ui/index.svelte';
 
 	type Props = {
 		data: { user: User; isAdmin: boolean };
@@ -38,6 +39,8 @@
 		visible = true;
 	});
 </script>
+
+<svelte:window on:resize={() => viewportStore.updateViewport(window)} />
 
 <!-- UI -->
 <Toaster />
