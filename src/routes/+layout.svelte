@@ -21,6 +21,8 @@
 
 	let visible = $state(false);
 
+	let checked = $state(false);
+
 	NProgress.configure({
 		// Full list: https://github.com/rstacruz/nprogress#configuration
 		minimum: 0.16
@@ -31,6 +33,7 @@
 			NProgress.start();
 		} else {
 			NProgress.done();
+			checked = false;
 		}
 	});
 
@@ -41,7 +44,7 @@
 
 <!-- UI -->
 <Toaster />
-<select
+<!-- <select
 	bind:value={$locale}
 	class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl"
 	id="langSelect"
@@ -94,7 +97,32 @@
 			{$t('login')}
 		</a>
 	{/if}
-</nav>
+</nav> -->
+
+<div class="z-50 drawer">
+	<input id="my-drawer" type="checkbox" bind:checked class="drawer-toggle" />
+	<div
+		class="fixed top-0 left-0 self-center p-4 text-center border-b border-r rounded-br-lg w-fit h-fit drawer-content"
+	>
+		<label for="my-drawer" class="w-full drawer-button">nav</label>
+	</div>
+	<div class="drawer-side">
+		<label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+		<ul class="flex flex-col justify-start h-full gap-4 p-4 text-xl text-white bg-gray-900 w-fit">
+			<!-- Sidebar content here -->
+			<li>
+				<a href="/">Home</a>
+			</li>
+			<li>
+				<a href="/sessions">Sessions</a>
+			</li>
+			<li>
+				<a href="/login">Login</a>
+			</li>
+			<li>Votre Profil</li>
+		</ul>
+	</div>
+</div>
 
 {@render children()}
 
