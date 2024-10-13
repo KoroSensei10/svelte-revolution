@@ -1,152 +1,186 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import * as d3 from 'd3';
+	import { onDestroy, onMount, untrack } from 'svelte';
+	import {
+		zoom as d3Zoom,
+		drag,
+		forceLink,
+		forceManyBody,
+		forceRadial,
+		forceSimulation,
+		forceX,
+		forceY,
+		select,
+		zoomIdentity,
+		type Selection,
+		type Simulation,
+		type SimulationNodeDatum,
+		type SimulationLinkDatum,
+		type D3DragEvent
+	} from 'd3';
+	import { homeStore, type ExampleNode } from '$stores/home/index.svelte';
+	import { scale, slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import { t } from 'svelte-i18n';
 
-	interface ExampleNode extends d3.SimulationNodeDatum {
-		id: number;
-		title: string;
-		text: string;
-	}
+	const width = 300;
+	const forces = {
+		forceX: 2,
+		forceY: 2,
+		forceLink: 1.2,
+		distanceLink: 80,
+		radialStrength: 0.3,
+		charge: -600,
+		radius: 50
+	};
 
-	const nodes: ExampleNode[] = [
-		{
-			id: 1,
-			title: 'Node 1',
-			text: 'Node 1 text'
-		},
-		{
-			id: 2,
-			title: 'Node 2',
-			text: 'Node 2 text'
-		},
-		{
-			id: 3,
-			title: 'Node 3',
-			text: 'Node 3 text'
-		},
-		{
-			id: 4,
-			title: 'Node 4',
-			text: 'Node 4 text'
-		},
-		{
-			id: 5,
-			title: 'Node 5',
-			text: 'Node 5 text'
-		}
-	];
-
-	const links = [
-		{ source: 1, target: 2 },
-		{ source: 1, target: 3 },
-		{ source: 2, target: 4 },
-		{ source: 3, target: 5 }
-	];
-
-	let selectedNode: ExampleNode = $state(nodes[0]);
+	const zoom = d3Zoom().on('zoom', (e) => {
+		const { transform } = e;
+		nodeLayer.attr('transform', transform);
+		labelLayer.attr('transform', transform);
+		const strokeWidth = 3 / Math.sqrt(transform.k);
+		nodeLayer.style('stroke-width', strokeWidth);
+		labelLayer.style('stroke-width', strokeWidth);
+	});
 
 	let svg: SVGElement;
-	let svgElement: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-	let simulation: d3.Simulation<ExampleNode, d3.SimulationLinkDatum<ExampleNode>> = d3
-		.forceSimulation(nodes)
+	let svgElement: Selection<SVGSVGElement, unknown, null, undefined>;
+	let nodeLayer: Selection<SVGGElement, ExampleNode, null, undefined>;
+	let labelLayer: Selection<SVGGElement, ExampleNode, null, undefined>;
+
+	let link: { source: ExampleNode; target: ExampleNode }[];
+	let node: ExampleNode[];
+	let label: ExampleNode[];
+
+	let simulation: Simulation<ExampleNode, SimulationLinkDatum<ExampleNode>> = forceSimulation(homeStore.nodes)
 		.force(
 			'link',
-			d3
-				.forceLink<ExampleNode, d3.SimulationLinkDatum<ExampleNode>>(links)
+			forceLink<ExampleNode, SimulationLinkDatum<ExampleNode>>(homeStore.links)
 				.id((d) => d.id)
-				.distance(100)
+				.distance(forces.distanceLink)
+				.strength(forces.forceLink)
 		)
-		.force('charge', d3.forceManyBody().strength(-300));
+		.force('charge', forceManyBody().strength(forces.charge))
+		.force('centerNode', forceRadial(forces.radius, width / 2, width / 2).strength(forces.radialStrength))
+		.force(
+			'x',
+			forceX(width).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceX : 0))
+		)
+		.force(
+			'y',
+			forceY(width).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceY : 0))
+		);
+
+	function dragstarted(event: D3DragEvent<SVGElement, SimulationNodeDatum, undefined>, d: SimulationNodeDatum) {
+		if (!event.active) simulation.alphaTarget(0.3).restart();
+		d.fx = d.x;
+		d.fy = d.y;
+	}
+	function dragged(event: D3DragEvent<SVGElement, SimulationNodeDatum, undefined>, d: SimulationNodeDatum) {
+		d.fx = event.x;
+		d.fy = event.y;
+	}
+	function dragended(event: D3DragEvent<SVGElement, SimulationNodeDatum, undefined>, d: SimulationNodeDatum) {
+		if (!event.active) simulation.alphaTarget(0);
+		d.fx = null;
+		d.fy = null;
+	}
+
+	$effect(() => {
+		if (homeStore.selectedNode) {
+			untrack(() => {
+				simulation
+					.force(
+						'x',
+						forceX(width / 2).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceX : 0))
+					)
+					.force(
+						'y',
+						forceY(width / 2).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceY : 0))
+					);
+				simulation.alpha(0.1).restart();
+			});
+		}
+		if (homeStore.selectedNode?.id === 5) {
+			svgElement?.call(zoom).call(zoom.transform, zoomIdentity);
+		}
+	});
 
 	onMount(() => {
-		svgElement = d3.select(svg);
-		const box = svg.getBoundingClientRect();
-		const xCenter = (box.left + box.right) / 1.4;
-		const yCenter = box.top + box.bottom / 1.6;
+		untrack(() => {
+			svgElement = select(svg);
+			nodeLayer = svgElement.append('g');
+			labelLayer = svgElement.append('g');
 
-		simulation.force('center', d3.forceCenter(xCenter / 2, yCenter / 2));
+			label = labelLayer
+				.append('g')
+				.selectAll('text')
+				.data(homeStore.nodes)
+				.enter()
+				.append('text')
+				.text((d) => $t(d.title))
+				.attr('dy', () => -18)
+				.attr('fill', 'white')
+				.attr('font-size', 12)
+				.attr('text-anchor', 'middle')
+				.attr('alignment-baseline', 'middle')
+				.style('cursor', 'pointer')
+				.call(drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
+				.on('click', (event, d) => {
+					homeStore.selectedNode = d;
+				});
 
-		const link = svgElement
-			.append('g')
-			.selectAll('line')
-			.data(links)
-			.enter()
-			.append('line')
-			.attr('stroke', '#999')
-			.attr('stroke-width', 2);
+			link = nodeLayer
+				.append('g')
+				.selectAll('line')
+				.data(homeStore.links)
+				.enter()
+				.append('line')
+				.attr('stroke', '#999')
+				.attr('stroke-width', 2);
 
-		const node = svgElement
-			.append('g')
-			.selectAll('circle')
-			.data(nodes)
-			.enter()
-			.append('circle')
-			.style('cursor', 'pointer')
-			.call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
-			.on('click', (event, d) => {
-				selectedNode = d;
-			})
-			.attr('r', (d) => (d.id === selectedNode.id ? 20 : 10))
-			.attr('fill', (d) => (d.id === selectedNode.id ? 'red' : 'yellow'));
+			node = nodeLayer
+				.append('g')
+				.selectAll('circle')
+				.data(homeStore.nodes)
+				.enter()
+				.append('circle')
+				.style('cursor', 'pointer')
+				.call(drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
+				.on('click', (event, d) => {
+					homeStore.selectedNode = d;
+				});
 
-		simulation.on('tick', () => {
-			link.attr('x1', (d) => d.source.x)
-				.attr('y1', (d) => d.source.y)
-				.attr('x2', (d) => d.target.x)
-				.attr('y2', (d) => d.target.y);
+			simulation.on('tick', () => {
+				if (!node || !link || !label) return;
+				node.attr('cx', (d) => Number(d.x))
+					.attr('cy', (d) => Number(d.y))
+					.attr('r', (d) => (d.id === homeStore.selectedNode?.id ? 15 : 10))
+					.attr('fill', (d) => (d.id === homeStore.selectedNode?.id ? 'yellow' : 'green'));
 
-			node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
-			// TODO: move this outside of the tick event to avoid re-rendering all nodes
+				link.attr('x1', (d) => d.source.x ?? 0)
+					.attr('y1', (d) => Number(d.source.y) ?? 0)
+					.attr('x2', (d) => Number(d.target.x) ?? 0)
+					.attr('y2', (d) => Number(d.target.y) ?? 0);
+
+				label.attr('x', (d) => d.x).attr('y', (d) => d.y);
+			});
+
+			simulation.alpha(1).restart();
 		});
+	});
 
-		function dragstarted(
-			event: d3.D3DragEvent<SVGElement, d3.SimulationNodeDatum, undefined>,
-			d: d3.SimulationNodeDatum
-		) {
-			if (!event.active) simulation.alphaTarget(0.3).restart();
-			d.fx = d.x;
-			d.fy = d.y;
-		}
-
-		function dragged(
-			event: d3.D3DragEvent<SVGElement, d3.SimulationNodeDatum, undefined>,
-			d: d3.SimulationNodeDatum
-		) {
-			d.fx = event.x;
-			d.fy = event.y;
-		}
-
-		function dragended(
-			event: d3.D3DragEvent<SVGElement, d3.SimulationNodeDatum, undefined>,
-			d: d3.SimulationNodeDatum
-		) {
-			if (!event.active) simulation.alphaTarget(0);
-			d.fx = null;
-			d.fy = null;
-		}
+	onDestroy(() => {
+		simulation.stop();
 	});
 </script>
 
-<div class="flex items-center justify-center w-full h-screen">
-	<div class="flex w-full gap-4 p-4 h-2/3">
-		<svg bind:this={svg} class="w-2/3 border rounded"></svg>
-		<div class="flex flex-col self-start w-1/3 gap-4">
-			<h1 class="text-center">Introduction à Babel Révolution</h1>
-			<div class="border rounded collapse collapse-plus sm:collapse-arrow">
-				<input checked={true} class="" name="GraphUI" type="checkbox" />
-				<div class="font-bold collapse-title">
-					{$t('nodeInformation')}
-				</div>
-				<div class="text-white collapse-content">
-					{#if selectedNode}
-						<div class="text-xl font-semibold first-letter:capitalize">{selectedNode.title}</div>
-						<div class="pl-1 overflow-auto max-h-44">{selectedNode.text}</div>
-					{:else}
-						<div class="pb-0 text-xl text-center first-letter:capitalize">{$t('noNodeSelected')}</div>
-					{/if}
-				</div>
-			</div>
-		</div>
-	</div>
+<div
+	in:scale={{
+		duration: 400,
+		easing: quintOut,
+		start: 0.2
+	}}
+	class="bg-black border-4 rounded-full w-fit bg-dotted-gray bg-dotted-20"
+>
+	<svg bind:this={svg} {width} height={width} class="rounded-full"></svg>
 </div>

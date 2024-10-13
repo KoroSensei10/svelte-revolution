@@ -10,6 +10,10 @@
 		font-style: normal;
 	}
 
+	h1 {
+		@apply p-4 text-5xl text-center;
+	}
+
 	input {
 		@apply bg-transparent;
 	}

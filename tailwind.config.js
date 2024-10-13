@@ -7,6 +7,17 @@ export default {
 	darkMode: 'selector',
 	theme: {
 		extend: {
+			backgroundImage: {
+				'dotted-white': 'radial-gradient(white 1px, transparent 1px)', // Motif de points
+				'dotted-gray': 'radial-gradient(#4a5568 1px, transparent 1px)', // Motif des points
+			},
+			backgroundSize: {
+				'dotted-20': '20px 20px',
+				'dotted-40': '40px 40px'
+			},
+			backgroundColor: {
+				'dark-bg': '#1a202c', // Couleur de fond sombre
+			},
 			fontFamily: {
 				redditSans: ['RedditSans', 'cursive']
 			},

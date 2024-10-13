@@ -30,7 +30,7 @@
 
 	let addNodeChecked = $state(false);
 
-	function handleAddNodeActionResult(result: ActionResult) {
+	function handleActionResult(result: ActionResult) {
 		switch (result.type) {
 			case 'failure':
 				toast.error(result.data?.error, { duration: 3000, position: 'bottom-center' });
@@ -82,7 +82,7 @@
 				nProgress.start();
 				return async ({ update, result }) => {
 					await update({ reset: false });
-					handleAddNodeActionResult(result);
+					handleActionResult(result);
 				};
 			}}
 			oninput={() => (validForm = !!theForm?.checkValidity())}
@@ -208,7 +208,7 @@
 			nProgress.start();
 			return async ({ update, result }) => {
 				await update();
-				handleAddNodeActionResult(result);
+				handleActionResult(result);
 			};
 		}}
 		class="flex flex-col gap-4 p-x-4"
