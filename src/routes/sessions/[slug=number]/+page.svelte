@@ -1,7 +1,5 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
-	import { onMount, untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { replaceState } from '$app/navigation';
 	import { pb } from '$lib/client/pocketbase';

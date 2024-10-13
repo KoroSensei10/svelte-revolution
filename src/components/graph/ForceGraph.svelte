@@ -177,7 +177,7 @@
 
 	onDestroy(() => {
 		unsubscribe();
-		simulation.stop();
+		simulation?.stop();
 	});
 </script>
 

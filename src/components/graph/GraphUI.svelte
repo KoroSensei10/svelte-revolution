@@ -7,6 +7,8 @@
 	import nProgress from 'nprogress';
 	import toast from 'svelte-french-toast';
 	import type { ActionResult } from '@sveltejs/kit';
+	import { slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
 	interface Props {
 		session: Session;
@@ -19,7 +21,7 @@
 
 	let { user = null, session, admin = false, events = [], ends = [], sides = [] }: Props = $props();
 
-	let nodeInfoChecked = $state(false);
+	let nodeInfoChecked = $state(true);
 
 	let nodeTitle = $state('');
 	let nodeText = $state('');
@@ -28,7 +30,7 @@
 	let theForm: HTMLFormElement | undefined = $state();
 	let validForm = $state(false);
 
-	let addNodeChecked = $state(false);
+	let addNodeChecked = $state(true);
 
 	function handleActionResult(result: ActionResult) {
 		switch (result.type) {
@@ -65,11 +67,120 @@
 	});
 </script>
 
-<div
-	class="fixed z-50 flex flex-col w-full bg-black border-t max-sm:bottom-0 bg-opacity-90 sm:top-0 sm:right-0 sm:border-t-0 sm:border-b sm:border-l sm:w-1/3 lg:w-1/4"
+<div class="z-50 bg-black border-t divide-x btm-nav dark:bg-black">
+	<!-- Add Node button -->
+	{#if !session?.completed}
+		<div class="flex flex-col-reverse">
+			<button
+				type="button"
+				class="z-20 flex flex-col items-center justify-center w-full h-full bg-black"
+				onclick={() => (addNodeChecked = !addNodeChecked)}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="w-5 h-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+				<span class="btm-nav-label">{$t('addNode')}</span>
+				<!-- Menu for Add Node -->
+			</button>
+			{#if addNodeChecked}
+				<div
+					transition:slide={{
+						duration: 200,
+						easing: quintOut
+					}}
+					class="absolute left-0 z-10 w-full bg-black border-t opacity-90 bottom-full"
+				>
+					<p>Option 1</p>
+					<p>Option 2</p>
+					<p>Option 2</p>
+					<p>Option 2</p>
+					<p>Option 2</p>
+					<p>Option 2</p>
+					<!-- Ajoute d'autres options ici -->
+				</div>
+			{/if}
+		</div>
+	{:else}
+		<!-- Session End button (if session completed) -->
+		<button>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="w-5 h-5"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12l5-5m0 0l5 5m-5-5v12" />
+			</svg>
+			<span class="btm-nav-label">{$t('sessions.sessionEnded')}</span>
+		</button>
+	{/if}
+
+	<!-- Node Info button -->
+	<div class="flex flex-row-reverse">
+		<button>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="w-5 h-5"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M11 17h2v2h-2v-2zm0-8h2v6h-2V9zm0 0V7h2v2h-2z"
+				/>
+			</svg>
+			<span class="btm-nav-label">{$t('nodeInformation')}</span>
+		</button>
+		{#if true}
+			<div
+				transition:slide={{
+					duration: 200,
+					easing: quintOut
+				}}
+				class="absolute left-0 z-10 w-full p-2 bg-black border-r opacity-90 bottom-full"
+			>
+				<p>Option 1</p>
+				<p>Option 2</p>
+				<p>Option 2</p>
+				<p>Option 2</p>
+				<p>Option 2</p>
+				<p>Option 2</p>
+				<!-- Ajoute d'autres options ici -->
+			</div>
+		{/if}
+	</div>
+
+	<!-- Admin button (visible only for admins) -->
+	{#if admin && user && !session?.completed}
+		<button>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="w-5 h-5"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8" />
+			</svg>
+			<span class="btm-nav-label">{$t('admin')}</span>
+		</button>
+	{/if}
+</div>
+
+<!-- <div
+	class="fixed bottom-0 right-0 z-50 flex flex-col w-full bg-black border-t bg-opacity-90 sm:border-l sm:w-1/3 lg:w-1/4"
 >
 	{#if !session?.completed}
-		<!-- ADD NODE -->
 		<form
 			class="w-full rounded-none collapse collapse-plus sm:collapse-arrow"
 			bind:this={theForm}
@@ -161,7 +272,6 @@
 			</div>
 		</div>
 	{/if}
-	<!-- NODE INFOS -->
 	<div class="border-t rounded-none collapse collapse-plus sm:collapse-arrow">
 		<input bind:checked={nodeInfoChecked} class="" name="GraphUI" type="checkbox" />
 		<div class="font-bold collapse-title">
@@ -178,7 +288,6 @@
 			{/if}
 		</div>
 	</div>
-	<!-- ADMIN -->
 	{#if admin && user && !session?.completed}
 		<div class="border-t rounded-none collapse collapse-plus sm:collapse-arrow">
 			<input type="checkbox" class="" name="GraphUI" />
@@ -191,7 +300,7 @@
 			</div>
 		</div>
 	{/if}
-</div>
+</div> -->
 
 {#snippet formTemplate(
 	values: { id: string; title: string }[],

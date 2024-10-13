@@ -14,7 +14,7 @@ function createTitleStore() {
 
 	return {
 		get mainTitle() {
-			return mainTitle;
+			return mainTitle + BRANCH_NAME;
 		},
 		get navTitle() {
 			return navTitle;
