@@ -1,28 +1,22 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import '../app.css';
 	import { onMount, type Snippet } from 'svelte';
-	import { enhance } from '$app/forms';
 	import { navigating } from '$app/stores';
+	import { enhance } from '$app/forms';
+	import NProgress from 'nprogress';
+	import { Toaster } from 'svelte-french-toast';
 	import { locale, locales, t } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
-	import NProgress from 'nprogress';
-	import { typewriter } from '$lib/animations';
-	import { Toaster } from 'svelte-french-toast';
-	import { titles } from '$stores/titles/index.svelte';
-	import type { User } from '$types/pocketBase/TableTypes';
+	import graph1 from '$lib/assets/graphe1.png';
 	import { viewportStore } from '$stores/ui/index.svelte';
+	import { titleStore } from '$stores/titles/index.svelte';
+	import type { User } from '$types/pocketBase/TableTypes';
 
 	type Props = {
 		data: { user: User; isAdmin: boolean };
 		children: Snippet;
 	};
 	let { data, children }: Props = $props();
-
-	let visible = $state(false);
-
-	let checked = $state(false);
 
 	NProgress.configure({
 		// Full list: https://github.com/rstacruz/nprogress#configuration
@@ -34,109 +28,123 @@
 			NProgress.start();
 		} else {
 			NProgress.done();
-			checked = false;
 		}
 	});
 
 	onMount(() => {
-		visible = true;
+		viewportStore.updateViewport(window);
 	});
 </script>
 
+<svelte:head>
+	<title>Babel Révolution</title>
+	<meta name="description" content="Super snoup" />
+</svelte:head>
 <svelte:window on:resize={() => viewportStore.updateViewport(window)} />
 
-<!-- UI -->
 <Toaster />
-<!-- <select
-	bind:value={$locale}
-	class="fixed bottom-0 right-0 z-50 p-4 text-white bg-gray-900 rounded-tl-xl"
-	id="langSelect"
->
-	{#each $locales as l (l)}
-		<option selected={String($locale).toUpperCase() === l.toUpperCase()} value={l}>
-			{l.split('-')[0].toLocaleUpperCase()}
-		</option>
-	{/each}
-</select>
-<nav
-	class="top-0 left-0 z-50 grid w-full grid-flow-col p-4 pr-2 overflow-hidden font-bold bg-black bg-opacity-80 sm:w-1/3 md:w-1/4 sm:border-b sm:border-r sm:fixed sm:flex sm:flex-col"
->
-	<a
-		class="col-span-1 overflow-hidden text-xl font-semibold text-center transition-all sm:text-start hover:pl-1 whitespace-nowrap dark:text-white"
-		href="/"
-	>
-		{#if visible}
-			{#key titles.mainTitle}
-				<span in:typewriter|global={{ text: titles.mainTitle }} class=""></span><span
-					class="blinking-underscore">_</span
+
+<!-- UI -->
+<nav class="sticky top-0 z-50 border-b border-gray-500 bg-gray-950 navbar opacity-90">
+	<div class="navbar-start">
+		<div class="dropdown">
+			<button tabindex="0" aria-label="menu" class="btn btn-ghost">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="w-5 h-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
 				>
-			{/key}
-		{/if}
-	</a>
-	<a class="font-semibold transition-all max-sm:order-first hover:pl-1 dark:text-white" href="/sessions">
-		{$t('sessions.sessions')}
-	</a>
-	<a class="font-semibold transition-all hover:pl-1 dark:text-white" href="/home">
-		{$t('home')}
-	</a>
-	{#if data.user}
-		<div class="flex justify-end w-full gap-2 sm:justify-start">
-			{#if data.isAdmin}
-				<a
-					href="/admin"
-					class="pr-2 font-semibold transition-all border-r hover:pl-1 hover:pr-1 dark:text-white"
-				>
-					{$t('admin')}
-				</a>
-			{/if}
-			<form class="inline" action="/logout?/logout" use:enhance method="POST">
-				<button type="submit" class="font-semibold transition-all hover:pl-1 dark:text-white">
-					{$t('logout')}
-				</button>
-			</form>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+				</svg>
+			</button>
+			<ul
+				role="menu"
+				tabindex="0"
+				class="z-50 p-2 mt-3 bg-gray-800 shadow menu dropdown-content rounded-box w-52"
+			>
+				<li><a href="/">{$t('nav.home')}</a></li>
+				<li><a href="/sessions">{$t('nav.sessions')}</a></li>
+				{#if data.isAdmin}
+					<li>
+						<a href="/admin">{$t('nav.admin')}</a>
+						<ul class="p-2">
+							<li>
+								<a href="/admin">{$t('sessions.yourSessions')}</a>
+							</li>
+							<li>
+								<a href="/admin/scenario/create">{$t('scenario.createScenario')}</a>
+							</li>
+							<li>
+								<a class="text-nowrap" href="/admin/sessions/create">{$t('sessions.createSession')}</a>
+							</li>
+						</ul>
+					</li>
+				{/if}
+				<li><a href="/roadmap">Roadmap</a></li>
+				{#if viewportStore.actualBreakpoint === 'sm'}
+					<select bind:value={$locale} class="select select-ghost">
+						{#each $locales as loc}
+							<option class="uppercase" value={loc}>{loc.split('-')[0]}</option>
+						{/each}
+					</select>
+				{/if}
+			</ul>
 		</div>
-	{:else}
-		<a href="/login" class="font-semibold transition-all text-end sm:text-start hover:pl-1 dark:text-white">
-			{$t('login')}
-		</a>
-	{/if}
-</nav> -->
+		<a href="/" class="text-xl btn btn-ghost">{titleStore.navTitle}</a>
+	</div>
+	<div class=" navbar-end">
+		{#if viewportStore.actualBreakpoint !== 'sm'}
+			<select bind:value={$locale} class="select select-ghost">
+				{#each $locales as loc}
+					<option value={loc}>{loc.split('-')[1]}</option>
+				{/each}
+			</select>
+		{/if}
+		{#if data.user}
+			<div class="flex-none gap-2">
+				<div class="z-50 dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+						<div class="w-10 rounded-full">
+							<img alt="Tailwind CSS Navbar component" src={graph1} />
+						</div>
+					</div>
+					<ul
+						tabindex="0"
+						role="menu"
+						class="z-50 p-2 mt-3 bg-gray-800 shadow menu menu-sm dropdown-content rounded-box w-52"
+					>
+						<li>
+							<a href="/" class="justify-between">
+								{$t('nav.profile')}
+								<span class="badge">{$t('new')}</span>
+							</a>
+						</li>
+						<li><a href="/">{$t('nav.settings')}</a></li>
+						<form
+							action="/logout?/logout"
+							use:enhance={() => {
+								NProgress.start();
+								return async ({ update }) => {
+									await update({ reset: false });
+									NProgress.done();
+								};
+							}}
+							onsubmit={(e) => e.preventDefault()}
+							method="post"
+						>
+							<button class="z-50 w-full" type="submit">{$t('nav.logout')}</button>
+						</form>
+					</ul>
+				</div>
+			</div>
+		{:else}
+			<a href="/login" class="justify-between btn btn-ghost">{$t('login')}</a>
+		{/if}
+	</div>
+</nav>
 
-<div class="z-50 drawer">
-	<input id="my-drawer" type="checkbox" bind:checked class="drawer-toggle" />
-	<div
-		class="fixed top-0 left-0 self-center p-4 text-center border-b border-r rounded-br-lg w-fit h-fit drawer-content"
-	>
-		<label for="my-drawer" class="w-full drawer-button">nav</label>
-	</div>
-	<div class="drawer-side">
-		<label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-		<ul class="flex flex-col justify-start h-full gap-4 p-4 text-xl text-white bg-gray-900 w-fit">
-			<!-- Sidebar content here -->
-			<li>
-				<a href="/">Home</a>
-			</li>
-			<li>
-				<a href="/sessions">Sessions</a>
-			</li>
-			<li>
-				<a href="/login">Login</a>
-			</li>
-			<li>Votre Profil</li>
-		</ul>
-	</div>
+<div class="inset-0 w-full text-gray-300 bg-black h-fit bg-dotted-gray bg-dotted-40">
+	{@render children()}
 </div>
-
-{@render children()}
-
-<style>
-	.blinking-underscore {
-		animation: blink 1s step-start infinite 2s;
-	}
-
-	@keyframes blink {
-		50% {
-			opacity: 0;
-		}
-	}
-</style>

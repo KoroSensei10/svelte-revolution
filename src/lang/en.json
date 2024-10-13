@@ -63,6 +63,41 @@
 		"password": "Password",
 		"creationSuccess": "User created successfully"
 	},
+	"home": {
+		"home": "Home",
+		"intro": "BⱯBEL RËVOLUㅏION is a monumental project, as rich and diverse as languages themselves. It is both a constantly evolving work, finished creations, and an interactive platform for crafting collaborative stories. This site invites you to dive into a digital writing space where everyone can contribute and co-create, in their own style.",
+		"introHighlight": "Come and reinvent stories, ",
+		"introHyperHighlight": "your way.",
+		"writeMessage": "Write a message",
+		"yourMessage": "Your message",
+		"emptyMessage": "Come on, try to write something!",
+		"send": "Send",
+		"discoverBabel": "Discover BⱯBEL",
+		"joinSession": "Join a Session",
+		"tryDragGraph": "Let's try to drag the graph!"
+	},
+	"exampleGraph": {
+		"title1": "Contemplate the Network",
+		"text1": "The graph appears with at least four interconnected nodes. Each node holds a title, a gateway to an idea. Observe the whole, feel the connections, and discover the relationships between each thought.",
+		"title2": "Dive into the Words",
+		"text2": "Click on a node to unveil the details: the author and the content of the message. Each interaction reveals a new step in understanding the exchanges that precede your input.",
+		"title3": "Add Your Voice",
+		"text3": "By clicking on a node, you can attach your contribution. Write your own message, which will be added to the network, creating a new link or continuing the conversation.",
+		"title4": "Manipulate the Whole",
+		"text4": "Grab a node and move it to see the links react. Shift the entire graph, rearrange your view, and play with the gravity that binds thoughts together.",
+		"title5": "Explore Your Way",
+		"text5": "Use the zoom feature to enlarge or shrink your view of the graph. Whether you want to delve into the details of a specific section or get an overview, it’s up to you to choose the perfect angle."
+	},
+	"nav": {
+		"home": "Home",
+		"sessions": "Sessions",
+		"admin": "Admin",
+		"login": "Login",
+		"logout": "Logout",
+		"register": "Register",
+		"profile": "Profile",
+		"settings": "Settings"
+	},
 	"language": "Language",
 	"days": "days",
 	"hours": "hours",

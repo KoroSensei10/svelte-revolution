@@ -1,41 +1,34 @@
-import type { LinkMessage, NodeMessage } from '$types/graph';
+import type { BaseNode } from '$types/graph';
 
-function createGraphStore() {
-	let selectedNode: NodeMessage | null = $state(null);
-	let nodes: NodeMessage[] = $state([]);
-	let links: LinkMessage[] = $state([]);
+function createGraphStore(badeNodes: BaseNode[], baseLinks: { source: number; target: number }[]) {
+	let selectedNode: BaseNode | null = $state(badeNodes[0]);
+	const nodes: BaseNode[] = $state(badeNodes);
+	const links: { source: number; target: number }[] = $state(baseLinks);
 
-	function addNode(node: NodeMessage) {
+	function addNode(node: BaseNode) {
 		nodes.push(node);
+		return node;
 	}
-	function addLink(node: NodeMessage, parent: NodeMessage | null) {
-		if (node === parent) return;
-		if (!parent) return;
-		links.push({ source: node, target: parent });
+	function addLink(link: { source: number; target: number }) {
+		links.push(link);
 	}
 
 	return {
-		get nodes() {
-			return nodes;
-		},
 		get selectedNode() {
 			return selectedNode;
 		},
+		set selectedNode(node: BaseNode | null) {
+			selectedNode = node;
+		},
+		get nodes() {
+			return nodes;
+		},
 		get links() {
 			return links;
-		},
-		set nodes(newNodes: NodeMessage[]) {
-			nodes = newNodes;
-		},
-		set selectedNode(newSelectedNode: NodeMessage | null) {
-			selectedNode = newSelectedNode;
-		},
-		set links(newLinks: LinkMessage[]) {
-			links = newLinks;
 		},
 		addNode,
 		addLink
 	};
 }
 
-export const graphStore = createGraphStore();
+export { createGraphStore };

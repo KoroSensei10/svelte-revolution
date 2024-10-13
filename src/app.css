@@ -11,7 +11,7 @@
 	}
 
 	h1 {
-		@apply p-4 text-4xl text-center;
+		@apply p-4 text-5xl text-center;
 	}
 
 	input {

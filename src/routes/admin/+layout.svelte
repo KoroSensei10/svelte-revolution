@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
-	import { titles } from '$stores/titles/index.svelte.js';
-	import type { Snippet } from 'svelte';
+	import { titleStore } from '$stores/titles/index.svelte.js';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import type { LayoutData } from './$types.js';
 
 	interface Props {
@@ -12,8 +12,6 @@
 
 	let activeTab = $derived(data?.route);
 
-	titles.setMainTitle('Admin');
-
 	const tabs = [
 		{ href: '/admin/scenario/create', label: $t('createScenario') },
 		{ href: '/admin/sessions/create', label: $t('sessions.createSession') }
@@ -21,6 +19,13 @@
 	if (data.user?.role === 'superAdmin') {
 		tabs.push({ href: '/admin/user/create', label: $t('user.createUser') });
 	}
+
+	onMount(() => {
+		titleStore.setNavTitle('Admin');
+	});
+	onDestroy(() => {
+		titleStore.setNavTitle('Babel Revolution');
+	});
 </script>
 
 <div class="flex flex-col items-center gap-4 py-4">

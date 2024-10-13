@@ -12,7 +12,7 @@
 	import graph1 from '$lib/assets/graphe1.png';
 	import type { PageServerData } from './$types';
 	import type { LayoutServerData } from '../../$types';
-	import { titles } from '$stores/titles/index.svelte';
+	import { titleStore } from '$stores/titles/index.svelte';
 
 	interface Props {
 		data: PageServerData & LayoutServerData;
@@ -51,13 +51,8 @@
 			url.searchParams.delete('admin');
 			replaceState(url.toString(), '');
 		}
-	});
 
-	$effect.pre(() => {
-		const newTitle = title;
-		untrack(() => {
-			titles.setMainTitle(newTitle);
-		});
+		titleStore.setNavTitle(title);
 	});
 </script>
 

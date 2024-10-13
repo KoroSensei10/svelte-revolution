@@ -16,6 +16,7 @@
 	} from 'd3';
 	import type { LinkMessage, NodeMessage } from '$types/graph';
 	import { pb } from '$lib/client/pocketbase';
+	// TODO: change for the new Store system
 	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
 	import { updateLabelsInGraph, updateLinksInGraph, updateNodesInGraph } from './utils';
 	import toast from 'svelte-french-toast';
@@ -131,7 +132,7 @@
 							record
 						},
 						duration: 4000,
-						position: 'top-left',
+						position: 'bottom-left',
 						style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
 						icon: '📩'
 					});
@@ -176,9 +177,10 @@
 
 	onDestroy(() => {
 		unsubscribe();
+		simulation.stop();
 	});
 </script>
 
-<svelte:window on:resize={() => restartSimulation()} />
+<svelte:window on:resize={restartSimulation} />
 
 <svg bind:this={svg} class="w-full h-full cursor-grab"></svg>

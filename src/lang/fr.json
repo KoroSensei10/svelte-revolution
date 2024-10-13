@@ -61,6 +61,41 @@
 		"password": "Mot de passe",
 		"creationSuccess": "Utilisateur créé avec succès"
 	},
+	"home": {
+		"home": "Accueil",
+		"intro" : "BⱯBEL RËVOLUㅏION est un projet monumental, aussi riche et diversifié que les langues elles-mêmes. C'est à la fois une œuvre en perpétuelle évolution, des créations abouties, et une plateforme interactive pour façonner des récits collaboratifs. Ce site vous invite à plonger dans un espace d’écriture numérique où chacun peut contribuer et co-créer, selon son propre style.",
+		"introHighlight": "Venez réinventer les histoires, ",
+		"introHyperHighlight": "à votre manière.",
+		"writeMessage": "Ecris un message",
+		"send": "Envoyer",
+		"discoverBabel": "Découvres BⱯBEL",
+		"joinSession": "Rejoins une session",
+		"yourMessage": "Ton message",
+		"emptyMessage": "Allez, essaye d'écire quelque chose !",
+		"tryDragGraph": "Essayes de déplacer le graphe !"
+	},
+	"exampleGraph": {
+		"title1": "Contemple le réseau",
+		"text1": "Le graphe apparaît avec plusieurs noeuds interconnectés. Chaque nœud détient un titre, un texte et un auteur, c'est une porte d’entrée vers une idée. Observe l’ensemble, ressens les connexions, et découvre les relations entre chaque pensée.",
+		"title2": "Plonge dans les mots",
+		"text2": "Clique sur un nœud pour dévoiler les détails : l’auteur et le contenu du message. Chaque interaction révèle une nouvelle étape dans la compréhension des échanges qui précèdent ton intervention.",
+		"title3": "Ajoute ta voix",
+		"text3": "En cliquant sur un nœud, tu peux y greffer ta contribution. Rédige ton propre message, qui viendra s’ajouter au réseau, créant un nouveau lien ou poursuivant la conversation.",
+		"title4": "Manipule l’ensemble",
+		"text4": "Saisis un nœud et déplace-le pour voir les liens réagir. Déplace le graphe dans sa totalité, réorganise ta vue, et joue avec la gravité qui lie les pensées entre elles.",
+		"title5": "Explore à ta manière",
+		"text5": "Utilise le zoom pour agrandir ou rétrécir ta vue du graphe. Que tu veuilles entrer dans les détails d’une section précise ou obtenir une vue d’ensemble, c’est à toi de choisir l’angle parfait."
+	},
+	"nav": {
+		"home": "Accueil",
+		"sessions": "Sessions",
+		"admin": "Admin",
+		"login": "Connexion",
+		"logout": "Déconnexion",
+		"register": "S'inscrire",
+		"profile": "Profil",
+		"settings": "Paramètres"
+	},
 	"join": "Rejoindre",
 	"createSession": "Démarrer une session",
 	"createScenario": "Créer un scénario",

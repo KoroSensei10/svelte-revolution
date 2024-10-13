@@ -27,8 +27,7 @@
 	$effect(() => {
 		if (form?.error) {
 			toast.error(form.error, { duration: 5000, position: 'bottom-center' });
-		}
-		if (form?.success) {
+		} else if (form?.success) {
 			// TODO Traduction
 			toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
 		}

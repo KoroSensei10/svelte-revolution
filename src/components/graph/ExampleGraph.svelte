@@ -1,98 +1,186 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import * as d3 from 'd3';
-	import homeStore, { type ExampleNode } from '$stores/home/index.svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
+	import {
+		zoom as d3Zoom,
+		drag,
+		forceLink,
+		forceManyBody,
+		forceRadial,
+		forceSimulation,
+		forceX,
+		forceY,
+		select,
+		zoomIdentity,
+		type Selection,
+		type Simulation,
+		type SimulationNodeDatum,
+		type SimulationLinkDatum,
+		type D3DragEvent
+	} from 'd3';
+	import { homeStore, type ExampleNode } from '$stores/home/index.svelte';
+	import { scale, slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+	import { t } from 'svelte-i18n';
 
-	let svg: SVGElement;
-	let svgElement: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-	let nodeLayer: d3.Selection<SVGGElement, ExampleNode, null, undefined>;
-	const zoom = d3.zoom().on('zoom', (e) => {
+	const width = 300;
+	const forces = {
+		forceX: 2,
+		forceY: 2,
+		forceLink: 1.2,
+		distanceLink: 80,
+		radialStrength: 0.3,
+		charge: -600,
+		radius: 50
+	};
+
+	const zoom = d3Zoom().on('zoom', (e) => {
 		const { transform } = e;
 		nodeLayer.attr('transform', transform);
+		labelLayer.attr('transform', transform);
 		const strokeWidth = 3 / Math.sqrt(transform.k);
 		nodeLayer.style('stroke-width', strokeWidth);
+		labelLayer.style('stroke-width', strokeWidth);
 	});
-	let simulation: d3.Simulation<ExampleNode, d3.SimulationLinkDatum<ExampleNode>> = d3
-		.forceSimulation(homeStore.nodes)
+
+	let svg: SVGElement;
+	let svgElement: Selection<SVGSVGElement, unknown, null, undefined>;
+	let nodeLayer: Selection<SVGGElement, ExampleNode, null, undefined>;
+	let labelLayer: Selection<SVGGElement, ExampleNode, null, undefined>;
+
+	let link: { source: ExampleNode; target: ExampleNode }[];
+	let node: ExampleNode[];
+	let label: ExampleNode[];
+
+	let simulation: Simulation<ExampleNode, SimulationLinkDatum<ExampleNode>> = forceSimulation(homeStore.nodes)
 		.force(
 			'link',
-			d3
-				.forceLink<ExampleNode, d3.SimulationLinkDatum<ExampleNode>>(homeStore.links)
+			forceLink<ExampleNode, SimulationLinkDatum<ExampleNode>>(homeStore.links)
 				.id((d) => d.id)
-				.distance(100)
+				.distance(forces.distanceLink)
+				.strength(forces.forceLink)
 		)
-		.force('charge', d3.forceManyBody().strength(-300));
+		.force('charge', forceManyBody().strength(forces.charge))
+		.force('centerNode', forceRadial(forces.radius, width / 2, width / 2).strength(forces.radialStrength))
+		.force(
+			'x',
+			forceX(width).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceX : 0))
+		)
+		.force(
+			'y',
+			forceY(width).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceY : 0))
+		);
+
+	function dragstarted(event: D3DragEvent<SVGElement, SimulationNodeDatum, undefined>, d: SimulationNodeDatum) {
+		if (!event.active) simulation.alphaTarget(0.3).restart();
+		d.fx = d.x;
+		d.fy = d.y;
+	}
+	function dragged(event: D3DragEvent<SVGElement, SimulationNodeDatum, undefined>, d: SimulationNodeDatum) {
+		d.fx = event.x;
+		d.fy = event.y;
+	}
+	function dragended(event: D3DragEvent<SVGElement, SimulationNodeDatum, undefined>, d: SimulationNodeDatum) {
+		if (!event.active) simulation.alphaTarget(0);
+		d.fx = null;
+		d.fy = null;
+	}
+
+	$effect(() => {
+		if (homeStore.selectedNode) {
+			untrack(() => {
+				simulation
+					.force(
+						'x',
+						forceX(width / 2).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceX : 0))
+					)
+					.force(
+						'y',
+						forceY(width / 2).strength((d) => (d.id === homeStore.selectedNode?.id ? forces.forceY : 0))
+					);
+				simulation.alpha(0.1).restart();
+			});
+		}
+		if (homeStore.selectedNode?.id === 5) {
+			svgElement?.call(zoom).call(zoom.transform, zoomIdentity);
+		}
+	});
 
 	onMount(() => {
-		svgElement = d3.select(svg);
-		nodeLayer = svgElement.append('g');
-		const box = svg.getBoundingClientRect();
-		const xCenter = (box.left + box.right) / 2;
-		const yCenter = box.top + box.bottom / 2;
+		untrack(() => {
+			svgElement = select(svg);
+			nodeLayer = svgElement.append('g');
+			labelLayer = svgElement.append('g');
 
-		simulation.force('center', d3.forceCenter(xCenter / 2, yCenter / 2));
+			label = labelLayer
+				.append('g')
+				.selectAll('text')
+				.data(homeStore.nodes)
+				.enter()
+				.append('text')
+				.text((d) => $t(d.title))
+				.attr('dy', () => -18)
+				.attr('fill', 'white')
+				.attr('font-size', 12)
+				.attr('text-anchor', 'middle')
+				.attr('alignment-baseline', 'middle')
+				.style('cursor', 'pointer')
+				.call(drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
+				.on('click', (event, d) => {
+					homeStore.selectedNode = d;
+				});
 
-		const link = nodeLayer
-			.append('g')
-			.selectAll('line')
-			.data(homeStore.links)
-			.enter()
-			.append('line')
-			.attr('stroke', '#999')
-			.attr('stroke-width', 2);
+			link = nodeLayer
+				.append('g')
+				.selectAll('line')
+				.data(homeStore.links)
+				.enter()
+				.append('line')
+				.attr('stroke', '#999')
+				.attr('stroke-width', 2);
 
-		const node = nodeLayer
-			.append('g')
-			.selectAll('circle')
-			.data(homeStore.nodes)
-			.enter()
-			.append('circle')
-			.style('cursor', 'pointer')
-			.call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
-			.on('click', (event, d) => {
-				homeStore.selectedNode = d;
-			})
-			.attr('r', (d) => (d.id === homeStore.selectedNode?.id ? 20 : 10))
-			.attr('fill', (d) => (d.id === homeStore.selectedNode?.id ? 'red' : 'yellow'));
+			node = nodeLayer
+				.append('g')
+				.selectAll('circle')
+				.data(homeStore.nodes)
+				.enter()
+				.append('circle')
+				.style('cursor', 'pointer')
+				.call(drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
+				.on('click', (event, d) => {
+					homeStore.selectedNode = d;
+				});
 
-		simulation.on('tick', () => {
-			link.attr('x1', (d) => d.source.x)
-				.attr('y1', (d) => d.source.y)
-				.attr('x2', (d) => d.target.x)
-				.attr('y2', (d) => d.target.y);
+			simulation.on('tick', () => {
+				if (!node || !link || !label) return;
+				node.attr('cx', (d) => Number(d.x))
+					.attr('cy', (d) => Number(d.y))
+					.attr('r', (d) => (d.id === homeStore.selectedNode?.id ? 15 : 10))
+					.attr('fill', (d) => (d.id === homeStore.selectedNode?.id ? 'yellow' : 'green'));
 
-			node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
-			// TODO: move this outside of the tick event to avoid re-rendering all nodes
+				link.attr('x1', (d) => d.source.x ?? 0)
+					.attr('y1', (d) => Number(d.source.y) ?? 0)
+					.attr('x2', (d) => Number(d.target.x) ?? 0)
+					.attr('y2', (d) => Number(d.target.y) ?? 0);
+
+				label.attr('x', (d) => d.x).attr('y', (d) => d.y);
+			});
+
+			simulation.alpha(1).restart();
 		});
+	});
 
-		function dragstarted(
-			event: d3.D3DragEvent<SVGElement, d3.SimulationNodeDatum, undefined>,
-			d: d3.SimulationNodeDatum
-		) {
-			if (!event.active) simulation.alphaTarget(0.3).restart();
-			d.fx = d.x;
-			d.fy = d.y;
-		}
-
-		function dragged(
-			event: d3.D3DragEvent<SVGElement, d3.SimulationNodeDatum, undefined>,
-			d: d3.SimulationNodeDatum
-		) {
-			d.fx = event.x;
-			d.fy = event.y;
-		}
-
-		function dragended(
-			event: d3.D3DragEvent<SVGElement, d3.SimulationNodeDatum, undefined>,
-			d: d3.SimulationNodeDatum
-		) {
-			if (!event.active) simulation.alphaTarget(0);
-			d.fx = null;
-			d.fy = null;
-		}
-
-		svgElement.call(zoom).call(zoom.transform, d3.zoomIdentity);
+	onDestroy(() => {
+		simulation.stop();
 	});
 </script>
 
-<svg bind:this={svg} class="border rounded-full w-96 h-96 bg-gray-950"></svg>
+<div
+	in:scale={{
+		duration: 400,
+		easing: quintOut,
+		start: 0.2
+	}}
+	class="bg-black border-4 rounded-full w-fit bg-dotted-gray bg-dotted-20"
+>
+	<svg bind:this={svg} {width} height={width} class="rounded-full"></svg>
+</div>

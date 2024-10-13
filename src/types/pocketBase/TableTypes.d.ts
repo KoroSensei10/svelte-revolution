@@ -1,12 +1,11 @@
+import type { BaseNode } from '$types/graph';
+
 declare module '$types/pocketBase/TableTypes' {
 	export type NodeType = 'contribution' | 'event' | 'startNode';
 	export type Lang = 'fr' | 'en' | 'jp';
 	export type Role = 'admin' | 'user' | 'superAdmin'; // see in the database
 
-	export interface GraphNode {
-		id: string;
-		title: string;
-		text: string;
+	export interface GraphNode extends BaseNode {
 		author: string;
 		session: string;
 		type: NodeType;

@@ -2,7 +2,7 @@ const themeStore = $state('dark');
 const sidebarOpen = $state(false);
 const sidebarExpanded = $state(false);
 
-function createViewportStore () {
+function createViewportStore() {
 	let innerWidth: number = $state(0);
 	let outerWidth: number = $state(0);
 	let isMobile: boolean = $state(false);
@@ -15,11 +15,12 @@ function createViewportStore () {
 			return 'md';
 		}
 		return 'lg';
-	})
+	});
 
 	function updateViewport(window: Window) {
 		innerWidth = window.innerWidth;
 		outerWidth = window.outerWidth;
+		return actualBreakpoint;
 	}
 
 	return {
@@ -45,9 +46,9 @@ function createViewportStore () {
 			return actualBreakpoint;
 		},
 		updateViewport
-	}
+	};
 }
 
 const viewportStore = createViewportStore();
 
-export { viewportStore, createViewportStore, themeStore, sidebarOpen, sidebarExpanded };
+export { viewportStore, themeStore, sidebarOpen, sidebarExpanded };

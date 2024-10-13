@@ -1,58 +1,33 @@
-class HomeStore {
-	selectedNode: null | { id: number } = $state(null);
-	nodes: { id: number; text: string; title: string }[] = $state([]);
-	links: { source: number; target: number }[] = $state([]);
+import { createGraphStore } from '$stores/graph/index.svelte';
+import type { BaseNode } from '$types/graph';
 
-	constructor(nodes: { id: number }[], links: { source: number; target: number }[]) {
-		this.nodes = nodes;
-		this.links = links;
-		this.selectedNode = nodes[0];
-	}
+interface ExampleNode extends d3.SimulationNodeDatum, BaseNode {}
 
-	setSelectedNode(node: { id: number }) {
-		this.selectedNode = node;
-	}
-
-	setNodes(nodes: { id: number }[]) {
-		this.nodes = nodes;
-	}
-
-	setLinks(links: { source: number; target: number }[]) {
-		this.links = links;
-	}
-}
-
-export interface ExampleNode extends d3.SimulationNodeDatum {
-	id: number;
-	title: string;
-	text: string;
-}
-
-const nodes: ExampleNode[] = [
+const exampleNodes: ExampleNode[] = [
 	{
 		id: 1,
-		title: 'Introduction',
-		text: 'Babel est une plateforme de développement de logiciels qui permet aux développeurs de créer des applications web et mobiles en utilisant des technologies modernes telles que React, Vue, Svelte, TypeScript, Tailwind CSS, Express, MongoDB, PostgreSQL, etc.'
+		title: 'exampleGraph.title1',
+		text: 'exampleGraph.text1'
 	},
 	{
 		id: 2,
-		title: 'Node 2',
-		text: 'Node 2 text'
+		title: 'exampleGraph.title2',
+		text: 'exampleGraph.text2'
 	},
 	{
 		id: 3,
-		title: 'Node 3',
-		text: 'Node 3 text'
+		title: 'exampleGraph.title3',
+		text: 'exampleGraph.text3'
 	},
 	{
 		id: 4,
-		title: 'Node 4',
-		text: 'Node 4 text'
+		title: 'exampleGraph.title4',
+		text: 'exampleGraph.text4'
 	},
 	{
 		id: 5,
-		title: 'Node 5',
-		text: 'Node 5 text'
+		title: 'exampleGraph.title5',
+		text: 'exampleGraph.text5'
 	}
 ];
 
@@ -63,8 +38,6 @@ const links = [
 	{ source: 3, target: 5 }
 ];
 
-const homeStore = new HomeStore(nodes, links);
+const homeStore = createGraphStore(exampleNodes, links);
 
-homeStore.setNodes(nodes);
-
-export default homeStore;
+export { homeStore, type ExampleNode };

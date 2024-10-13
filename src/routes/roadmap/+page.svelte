@@ -2,9 +2,6 @@
 	import { sumTaskDuration, tasks } from '$lib/taskProgress';
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-	import { titles } from '$stores/titles/index.svelte';
-
-	titles.setMainTitle('Svelte Révolution Roadmap');
 
 	tasks.sort((a, b) => Number(a.order) - Number(b.order));
 
