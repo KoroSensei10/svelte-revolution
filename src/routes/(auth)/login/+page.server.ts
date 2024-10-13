@@ -1,6 +1,16 @@
 import { type Actions, fail, redirect } from '@sveltejs/kit';
 import type { ClientResponseError } from 'pocketbase';
 
+export const load = ({ locals }) => {
+	if (locals.pb.authStore.isValid) {
+		if (locals.pb.authStore.model?.role !== 'user') {
+			redirect(303, '/admin');
+		} else {
+			redirect(303, '/sessions');
+		}
+	}
+};
+
 export const actions: Actions = {
 	login: async ({ request, locals }) => {
 		const data = await request.formData();
