@@ -113,15 +113,20 @@
 					<ul
 						tabindex="0"
 						role="menu"
-						class="z-50 p-2 mt-3 bg-gray-800 shadow menu menu-sm dropdown-content rounded-box w-52"
+						class="z-40 p-2 mt-3 bg-gray-800 shadow menu menu-sm dropdown-content rounded-box w-52"
 					>
-						<li>
+						<li class="text-gray-500">
 							<a href="/" class="justify-between">
 								{$t('nav.profile')}
-								<span class="badge">{$t('new')}</span>
+								<span class="badge">{$t('soon')}</span>
 							</a>
 						</li>
-						<li><a href="/">{$t('nav.settings')}</a></li>
+						<li class="text-gray-500">
+							<a href="/"
+								>{$t('nav.settings')}
+								<span class="badge">{$t('soon')}</span>
+							</a>
+						</li>
 						<form
 							action="/logout?/logout"
 							use:enhance={() => {
