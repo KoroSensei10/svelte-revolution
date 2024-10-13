@@ -11,15 +11,6 @@ services:
             - pocketbase
         networks:
             - babelNetwork
-        develop:
-            watch:
-                - action: sync
-                  path: ./src
-                  target: /app/src
-                  ignore: 
-                    - node_modules/
-                - action: rebuild
-                  path: package.json
 
     pocketbase:
         image: ghcr.io/muchobien/pocketbase:latest # wait for official pocketbase image

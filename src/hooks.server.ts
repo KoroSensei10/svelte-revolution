@@ -3,7 +3,6 @@ import { createPocketBase } from '$lib/server/pocketbase';
 import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-
 	if (event.request.url.endsWith('__data.json')) {
 		redirect(300, event.request.url.replace(/__data.json$/, ''));
 	}
@@ -23,7 +22,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	response.headers.append(
 		'set-cookie',
-		event.locals.pb.authStore.exportToCookie({ httpOnly: false, path: '/', secure: dev ? false : true })
+		event.locals.pb.authStore.exportToCookie({ httpOnly: false, path: '/', secure: dev ? false : false })
 	);
 
 	return response;
