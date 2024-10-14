@@ -25,7 +25,7 @@
 	function submitUserMessage(e: SubmitEvent) {
 		e.preventDefault();
 		if (userMessage) {
-			const id = String(homeStore.nodes.length + 1);
+			const id = homeStore.nodes.length + 1;
 			const node = homeStore.addNode({
 				id,
 				title: 'home.yourMessage',
