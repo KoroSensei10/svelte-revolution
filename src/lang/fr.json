@@ -1,6 +1,7 @@
 {
 	"page_title": "Page d'accueil",
 	"sessions": {
+		"addNode": "Ajouter un nœud",
 		"addEvent": "Ajouter un événement",
 		"session": "Session",
 		"sessions": "Sessions",

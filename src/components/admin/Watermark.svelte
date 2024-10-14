@@ -19,7 +19,7 @@
 			</div>
 		{/each}
 	</div>
-	<div class="relative z-10">
+	<div class="">
 		{@render children()}
 	</div>
 </div>

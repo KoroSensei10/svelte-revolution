@@ -1,6 +1,7 @@
 {
 	"page_title": "ホームページ",
 	"sessions": {
+		"addNode": "ノードを追加",
 		"addEvent": "イベントを追加",
 		"session": "セッション",
 		"sessions": "セッション",

@@ -18,7 +18,7 @@
 		type D3DragEvent
 	} from 'd3';
 	import { homeStore, type ExampleNode } from '$stores/home/index.svelte';
-	import { scale, slide } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { t } from 'svelte-i18n';
 

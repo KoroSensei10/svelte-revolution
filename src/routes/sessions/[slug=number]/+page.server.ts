@@ -59,7 +59,7 @@ export const actions: Actions = {
 			return fail(500, { success: false, error: 'Not in a session' });
 		}
 
-		if (!title || !text || !author) {
+		if (!title || !text || !author || !side) {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 

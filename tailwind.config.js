@@ -9,7 +9,9 @@ export default {
 		extend: {
 			backgroundImage: {
 				'dotted-white': 'radial-gradient(white 1px, transparent 1px)', // Motif de points
-				'dotted-gray': 'radial-gradient(#4a5568 1px, transparent 1px)', // Motif des points
+				'dotted-gray': 'radial-gradient(#4a5568 1px, transparent 1px)',
+				'dotted-darkGray': 'radial-gradient(#333 1px, transparent 1px)',
+				'dotted-black': 'radial-gradient(#000 1px, transparent 1px)',
 			},
 			backgroundSize: {
 				'dotted-20': '20px 20px',

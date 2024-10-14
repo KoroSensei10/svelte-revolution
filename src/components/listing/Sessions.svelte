@@ -42,27 +42,31 @@
 	{#if showFilter}
 		<div></div>
 	{/if}
-	<ul class="flex flex-col gap-4 text-black sm:w-2/3">
+	<ul class="grid grid-flow-row lg:grid-cols-2 gap-4 text-black">
 		{#each sessions as session (session.id)}
+			{@const completed = session.completed}
 			{@const scenario = session.expand?.scenario}
 			{@const imageUrl = pb.files.getUrl(session, session.image)}
 			<li
 				animate:flip={{ duration: 300 }}
-				class="w-full h-20 flex items-center rounded-lg {session.completed
-					? 'opacity-80 bg-gray-500'
-					: 'bg-primary-500'}"
+				class="w-full h-fit flex flex-col items-center rounded-lg {completed
+					? ' bg-gray-600'
+					: 'bg-primary-600'}"
 			>
 				<a
-					class="grid w-full grid-cols-3 p-4 transition-all h-full rounded-lg place-items-center hover:bg-primary-300"
+					tabindex="0"
+					class="grid focus:overflow-clip focus:z-50 w-full grid-cols-3 p-4 hover:scale-105 transition-all h-20 rounded-lg place-items-center {completed
+						? ' bg-gray-500'
+						: 'bg-primary-500'}"
 					href={getSessionUrl(session)}
 				>
-					<h2 class="text-lg font-semibold capitalize justify-self-start">{session.name}</h2>
-					<div class="text-center">
+					<h2 class="text-lg font-semibold text-nowrap capitalize justify-self-start">{session.name}</h2>
+					<div class="text-center w-full truncate">
 						{$t('scenario.scenario')}:
 						<span
-							data-tip={scenario.prologue}
-							class="italic font-light cursor-default tooltip tooltip-bottom hover:underline"
-							>{scenario.title}</span
+							data-tip={scenario?.prologue}
+							class="italic underline text-pretty font-light cursor-default tooltip tooltip-bottom hover:underline"
+							>{scenario?.title}</span
 						>
 					</div>
 					<figure class="w-12 h-12 p-0 flex justify-center justify-self-end">
@@ -73,6 +77,16 @@
 						/>
 					</figure>
 				</a>
+				<div class="w-full flex justify-between h-full p-1 pl-2 bg-inherit rounded-b-lg">
+					{#if session.expand?.author}
+						<div>
+							{$t('scenario.author')} : {session.expand?.author?.username}
+						</div>
+					{/if}
+					<div>
+						{$t('creationDate')} : {new Date(session.created).toISOString().split('T')[0]}
+					</div>
+				</div>
 			</li>
 		{/each}
 	</ul>

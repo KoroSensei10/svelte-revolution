@@ -1,6 +1,7 @@
 {
 	"page_title": "Home page",
 	"sessions": {
+		"addNode": "Add Node",
 		"addEvent": "Add Event",
 		"session": "Session",
 		"sessions": "Sessions",
