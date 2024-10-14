@@ -9,6 +9,7 @@
 	import type { ActionResult } from '@sveltejs/kit';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
+	import { viewportStore } from '$stores/ui/index.svelte';
 
 	interface Props {
 		session: Session;
@@ -21,7 +22,10 @@
 
 	let { user = null, session, admin = false, events = [], ends = [], sides = [] }: Props = $props();
 
-	let nodeInfoChecked = $state(true);
+	let nodeInfoChecked = $state(false);
+	let addNodeChecked = $state(false);
+	let sessionEndChecked = $state(false);
+	let adminChecked = $state(false);
 
 	let nodeTitle = $state('');
 	let nodeText = $state('');
@@ -30,7 +34,30 @@
 	let theForm: HTMLFormElement | undefined = $state();
 	let validForm = $state(false);
 
-	let addNodeChecked = $state(true);
+	const states = {
+		nodeInfo: false,
+		addNode: false,
+		sessionEnd: false,
+		admin: false
+	};
+	function setCheck(type: 'addNode' | 'nodeInfo' | 'sessionEnd' | 'admin') {
+		if (viewportStore.actualBreakpoint != 'lg') {
+			for (const key in states) {
+				if (key !== type) {
+					states[key as 'nodeInfo' | 'addNode' | 'sessionEnd' | 'admin'] = false;
+				}
+			}
+		}
+
+		if (type in states) {
+			states[type] = !states[type];
+		}
+
+		nodeInfoChecked = states.nodeInfo;
+		addNodeChecked = states.addNode;
+		sessionEndChecked = states.sessionEnd;
+		adminChecked = states.admin;
+	}
 
 	function handleActionResult(result: ActionResult) {
 		switch (result.type) {
@@ -55,7 +82,8 @@
 	}
 
 	const selectedNodeUnsubscribe = selectedNodeStore.subscribe((value) => {
-		nodeInfoChecked = !!value;
+		if (nodeInfoChecked) return;
+		setCheck('nodeInfo');
 	});
 
 	onMount(() => {
@@ -67,14 +95,16 @@
 	});
 </script>
 
-<div class="z-50 bg-black border-t divide-x btm-nav dark:bg-black">
-	<!-- Add Node button -->
+<div class="z-50 bg-gray-950 border-t border-gray-500 divide-x divide-gray-500 btm-nav dark:bg-gray-950">
+	<!-- Add Node Or Session Ended -->
 	{#if !session?.completed}
 		<div class="flex flex-col-reverse">
 			<button
 				type="button"
-				class="z-20 flex flex-col items-center justify-center w-full h-full bg-black"
-				onclick={() => (addNodeChecked = !addNodeChecked)}
+				class="z-20 flex flex-col items-center justify-center w-full h-full bg-gray-950"
+				onclick={() => {
+					setCheck('addNode');
+				}}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -89,42 +119,125 @@
 				<!-- Menu for Add Node -->
 			</button>
 			{#if addNodeChecked}
+				<form
+					transition:slide={{
+						duration: 200,
+						easing: quintOut
+					}}
+					method="post"
+					action="/sessions/{session.id}?/addNode"
+					class="flex flex-col items-center gap-2 cursor-default p-2 text-primary-500 absolute z-10 w-screen left-0 md:w-full bg-gray-950 border-t opacity-90 bottom-full"
+					onsubmit={(e) => {
+						e.preventDefault();
+					}}
+					use:enhance={() => {
+						nProgress.start();
+						return async ({ update, result }) => {
+							await update({ reset: false });
+							handleActionResult(result);
+							nProgress.done();
+						};
+					}}
+				>
+					<label class="form-control w-full max-w-xs">
+						<div class="label p-0">
+							<span class="label-text text-inherit">Titre du message</span>
+						</div>
+						<input
+							type="text"
+							bind:value={nodeTitle}
+							placeholder="Youhouhou"
+							class="input input-sm input-accent bg-gray-950 input-bordered w-full max-w-xs"
+						/>
+					</label>
+					<label class="form-control w-full max-w-xs">
+						<div class="label p-0">
+							<span class="label-text text-inherit">Ton nom</span>
+						</div>
+						<input
+							type="text"
+							bind:value={nodeAuthor}
+							placeholder="Snoup"
+							class="input input-sm input-accent bg-gray-950 input-bordered w-full max-w-xs"
+						/>
+					</label>
+					<label class="form-control w-full max-w-xs">
+						<div class="label p-0">
+							<span class="label-text text-inherit">Ton camp</span>
+						</div>
+						<select class="select select-accent bg-gray-950 select-sm select-bordered">
+							<option disabled selected>Pick one</option>
+							<option>Star Wars</option>
+						</select>
+					</label>
+					<label class="form-control w-full max-w-xs">
+						<div class="label p-0">
+							<span class="label-text text-inherit">Ton message</span>
+						</div>
+						<textarea
+							bind:value={nodeText}
+							class="textarea textarea-accent bg-gray-950"
+							placeholder="Ton message"
+						></textarea>
+					</label>
+					<button class="btn w-fit btn-accent btn-sm self-center" type="submit">Envoyer</button>
+				</form>
+			{/if}
+		</div>
+	{:else}
+		<div class="flex flex-col-reverse">
+			<!-- Session End -->
+			<button
+				type="button"
+				class="z-20 flex flex-col items-center justify-center w-full h-full bg-gray-950"
+				onclick={() => {
+					setCheck('sessionEnd');
+				}}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="w-5 h-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M5 12l5-5m0 0l5 5m-5-5v12"
+					/>
+				</svg>
+				<span class="btm-nav-label">{$t('sessions.sessionEnded')}</span>
+			</button>
+			{#if sessionEndChecked}
 				<div
 					transition:slide={{
 						duration: 200,
 						easing: quintOut
 					}}
-					class="absolute left-0 z-10 w-full bg-black border-t opacity-90 bottom-full"
+					class="flex flex-col items-center gap-2 p-2 text-primary-500 absolute z-10 left-0 w-screen md:w-full bg-gray-950 border-t opacity-90 bottom-full cursor-default"
 				>
-					<p>Option 1</p>
-					<p>Option 2</p>
-					<p>Option 2</p>
-					<p>Option 2</p>
-					<p>Option 2</p>
-					<p>Option 2</p>
-					<!-- Ajoute d'autres options ici -->
+					<div class="text-xl font-semibold first-letter:capitalize">
+						{session.expand?.end?.title}
+					</div>
+					<div>
+						{session.expand?.end?.text}
+					</div>
 				</div>
 			{/if}
 		</div>
-	{:else}
-		<!-- Session End button (if session completed) -->
-		<button>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				class="w-5 h-5"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke="currentColor"
-			>
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12l5-5m0 0l5 5m-5-5v12" />
-			</svg>
-			<span class="btm-nav-label">{$t('sessions.sessionEnded')}</span>
-		</button>
 	{/if}
 
 	<!-- Node Info button -->
 	<div class="flex flex-row-reverse">
-		<button>
+		<button
+			type="button"
+			class="z-20 flex flex-col items-center justify-center w-full h-full bg-gray-950"
+			onclick={() => {
+				setCheck('nodeInfo');
+			}}
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				class="w-5 h-5"
@@ -141,166 +254,68 @@
 			</svg>
 			<span class="btm-nav-label">{$t('nodeInformation')}</span>
 		</button>
-		{#if true}
+		{#if nodeInfoChecked}
 			<div
 				transition:slide={{
 					duration: 200,
 					easing: quintOut
 				}}
-				class="absolute left-0 z-10 w-full p-2 bg-black border-r opacity-90 bottom-full"
+				class="flex flex-col items-center gap-2 p-2 text-primary-500 absolute z-10 w-screen md:w-full bg-gray-950 border-t opacity-90 bottom-full {admin
+					? ''
+					: 'right-0'}"
 			>
-				<p>Option 1</p>
-				<p>Option 2</p>
-				<p>Option 2</p>
-				<p>Option 2</p>
-				<p>Option 2</p>
-				<p>Option 2</p>
-				<!-- Ajoute d'autres options ici -->
+				{#if $selectedNodeStore}
+					<div class="text-xl font-semibold first-letter:capitalize">
+						{$selectedNodeStore.title}
+					</div>
+					<div>
+						{$selectedNodeStore.text}
+					</div>
+				{:else}
+					<div class="text-xl font-semibold first-letter:capitalize">
+						{$t('noNodeSelected')}
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>
 
 	<!-- Admin button (visible only for admins) -->
 	{#if admin && user && !session?.completed}
-		<button>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				class="w-5 h-5"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke="currentColor"
+		<div class="flex flex-col-reverse">
+			<button
+				type="button"
+				class="z-20 flex flex-col items-center justify-center w-full h-full bg-gray-950"
+				onclick={() => {
+					setCheck('admin');
+				}}
 			>
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8" />
-			</svg>
-			<span class="btm-nav-label">{$t('admin')}</span>
-		</button>
-	{/if}
-</div>
-
-<!-- <div
-	class="fixed bottom-0 right-0 z-50 flex flex-col w-full bg-black border-t bg-opacity-90 sm:border-l sm:w-1/3 lg:w-1/4"
->
-	{#if !session?.completed}
-		<form
-			class="w-full rounded-none collapse collapse-plus sm:collapse-arrow"
-			bind:this={theForm}
-			method="post"
-			action="/sessions/{session.id}?/addNode"
-			onsubmit={(e) => {
-				e.preventDefault();
-			}}
-			use:enhance={() => {
-				nProgress.start();
-				return async ({ update, result }) => {
-					await update({ reset: false });
-					handleActionResult(result);
-				};
-			}}
-			oninput={() => (validForm = !!theForm?.checkValidity())}
-		>
-			<input type="checkbox" class="" name="GraphUI" bind:checked={addNodeChecked} />
-			<div class="w-full font-semibold collapse-title">
-				{$t('writeMessage')}
-			</div>
-			<div class="z-50 flex flex-col py-0 overflow-auto collapse-content snoup">
-				<div class="w-full">
-					<div class="w-full">
-						<input
-							required
-							autocomplete="off"
-							bind:value={nodeTitle}
-							name="title"
-							placeholder={$t('yourTitle')}
-							class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-						/>
-					</div>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="w-5 h-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8" />
+				</svg>
+				<span class="btm-nav-label">{$t('admin')}</span>
+			</button>
+			{#if adminChecked}
+				<div
+					transition:slide={{
+						duration: 200,
+						easing: quintOut
+					}}
+					class="flex flex-col items-center gap-2 p-2 text-primary-500 absolute z-10 w-screen right-0 md:w-full bg-gray-950 border-t opacity-90 bottom-full cursor-default"
+				>
+					{@render formTemplate(ends, 'end', 'end', $t('sessions.endSession'))}
+					{@render formTemplate(events, 'event', 'event', $t('sessions.addEvent'), true)}
 				</div>
-				<div class="w-full">
-					<textarea
-						required
-						autocomplete="off"
-						bind:value={nodeText}
-						name="text"
-						placeholder={$t('yourMessage')}
-						class="w-full py-4 border-b placeholder:font-thin placeholder:italic focus:border-white"
-					></textarea>
-				</div>
-				<div class="w-full">
-					<input
-						required
-						autocomplete="username"
-						bind:value={nodeAuthor}
-						name="author"
-						placeholder={$t('yourName')}
-						class="w-full py-4 placeholder:font-thin placeholder:italic focus:border-white"
-					/>
-				</div>
-				<div>
-					<select name="side" class="w-full p-4 border rounded">
-						<option disabled selected>{$t('side.chooseSide')}</option>
-						{#each sides as side}
-							<option value={side.id}>{side.name}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="w-full py-4 text-center">
-					<button
-						type="submit"
-						disabled={!validForm}
-						class="font-light border-none btn disabled:cursor-not-allowed disabled:bg-white disabled:opacity-50 hover:bg-white bg-primary-500"
-					>
-						{$t('publish')}
-					</button>
-				</div>
-				<input type="hidden" name="session" value={session.id} />
-				<input type="hidden" name="parent" value={$selectedNodeStore?.id} />
-			</div>
-		</form>
-	{:else}
-		<div class="w-full collapse collapse-plus sm:collapse-arrow">
-			<input type="checkbox" name="GraphUI" />
-			<div class="font-semibold collapse-title">
-				{$t('sessions.sessionEnded')}
-			</div>
-			<div class="collapse-content">
-				<div class="text-xl font-semibold first-letter:capitalize">
-					{session.expand?.end?.title}
-				</div>
-				<div>
-					{session.expand?.end?.text}
-				</div>
-			</div>
-		</div>
-	{/if}
-	<div class="border-t rounded-none collapse collapse-plus sm:collapse-arrow">
-		<input bind:checked={nodeInfoChecked} class="" name="GraphUI" type="checkbox" />
-		<div class="font-bold collapse-title">
-			{$t('nodeInformation')}
-		</div>
-		<div class="text-white collapse-content">
-			{#if $selectedNodeStore}
-				<div class="text-xl font-semibold first-letter:capitalize">{$selectedNodeStore.title}</div>
-				<div class="text-lg">{$t('side.side')}: {$selectedNodeStore.expand?.side?.name ?? $t('neutral')}</div>
-				<div>{$t('from')} {$selectedNodeStore.author}</div>
-				<div class="pl-1 overflow-auto max-h-44">{$selectedNodeStore.text}</div>
-			{:else}
-				<div class="pb-0 text-xl text-center first-letter:capitalize">{$t('noNodeSelected')}</div>
 			{/if}
 		</div>
-	</div>
-	{#if admin && user && !session?.completed}
-		<div class="border-t rounded-none collapse collapse-plus sm:collapse-arrow">
-			<input type="checkbox" class="" name="GraphUI" />
-			<div class="font-bold collapse-title">
-				{$t('admin')}
-			</div>
-			<div class="flex flex-col gap-4 text-white collapse-content">
-				{@render formTemplate(events, 'addEvent', 'eventId', $t('sessions.addEvent'), true)}
-				{@render formTemplate(ends, 'endSession', 'endId', $t('sessions.endSession'))}
-			</div>
-		</div>
 	{/if}
-</div> -->
+</div>
 
 {#snippet formTemplate(
 	values: { id: string; title: string }[],
@@ -320,9 +335,9 @@
 				handleActionResult(result);
 			};
 		}}
-		class="flex flex-col gap-4 p-x-4"
+		class="flex flex-col gap-4 p-x-4 cursor-default"
 	>
-		<select {name} id={name} class="w-full border rounded">
+		<select {name} id={name} class=" select select-accent select-sm bg-gray-950">
 			<option disabled selected>{trad}</option>
 			{#each values as value}
 				{@const alreadySelected =
@@ -331,15 +346,8 @@
 			{/each}
 		</select>
 		<input type="hidden" name="session" value={session.id} />
-
-		<button type="submit" class="self-center p-4 text-white rounded w-fit bg-primary-500">
+		<button type="submit" class="self-center btn btn-sm btn-accent">
 			{trad}
 		</button>
 	</form>
 {/snippet}
-
-<style lang="postcss">
-	.snoup {
-		@apply py-0;
-	}
-</style>
