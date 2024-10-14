@@ -16,7 +16,7 @@ export const load: ServerLoad = async ({ locals }) => {
 	if (user.role === 'superAdmin') {
 		otherSessions = await pb.collection('Session').getFullList({
 			filter: pb.filter('author != {:user}', { user: user.id }),
-			expand: 'scenario'
+			expand: 'scenario, author'
 		});
 	}
 

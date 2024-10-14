@@ -21,6 +21,7 @@
 	import { updateLabelsInGraph, updateLinksInGraph, updateNodesInGraph } from './utils';
 	import toast from 'svelte-french-toast';
 	import MessageToast from '$components/graph/MessageToast.svelte';
+	import { type GraphNode } from '$types/pocketBase/TableTypes';
 
 	interface Props {
 		sessionId: string;
@@ -52,9 +53,9 @@
 		svgElement.attr('width', currentWidth).attr('height', currentHeight);
 
 		const linksInGraph = updateLinksInGraph(linkLayer);
-
+		// @ts-expect-error d3...
 		const nodesInGraph = updateNodesInGraph(nodeLayer, linksInGraph, simulation);
-
+		// @ts-expect-error d3...
 		const labelsInGraph = updateLabelsInGraph(labelLayer, linksInGraph, nodesInGraph, simulation);
 
 		simulation.on('tick', () => {
@@ -76,11 +77,11 @@
 			.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2).strength(0.02))
 			.force(
 				'x',
-				forceX(currentWidth / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
+				forceX<GraphNode>(currentWidth / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
 			)
 			.force(
 				'y',
-				forceY(currentHeight / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
+				forceY<GraphNode>(currentHeight / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
 			);
 	}
 
@@ -183,4 +184,7 @@
 
 <svelte:window on:resize={restartSimulation} />
 
-<svg bind:this={svg} class="w-full h-full cursor-grab"></svg>
+<svg
+	bind:this={svg}
+	class="fixed top-0 left-0 w-screen h-screen z-10 cursor-grab bg-black bg-dotted-40 bg-dotted-darkGray"
+></svg>

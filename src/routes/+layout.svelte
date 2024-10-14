@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount, type Snippet } from 'svelte';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 	import { enhance } from '$app/forms';
 	import NProgress from 'nprogress';
 	import { Toaster } from 'svelte-french-toast';
@@ -38,7 +38,12 @@
 
 <svelte:head>
 	<title>Babel Révolution</title>
-	<meta name="description" content="Super snoup" />
+	<meta name="description" content={$t('home.intro')} />
+	<meta property="og:image" content={graph1} />
+	<meta property="og:title" content="Babel Révolution" />
+	<meta property="og:description" content={$t('home.intro')} />
+	<meta property="og:site_name" content="Babel Révolution" />
+	<meta property="og:url" content={$page.url.href} />
 </svelte:head>
 <svelte:window on:resize={() => viewportStore.updateViewport(window)} />
 
