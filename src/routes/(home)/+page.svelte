@@ -105,7 +105,7 @@
 							{$t(homeStore.selectedNode?.title ?? 'oupsi')}
 						</div>
 						<div class="">{$t(homeStore.selectedNode?.text ?? 'oupsi')}</div>
-						{#if homeStore.selectedNode?.id === '3'}
+						{#if homeStore.selectedNode?.id === 3}
 							<form class="flex justify-between mt-2" onsubmit={submitUserMessage}>
 								<input
 									type="text"
@@ -115,7 +115,7 @@
 								/>
 								<button type="submit" class=" btn btn-accent">{$t('home.send')}</button>
 							</form>
-						{:else if homeStore.selectedNode?.id === '5'}
+						{:else if homeStore.selectedNode?.id === 5}
 							<div class="mt-2 chat chat-end">
 								<div class="rounded-full chat-image avatar ring-primary-500 ring-1">
 									<div class="w-10 rounded-full">
