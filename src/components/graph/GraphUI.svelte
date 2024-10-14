@@ -22,11 +22,6 @@
 
 	let { user = null, session, admin = false, events = [], ends = [], sides = [] }: Props = $props();
 
-	let nodeInfoChecked = $state(false);
-	let addNodeChecked = $state(false);
-	let sessionEndChecked = $state(false);
-	let adminChecked = $state(false);
-
 	let nodeTitle = $state('');
 	let nodeText = $state('');
 	let nodeAuthor = $state('');
@@ -34,12 +29,12 @@
 	let theForm: HTMLFormElement | undefined = $state();
 	let validForm = $state(false);
 
-	const states = {
+	const states = $state({
 		nodeInfo: false,
 		addNode: false,
 		sessionEnd: false,
 		admin: false
-	};
+	});
 	function setCheck(type: 'addNode' | 'nodeInfo' | 'sessionEnd' | 'admin') {
 		if (['lg, md'].includes(viewportStore.actualBreakpoint)) {
 			for (const key in states) {
@@ -52,11 +47,6 @@
 		if (type in states) {
 			states[type] = !states[type];
 		}
-
-		nodeInfoChecked = states.nodeInfo;
-		addNodeChecked = states.addNode;
-		sessionEndChecked = states.sessionEnd;
-		adminChecked = states.admin;
 	}
 
 	function handleActionResult(result: ActionResult) {
@@ -66,7 +56,7 @@
 				break;
 			case 'success':
 				toast.success(result.data?.body.message, { duration: 3000, position: 'top-center' });
-				addNodeChecked = false;
+				states.addNode = false;
 				nodeTitle = '';
 				nodeText = '';
 				localStorage.setItem('author', nodeAuthor);
@@ -84,20 +74,24 @@
 
 	const selectedNodeUnsubscribe = selectedNodeStore.subscribe((value) => {
 		if (!value) {
-			setCheck('nodeInfo');
-			nodeInfoChecked = false;
+			states.nodeInfo = false;
 			return;
 		}
-		if (nodeInfoChecked) return;
+		if (states.nodeInfo) return;
+		setCheck('nodeInfo');
 	});
 
 	onMount(() => {
 		nodeAuthor = localStorage.getItem('author') || '';
+		selectedNodeStore.set(null);
+		states.nodeInfo = false;
 	});
 
 	onDestroy(() => {
 		selectedNodeUnsubscribe();
 	});
+
+	$inspect(states.nodeInfo);
 </script>
 
 <div class="z-50 bg-gray-950 border-t border-gray-500 divide-x divide-gray-500 btm-nav dark:bg-gray-950">
@@ -126,7 +120,7 @@
 			</svg>
 			<span class="btm-nav-label">{$t('nodeInformation')}</span>
 		</button>
-		{#if nodeInfoChecked}
+		{#if states.nodeInfo}
 			<div
 				transition:slide|global={{
 					duration: 200,
@@ -137,7 +131,7 @@
 					: 'right-0'}"
 			>
 				{#if $selectedNodeStore}
-					{#key $selectedNodeStore?.id}
+					{#key $selectedNodeStore}
 						<div
 							in:blur={{
 								duration: 800,
@@ -189,7 +183,7 @@
 				<span class="btm-nav-label">{$t('sessions.addNode')}</span>
 				<!-- Menu for Add Node -->
 			</button>
-			{#if addNodeChecked}
+			{#if states.addNode}
 				<form
 					transition:slide={{
 						duration: 200,
@@ -296,7 +290,7 @@
 				</svg>
 				<span class="btm-nav-label">{$t('sessions.sessionEnded')}</span>
 			</button>
-			{#if sessionEndChecked}
+			{#if states.sessionEnd}
 				<div
 					transition:slide={{
 						duration: 200,
@@ -335,7 +329,7 @@
 				</svg>
 				<span class="btm-nav-label">{$t('admin')}</span>
 			</button>
-			{#if adminChecked}
+			{#if states.admin}
 				<div
 					transition:slide={{
 						duration: 200,

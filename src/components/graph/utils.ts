@@ -1,3 +1,4 @@
+// TODO: change for the new Store system
 import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
 import { get } from 'svelte/store';
 import type { LinkMessage, NodeMessage } from '$types/graph';
