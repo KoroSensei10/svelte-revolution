@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { replaceState } from '$app/navigation';
 	import { pb } from '$lib/client/pocketbase';
@@ -11,6 +11,7 @@
 	import type { PageServerData } from './$types';
 	import type { LayoutServerData } from '../../$types';
 	import { titleStore } from '$stores/titles/index.svelte';
+	import { selectedNodeStore } from '$stores/graph';
 
 	interface Props {
 		data: PageServerData & LayoutServerData;
@@ -51,6 +52,10 @@
 		}
 
 		titleStore.setNavTitle(title);
+	});
+
+	onDestroy(() => {
+		selectedNodeStore.set(null);
 	});
 </script>
 

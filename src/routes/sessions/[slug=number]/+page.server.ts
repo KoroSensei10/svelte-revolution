@@ -2,6 +2,7 @@ import { buildNodesAndLinks, getSession } from '$lib/server/sessions';
 import { createNode } from '$lib/server/sessions/create';
 import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
 import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
+import type { GraphNode } from '$types/pocketBase/TableTypes';
 
 export const load: ServerLoad = async ({ params, locals }) => {
 	const pb = locals.pb;
@@ -99,7 +100,7 @@ export const actions: Actions = {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 
-		let createdEventNode: GraphEvent | null = null;
+		let createdEventNode: GraphNode | null = null;
 		try {
 			const { title, text, author } = await locals.pb.collection('Event').getOne(eventId);
 			const firstNode = await locals.pb.collection('Node').getFirstListItem(
