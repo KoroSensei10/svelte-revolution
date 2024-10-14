@@ -36,7 +36,7 @@
 		admin: false
 	});
 	function setCheck(type: 'addNode' | 'nodeInfo' | 'sessionEnd' | 'admin') {
-		if (['lg, md'].includes(viewportStore.actualBreakpoint)) {
+		if (!['lg', 'md'].includes(viewportStore.actualBreakpoint)) {
 			for (const key in states) {
 				if (key !== type) {
 					states[key as 'nodeInfo' | 'addNode' | 'sessionEnd' | 'admin'] = false;
@@ -90,77 +90,9 @@
 	onDestroy(() => {
 		selectedNodeUnsubscribe();
 	});
-
-	$inspect(states.nodeInfo);
 </script>
 
 <div class="z-50 bg-gray-950 border-t border-gray-500 divide-x divide-gray-500 btm-nav dark:bg-gray-950">
-	<!-- Node Info button -->
-	<div class="flex flex-row-reverse">
-		<button
-			type="button"
-			class="z-20 flex flex-col items-center justify-center w-full h-full bg-gray-950"
-			onclick={() => {
-				setCheck('nodeInfo');
-			}}
-		>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				class="w-5 h-5"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke="currentColor"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M11 17h2v2h-2v-2zm0-8h2v6h-2V9zm0 0V7h2v2h-2z"
-				/>
-			</svg>
-			<span class="btm-nav-label">{$t('nodeInformation')}</span>
-		</button>
-		{#if states.nodeInfo}
-			<div
-				transition:slide|global={{
-					duration: 200,
-					easing: quintOut
-				}}
-				class="p-2 text-primary-500 absolute z-10 w-screen md:w-full bg-gray-950 border-t opacity-90 bottom-full {admin
-					? ''
-					: 'right-0'}"
-			>
-				{#if $selectedNodeStore}
-					{#key $selectedNodeStore}
-						<div
-							in:blur={{
-								duration: 800,
-								easing: quintOut,
-								amount: 2,
-								opacity: 0.4
-							}}
-							class="flex flex-col items-center gap-2"
-						>
-							<div class="text-xl text-white font-semibold first-letter:capitalize">
-								{$selectedNodeStore.title}
-							</div>
-							<div>
-								{$t('from')}
-								<span class="text-white">{$selectedNodeStore.author}</span>
-							</div>
-							<div class="max-h-60 overflow-auto text-justify text-gray-300">
-								{$selectedNodeStore.text}
-							</div>
-						</div>
-					{/key}
-				{:else}
-					<div class="text-xl text-center font-semibold first-letter:capitalize">
-						{$t('noNodeSelected')}
-					</div>
-				{/if}
-			</div>
-		{/if}
-	</div>
 	<!-- Add Node Or Session Ended -->
 	{#if !session?.completed}
 		<div class="flex flex-col-reverse">
@@ -308,6 +240,72 @@
 			{/if}
 		</div>
 	{/if}
+	<!-- Node Info button -->
+	<div class="flex flex-row-reverse">
+		<button
+			type="button"
+			class="z-20 flex flex-col items-center justify-center w-full h-full bg-gray-950"
+			onclick={() => {
+				setCheck('nodeInfo');
+			}}
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="w-5 h-5"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M11 17h2v2h-2v-2zm0-8h2v6h-2V9zm0 0V7h2v2h-2z"
+				/>
+			</svg>
+			<span class="btm-nav-label">{$t('nodeInformation')}</span>
+		</button>
+		{#if states.nodeInfo}
+			<div
+				transition:slide|global={{
+					duration: 200,
+					easing: quintOut
+				}}
+				class="p-2 text-primary-500 absolute z-10 w-screen md:w-full bg-gray-950 border-t opacity-90 bottom-full {admin
+					? ''
+					: 'right-0'}"
+			>
+				{#if $selectedNodeStore}
+					{#key $selectedNodeStore}
+						<div
+							in:blur={{
+								duration: 800,
+								easing: quintOut,
+								amount: 2,
+								opacity: 0.4
+							}}
+							class="flex flex-col items-center gap-2"
+						>
+							<div class="text-xl text-white font-semibold first-letter:capitalize">
+								{$selectedNodeStore.title}
+							</div>
+							<div>
+								{$t('from')}
+								<span class="text-white">{$selectedNodeStore.author}</span>
+							</div>
+							<div class="max-h-60 overflow-auto text-justify text-gray-300">
+								{$selectedNodeStore.text}
+							</div>
+						</div>
+					{/key}
+				{:else}
+					<div class="text-xl text-center font-semibold first-letter:capitalize">
+						{$t('noNodeSelected')}
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</div>
 	<!-- Admin button (visible only for admins) -->
 	{#if admin && user && !session?.completed}
 		<div class="flex flex-col-reverse">
