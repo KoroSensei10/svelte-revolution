@@ -1,5 +1,4 @@
-import type { LinkMessage } from '$types/graph';
-import type { GraphNode, Session } from '$types/pocketBase/TableTypes';
+import type { Session } from '$types/pocketBase/TableTypes';
 import { error } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 import { type MyPocketBase } from '../../../types/pocketBase/index';

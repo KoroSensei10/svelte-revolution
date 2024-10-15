@@ -88,8 +88,10 @@
 	/**
 	 * Append a new node and his links to the graph, then restart the simulation
 	 */
-	function addNodeToGraph(node: NodeMessage) {
-		nodesStore.set([...$nodesStore, node]);
+	function addNodeToGraph(node: NodeMessage | null) {
+		if (node) {
+			nodesStore.set([...$nodesStore, node]);
+		}
 		linksStore.set(buildLinks($nodesStore));
 		restartSimulation();
 	}
@@ -162,7 +164,9 @@
 							if (node.id === record.id) {
 								return {
 									...node,
-									...record
+									text: record.text,
+									title: record.title,
+									parent: record.parent
 								};
 							}
 							return node;
@@ -170,6 +174,10 @@
 					);
 					renderGraph();
 				} else if (action === 'delete') {
+					const newNodes = await pb.collection('Node').getFullList({ filter: `session="${sessionId}"` });
+					nodesStore.set(newNodes);
+					linksStore.set(buildLinks(newNodes));
+					$selectedNodeStore = newNodes.find((node) => node.id === $selectedNodeStore?.parent) || null;
 					restartSimulation();
 				}
 			},
