@@ -88,7 +88,7 @@
 	/**
 	 * Append a new node and his links to the graph, then restart the simulation
 	 */
-	function updateGraph(node: NodeMessage, parentNodeId: string) {
+	function addNodeToGraph(node: NodeMessage, parentNodeId: string) {
 		nodesStore.set([...$nodesStore, node]);
 		linksStore.set([
 			...$linksStore,
@@ -108,43 +108,7 @@
 		renderGraph();
 	}
 
-	// Update the graph when a node is added
-	const unsubscribe = selectedNodeStore.subscribe(() => {
-		// hack to avoid the error "Cannot read property 'innerWidth' of undefined" on first render
-		try {
-			// eslint-disable-next-line
-			window.innerWidth;
-			renderGraph();
-		} catch (error) {
-			return error;
-		}
-	});
-
-	onMount(async () => {
-		await pb.collection('Node').subscribe(
-			'*',
-			async ({ record }) => {
-				const currentUser = localStorage.getItem('author');
-				if (record.author !== currentUser) {
-					// @ts-expect-error Svelte 5 problem I guess
-					toast(MessageToast, {
-						props: {
-							author: record.author,
-							record
-						},
-						duration: 4000,
-						position: 'bottom-left',
-						style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
-						icon: '📩'
-					});
-				}
-				updateGraph(record, record.parent);
-			},
-			{
-				filter: `session="${sessionId}"`
-			}
-		);
-
+	function initSimulation() {
 		svgElement = select(svg);
 		linkLayer = svgElement.append('g');
 		nodeLayer = svgElement.append('g');
@@ -174,11 +138,74 @@
 			.force('charge', forceManyBody().strength(-300));
 
 		renderGraph();
+	}
+
+	onMount(async () => {
+		// Real-time connection to the database
+		await pb.collection('Node').subscribe(
+			'*',
+			async ({ action, record }) => {
+				//action: 'create', 'update', 'delete'
+				if (action === 'create') {
+					const currentUser = localStorage.getItem('author');
+					if (record.author !== currentUser) {
+						// @ts-expect-error Svelte 5 problem I guess
+						toast(MessageToast, {
+							props: {
+								author: record.author,
+								record
+							},
+							duration: 4000,
+							position: 'bottom-left',
+							style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
+							icon: '📩'
+						});
+					}
+					addNodeToGraph(record, record.parent);
+				} else if (action === 'update') {
+					nodesStore.set(
+						$nodesStore.map((node) => {
+							if (node.id === record.id) {
+								return {
+									...node,
+									...record
+								};
+							}
+							return node;
+						})
+					);
+					renderGraph();
+				} else if (action === 'delete') {
+					restartSimulation();
+				}
+			},
+			{
+				filter: `session="${sessionId}"`
+			}
+		);
+
+		initSimulation();
+	});
+
+	// Update the graph when a node is added
+	const unsubscribe = selectedNodeStore.subscribe(() => {
+		// hack to avoid the error "Cannot read property 'innerWidth' of undefined" on first render
+		try {
+			// eslint-disable-next-line
+			window.innerWidth;
+			renderGraph();
+		} catch (error) {
+			return error;
+		}
 	});
 
 	onDestroy(() => {
 		unsubscribe();
 		simulation?.stop();
+		pb.collection('Node').unsubscribe();
+		selectedNodeStore.set(null);
+		nodesStore.set([]);
+		linksStore.set([]);
 	});
 </script>
 

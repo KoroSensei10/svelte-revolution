@@ -3,20 +3,27 @@
 	import { onMount, type Snippet } from 'svelte';
 	import { navigating, page } from '$app/stores';
 	import { enhance } from '$app/forms';
+	import { Pane, Button, Text, Textarea } from 'svelte-tweakpane-ui';
 	import NProgress from 'nprogress';
-	import { Toaster } from 'svelte-french-toast';
+	import { Toaster, toast } from 'svelte-french-toast';
 	import { locale, locales, t } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
 	import graph1 from '$lib/assets/graphe1.png';
 	import { viewportStore } from '$stores/ui/index.svelte';
 	import { titleStore } from '$stores/titles/index.svelte';
 	import type { User } from '$types/pocketBase/TableTypes';
+	import { goto } from '$app/navigation';
+	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
+	import { pb } from '$lib/client/pocketbase';
+	import { ClientResponseError } from 'pocketbase';
 
 	type Props = {
 		data: { user: User; isAdmin: boolean };
 		children: Snippet;
 	};
 	let { data, children }: Props = $props();
+
+	let confirmChange = $state(false);
 
 	NProgress.configure({
 		// Full list: https://github.com/rstacruz/nprogress#configuration
@@ -34,6 +41,72 @@
 	onMount(() => {
 		viewportStore.updateViewport(window);
 	});
+
+	function checkAuth() {
+		pb.authStore.loadFromCookie(document.cookie);
+		if (!pb.authStore.isValid || pb.authStore.model?.role !== 'superAdmin') {
+			throw new ClientResponseError({ message: 'Not authenticated' });
+		}
+	}
+
+	async function addRandomNode() {
+		try {
+			checkAuth();
+			// génère des données aléatoires
+			const data = {
+				title: crypto.getRandomValues(new Uint32Array(1))[0].toString(16),
+				text: crypto.getRandomValues(new Uint32Array(1))[0].toString(16),
+				type: 'contribution',
+				author: 'random',
+				parent: $selectedNodeStore?.id,
+				session: $selectedNodeStore?.session
+			};
+
+			const node = await pb.collection('Node').create(data);
+			$selectedNodeStore = node;
+		} catch (e) {
+			console.error(e);
+			const err = e as ClientResponseError;
+			toast.error(err.message);
+		}
+	}
+
+	async function updateNode() {
+		if (!$selectedNodeStore) {
+			return;
+		}
+		try {
+			checkAuth();
+			await pb.collection('Node').update(String($selectedNodeStore.id), {
+				title: $selectedNodeStore.title,
+				text: $selectedNodeStore.text
+			});
+			toast.success('Node updated');
+		} catch (e) {
+			const err = e as ClientResponseError;
+			toast.error(err.message);
+		}
+	}
+
+	async function deleteNode() {
+		try {
+			if ($selectedNodeStore?.type === 'startNode') {
+				throw new ClientResponseError({ message: 'Cannot delete start node' });
+			}
+			checkAuth();
+			const parent = $selectedNodeStore?.parent;
+			const nodes = await pb.collection('Node').getFullList({ filter: `parent="${$selectedNodeStore?.id}"` });
+			const promiseList = nodes.map((node) => {
+				pb.collection('Node').update(String(node.id), { parent });
+			});
+			await Promise.all(promiseList);
+			await pb.collection('Node').delete(String($selectedNodeStore?.id));
+			toast.success('Node deleted');
+		} catch (e) {
+			const err = e as ClientResponseError;
+			toast.error(err.message);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -48,6 +121,23 @@
 <svelte:window on:resize={() => viewportStore.updateViewport(window)} />
 
 <Toaster />
+
+{#if $page.data.user?.role === 'superAdmin'}
+	<!--  && $page.url.searchParams.get('debug') === 'true'} -->
+	<Pane position="draggable" title="Debug Panel">
+		<Button on:click={() => goto('/roadmap')} title="Go to Roadmap"></Button>
+		<Button on:click={() => window.location.reload()} title="Reload Page"></Button>
+		{#if $nodesStore.length && $linksStore.length}
+			{#if $selectedNodeStore}
+				<Button on:click={addRandomNode} title="Add random node"></Button>
+				<Button on:click={deleteNode} title="Delete node"></Button>
+				<Text bind:value={$selectedNodeStore.title} label="Node title"></Text>
+				<Textarea bind:value={$selectedNodeStore.text} label="Node description"></Textarea>
+				<Button on:click={updateNode} title="Update node"></Button>
+			{/if}
+		{/if}
+	</Pane>
+{/if}
 
 <!-- UI -->
 <nav class="sticky top-0 z-50 border-b border-gray-500 bg-gray-950 navbar opacity-90">
