@@ -1,20 +1,26 @@
-import { buildNodesAndLinks, getSession } from '$lib/server/sessions';
+import { getSession } from '$lib/server/sessions';
 import { createNode } from '$lib/server/sessions/create';
 import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
 import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
 import type { GraphNode } from '$types/pocketBase/TableTypes';
+import { buildLinks } from '$lib/sessions';
 
 export const load: ServerLoad = async ({ params, locals }) => {
 	const pb = locals.pb;
 	const sessionData = await getSession(pb, Number(params.slug));
-	const nodesAndLinks = await buildNodesAndLinks(pb, sessionData);
+
+	const nodes = await pb
+		.collection('Node')
+		.getFullList({ filter: pb.filter('session = {:session}', { session: sessionData.id }) });
+
+	const links = buildLinks(nodes);
 
 	// Admin only
 	let events: GraphEvent[] = [];
 	let ends: End[] = [];
 	if (sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin') {
 		if (locals.pb.authStore.isValid) {
-			const scenario = sessionData.expand.scenario.id;
+			const scenario = sessionData.expand?.scenario?.id;
 			events = await locals.pb.collection('Event').getFullList({
 				filter: locals.pb.filter('scenario = {:scenario}', { scenario })
 			});
@@ -26,12 +32,15 @@ export const load: ServerLoad = async ({ params, locals }) => {
 	// ---
 
 	const sides = await locals.pb.collection('Side').getFullList({
-		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData.expand.scenario.id })
+		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData?.expand?.scenario?.id })
 	});
 
 	return {
 		sessionData,
-		nodesAndLinks,
+		nodesAndLinks: {
+			nodes,
+			links
+		},
 		events,
 		ends,
 		sides,
