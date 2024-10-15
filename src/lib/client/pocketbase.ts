@@ -4,4 +4,8 @@ import { env } from '$env/dynamic/public';
 
 const DB_URL = env.PUBLIC_DB_URL;
 
-export const pb = new PocketBase(DB_URL) as MyPocketBase;
+const pb = new PocketBase(DB_URL) as MyPocketBase;
+
+pb.autoCancellation(false);
+
+export { pb };

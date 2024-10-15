@@ -3,20 +3,28 @@
 	import { onMount, type Snippet } from 'svelte';
 	import { navigating, page } from '$app/stores';
 	import { enhance } from '$app/forms';
+	import { Pane, Button, Text, Textarea, Separator } from 'svelte-tweakpane-ui';
 	import NProgress from 'nprogress';
-	import { Toaster } from 'svelte-french-toast';
+	import { Toaster, toast } from 'svelte-french-toast';
 	import { locale, locales, t } from 'svelte-i18n';
 	import 'nprogress/nprogress.css';
 	import graph1 from '$lib/assets/graphe1.png';
 	import { viewportStore } from '$stores/ui/index.svelte';
 	import { titleStore } from '$stores/titles/index.svelte';
 	import type { User } from '$types/pocketBase/TableTypes';
+	import { goto } from '$app/navigation';
+	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
+	import { pb } from '$lib/client/pocketbase';
+	import { ClientResponseError } from 'pocketbase';
+	import DebugPane from '$components/admin/DebugPane.svelte';
 
 	type Props = {
 		data: { user: User; isAdmin: boolean };
 		children: Snippet;
 	};
 	let { data, children }: Props = $props();
+
+	let confirmChange = $state(false);
 
 	NProgress.configure({
 		// Full list: https://github.com/rstacruz/nprogress#configuration
@@ -48,6 +56,11 @@
 <svelte:window on:resize={() => viewportStore.updateViewport(window)} />
 
 <Toaster />
+
+{#if $page.data.user?.role === 'superAdmin'}
+	<!--  && $page.url.searchParams.get('debug') === 'true'} -->
+	<DebugPane />
+{/if}
 
 <!-- UI -->
 <nav class="sticky top-0 z-50 border-b border-gray-500 bg-gray-950 navbar opacity-90">
