@@ -22,11 +22,11 @@
 	import toast from 'svelte-french-toast';
 	import MessageToast from '$components/graph/MessageToast.svelte';
 	import { type GraphNode } from '$types/pocketBase/TableTypes';
+	import { buildLinks } from '$lib/sessions';
 
 	interface Props {
 		sessionId: string;
 	}
-
 	let { sessionId }: Props = $props();
 
 	let svg: SVGElement;
@@ -88,15 +88,9 @@
 	/**
 	 * Append a new node and his links to the graph, then restart the simulation
 	 */
-	function addNodeToGraph(node: NodeMessage, parentNodeId: string) {
+	function addNodeToGraph(node: NodeMessage) {
 		nodesStore.set([...$nodesStore, node]);
-		linksStore.set([
-			...$linksStore,
-			{
-				source: parentNodeId,
-				target: node.id
-			}
-		]);
+		linksStore.set(buildLinks($nodesStore));
 		restartSimulation();
 	}
 
@@ -161,7 +155,7 @@
 							icon: '📩'
 						});
 					}
-					addNodeToGraph(record, record.parent);
+					addNodeToGraph(record);
 				} else if (action === 'update') {
 					nodesStore.set(
 						$nodesStore.map((node) => {
