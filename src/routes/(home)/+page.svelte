@@ -182,7 +182,7 @@
 			<p class="font-bold">
 				Credits Project design and supervision: Serge Bouchardon, Isabelle Cros, Erika Fülöp, Simon Renaud.
 				<br />
-				Design and development: Mathis Jung, Eileen Lorenzo, Eva Gui Florestan Biaux, Benoît Chevillon, <br /> Lucas
+				Design and development: Mathis Jung, Eileen Lorenzo, Eva Guignabodet, Florestan Biaux, Benoît Chevillon, <br /> Lucas
 				D'Aquaro, Solène Desvaux de Marigny, Ismaïl Kadiri, Mathilde Lange, Claire Malgonne, Gabrielle Van de Vijver
 			</p>
 			<p>{new Date().getFullYear()}</p>
