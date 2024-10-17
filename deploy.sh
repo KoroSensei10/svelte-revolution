@@ -54,6 +54,6 @@ sudo systemctl reload nginx
 
 # Lancement de l'application avec Docker Compose
 echo "Lancement de l'application avec Docker Compose..."
-sudo docker-compose up -d
+sudo docker-compose up -d --build
 
 echo "Déploiement terminé avec succès !"
