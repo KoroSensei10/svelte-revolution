@@ -50,10 +50,11 @@ sudo apt install -y certbot python3-certbot-nginx
 # Obtention et installation du certificat SSL
 echo "Obtention et installation du certificat SSL..."
 sudo certbot --nginx -d docker.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
-sudo systemctl reload nginx
 
 # Lancement de l'application avec Docker Compose
 echo "Lancement de l'application avec Docker Compose..."
 sudo docker-compose up -d --build
+
+sudo systemctl reload nginx
 
 echo "Déploiement terminé avec succès !"
