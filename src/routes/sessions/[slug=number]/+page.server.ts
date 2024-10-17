@@ -30,9 +30,8 @@ export const load: ServerLoad = async ({ params, locals }) => {
 				age: 30
 			})
 		});
+		console.log(await data.json());
 	}
-
-	console.log(await data.json());
 
 	// Admin only
 	let events: GraphEvent[] = [];
