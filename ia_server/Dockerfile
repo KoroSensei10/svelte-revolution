@@ -16,5 +16,9 @@ RUN cargo build --release
 # Expose the port that Rocket will run on
 EXPOSE 8000
 
+# Set environment variables for Rocket URL and port
+ENV ROCKET_ADDRESS=0.0.0.0
+ENV ROCKET_PORT=8000
+
 # Set the startup command to run the Rocket application
 CMD ["./target/release/rust-server"]
