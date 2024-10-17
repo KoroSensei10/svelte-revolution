@@ -4,7 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"ia": "cd ./ia_server && cargo-watch -x 'run'",
+		"ia": "cd ./ia_server && cargo run",
+		"ia-watch": "cd ./ia_server && cargo-watch -x 'run'",
 		"dev": "vite dev",
 		"vercel-build": "ADAPTER=auto vite build",
 		"build": "ADAPTER=bun vite build",
@@ -12,7 +13,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"clear-b": "bunx clear-branches"
 	},
 	"dependencies": {
 		"@faker-js/faker": "^9.0.3",
