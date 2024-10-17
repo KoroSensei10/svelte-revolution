@@ -45,7 +45,8 @@
 	"side": {
 		"side": "Side",
 		"sides": "Sides",
-		"chooseSide": "Choose Side"
+		"chooseSide": "Choose Side",
+		"yourSide": "Your Side"
 	},
 	"form": {
 		"submit": "Submit",
@@ -118,6 +119,7 @@
 	"password": "Password",
 	"email": "Email",
 	"yourTitle": "Your title",
+	"messageTitle": "Message title",
 	"yourMessage": "Your message",
 	"yourName": "Your name",
 	"publish": "Publish"

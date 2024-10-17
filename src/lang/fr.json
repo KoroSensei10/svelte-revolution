@@ -43,9 +43,10 @@
 		"sides": "Côtés"
 	},
 	"side": {
-		"side": "Côté",
-		"sides": "Côtés",
-		"chooseSide": "Choisir un côté"
+		"side": "Camp",
+		"sides": "Camps",
+		"chooseSide": "Choisir un camp",
+		"yourSide": "Ton camp"
 	},
 	"form": {
 		"submit": "Soumettre",
@@ -121,5 +122,6 @@
 	"yourTitle": "Votre titre",
 	"yourMessage": "Votre message",
 	"yourName": "Votre nom",
-	"publish": "Publier"
+	"publish": "Publier",
+	"messageTitle": "Titre du message"
 }

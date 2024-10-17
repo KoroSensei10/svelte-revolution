@@ -144,7 +144,7 @@
 				>
 					<label class="form-control w-full max-w-xs">
 						<div class="label p-0">
-							<span class="label-text text-inherit">Titre du message</span>
+							<span class="label-text text-inherit">{$t('messageTitle')}</span>
 						</div>
 						<input
 							name="title"
@@ -156,7 +156,7 @@
 					</label>
 					<label class="form-control w-full max-w-xs">
 						<div class="label p-0">
-							<span class="label-text text-inherit">Ton nom</span>
+							<span class="label-text text-inherit">{$t('yourName')}</span>
 						</div>
 						<input
 							name="author"
@@ -168,7 +168,7 @@
 					</label>
 					<label class="form-control w-full max-w-xs">
 						<div class="label p-0">
-							<span class="label-text text-inherit">Ton camp</span>
+							<span class="label-text text-inherit">{$t('side.yourSide')}</span>
 						</div>
 						<select
 							name="side"
@@ -181,7 +181,7 @@
 					</label>
 					<label class="form-control w-full max-w-xs">
 						<div class="label p-0">
-							<span class="label-text text-inherit">Ton message</span>
+							<span class="label-text text-inherit">{$t('home.yourMessage')}</span>
 						</div>
 						<textarea
 							name="text"
@@ -192,7 +192,7 @@
 					</label>
 					<input type="hidden" name="session" value={session.id} />
 					<input type="hidden" name="parent" value={$selectedNodeStore?.id ?? null} />
-					<button class="btn w-fit btn-accent btn-sm self-center" type="submit">Envoyer</button>
+					<button class="btn w-fit btn-accent btn-sm self-center" type="submit">{$t('form.submit')}</button>
 				</form>
 			{/if}
 		</div>

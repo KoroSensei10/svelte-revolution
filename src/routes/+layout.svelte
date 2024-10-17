@@ -163,7 +163,7 @@
 				</div>
 			</div>
 		{:else}
-			<a href="/login" class="justify-between btn btn-ghost">{$t('login')}</a>
+			<a href="/login" class="justify-between btn btn-ghost">{$t('admin')}</a>
 		{/if}
 	</div>
 </nav>

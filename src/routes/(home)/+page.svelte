@@ -62,7 +62,7 @@
 				<span class="invisible">BABEL REVOLUTION</span>
 			{/if}
 		</h1>
-		<div class="text-lg text-center text-gray-300">
+		<div class="text-lg text-pretty text-gray-300">
 			{$t('home.intro')}
 			<p class="text-white">
 				{$t('home.introHighlight')}
@@ -92,7 +92,7 @@
 					duration: 400,
 					easing: quintOut
 				}}
-				class="flex flex-col w-full h-full gap-4 text-justify item md:py-12"
+				class="flex flex-col w-full h-full gap-4 text-balance item md:py-12"
 			>
 				{#key homeStore.selectedNode}
 					<div
