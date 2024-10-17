@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { t } from 'svelte-i18n';
 
 	interface Props {
 		watermarkText: string;
@@ -14,11 +15,11 @@
 	>
 		{#each Array.from({ length: 10 }, (_, i) => i) as i}
 			<div class="" style="transform: rotate({i * 36}deg);">
-				{watermarkText}
+				{$t(watermarkText)}
 			</div>
 		{/each}
 	</div>
-	<div class="relative z-10">
+	<div class="">
 		{@render children()}
 	</div>
 </div>

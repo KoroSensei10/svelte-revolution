@@ -4,9 +4,22 @@ import daisyui from 'daisyui';
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
-	darkMode: 'selector',
+	darkMode: "media",
 	theme: {
 		extend: {
+			backgroundImage: {
+				'dotted-white': 'radial-gradient(white 1px, transparent 1px)', // Motif de points
+				'dotted-gray': 'radial-gradient(#4a5568 1px, transparent 1px)',
+				'dotted-darkGray': 'radial-gradient(#333 1px, transparent 1px)',
+				'dotted-black': 'radial-gradient(#000 1px, transparent 1px)',
+			},
+			backgroundSize: {
+				'dotted-20': '20px 20px',
+				'dotted-40': '40px 40px'
+			},
+			backgroundColor: {
+				'dark-bg': '#1a202c', // Couleur de fond sombre
+			},
 			fontFamily: {
 				redditSans: ['RedditSans', 'cursive']
 			},

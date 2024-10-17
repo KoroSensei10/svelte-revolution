@@ -1,5 +1,3 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import {
@@ -17,16 +15,18 @@
 		zoomIdentity
 	} from 'd3';
 	import type { LinkMessage, NodeMessage } from '$types/graph';
-	import { pb } from '$lib/pocketbase';
+	import { pb } from '$lib/client/pocketbase';
+	// TODO: change for the new Store system
 	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
 	import { updateLabelsInGraph, updateLinksInGraph, updateNodesInGraph } from './utils';
 	import toast from 'svelte-french-toast';
 	import MessageToast from '$components/graph/MessageToast.svelte';
+	import { type GraphNode } from '$types/pocketBase/TableTypes';
+	import { buildLinks } from '$lib/sessions';
 
 	interface Props {
 		sessionId: string;
 	}
-
 	let { sessionId }: Props = $props();
 
 	let svg: SVGElement;
@@ -53,9 +53,9 @@
 		svgElement.attr('width', currentWidth).attr('height', currentHeight);
 
 		const linksInGraph = updateLinksInGraph(linkLayer);
-
+		// @ts-expect-error d3...
 		const nodesInGraph = updateNodesInGraph(nodeLayer, linksInGraph, simulation);
-
+		// @ts-expect-error d3...
 		const labelsInGraph = updateLabelsInGraph(labelLayer, linksInGraph, nodesInGraph, simulation);
 
 		simulation.on('tick', () => {
@@ -77,26 +77,22 @@
 			.force('centerNode', forceRadial(100, currentWidth / 2, currentHeight / 2).strength(0.02))
 			.force(
 				'x',
-				forceX(currentWidth / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
+				forceX<GraphNode>(currentWidth / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
 			)
 			.force(
 				'y',
-				forceY(currentHeight / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
+				forceY<GraphNode>(currentHeight / 2).strength((d) => (d.type === 'startNode' ? 1 : 0))
 			);
 	}
 
 	/**
 	 * Append a new node and his links to the graph, then restart the simulation
 	 */
-	function updateGraph(node: NodeMessage, parentNodeId: string) {
-		nodesStore.set([...$nodesStore, node]);
-		linksStore.set([
-			...$linksStore,
-			{
-				source: parentNodeId,
-				target: node.id
-			}
-		]);
+	function addNodeToGraph(node: NodeMessage | null) {
+		if (node) {
+			nodesStore.set([...$nodesStore, node]);
+		}
+		linksStore.set(buildLinks($nodesStore));
 		restartSimulation();
 	}
 
@@ -108,46 +104,7 @@
 		renderGraph();
 	}
 
-	// Update the graph when a node is added
-	const unsubscribe = selectedNodeStore.subscribe(() => {
-		// hack to avoid the error "Cannot read property 'innerWidth' of undefined" on first render
-		try {
-			// eslint-disable-next-line
-			window.innerWidth;
-			renderGraph();
-		} catch (error) {
-			return error;
-		}
-	});
-
-	onMount(async () => {
-		await pb.collection('Node').subscribe(
-			'*',
-			async ({ record }) => {
-				const currentUser = localStorage.getItem('author');
-				if (record.author !== currentUser) {
-					// @ts-expect-error Svelte 5 problem I guess
-					toast(MessageToast, {
-						props: {
-							author: record.author,
-							record
-						},
-						duration: 4000,
-						position: 'top-left',
-						style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
-						icon: '📩'
-					});
-				}
-				const side = await pb.collection('Side').getOne(record.side);
-				record.expand = {};
-				record.expand.side = side;
-				updateGraph(record, record.parent);
-			},
-			{
-				filter: `session="${sessionId}"`
-			}
-		);
-
+	function initSimulation() {
 		svgElement = select(svg);
 		linkLayer = svgElement.append('g');
 		nodeLayer = svgElement.append('g');
@@ -177,13 +134,86 @@
 			.force('charge', forceManyBody().strength(-300));
 
 		renderGraph();
+	}
+
+	onMount(async () => {
+		// Real-time connection to the database
+		await pb.collection('Node').subscribe(
+			'*',
+			async ({ action, record }) => {
+				//action: 'create', 'update', 'delete'
+				if (action === 'create') {
+					const currentUser = localStorage.getItem('author');
+					if (record.author !== currentUser) {
+						// @ts-expect-error Svelte 5 problem I guess
+						toast(MessageToast, {
+							props: {
+								author: record.author,
+								record
+							},
+							duration: 4000,
+							position: 'bottom-left',
+							style: "{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white'}",
+							icon: '📩'
+						});
+					}
+					addNodeToGraph(record);
+				} else if (action === 'update') {
+					nodesStore.set(
+						$nodesStore.map((node) => {
+							if (node.id === record.id) {
+								return {
+									...node,
+									text: record.text,
+									title: record.title,
+									parent: record.parent
+								};
+							}
+							return node;
+						})
+					);
+					renderGraph();
+				} else if (action === 'delete') {
+					const newNodes = await pb.collection('Node').getFullList({ filter: `session="${sessionId}"` });
+					nodesStore.set(newNodes);
+					linksStore.set(buildLinks(newNodes));
+					$selectedNodeStore = newNodes.find((node) => node.id === $selectedNodeStore?.parent) || null;
+					restartSimulation();
+				}
+			},
+			{
+				filter: `session="${sessionId}"`
+			}
+		);
+
+		initSimulation();
+	});
+
+	// Update the graph when a node is added
+	const unsubscribe = selectedNodeStore.subscribe(() => {
+		// hack to avoid the error "Cannot read property 'innerWidth' of undefined" on first render
+		try {
+			// eslint-disable-next-line
+			window.innerWidth;
+			renderGraph();
+		} catch (error) {
+			return error;
+		}
 	});
 
 	onDestroy(() => {
 		unsubscribe();
+		simulation?.stop();
+		pb.collection('Node').unsubscribe();
+		selectedNodeStore.set(null);
+		nodesStore.set([]);
+		linksStore.set([]);
 	});
 </script>
 
-<svelte:window on:resize={() => restartSimulation()} />
+<svelte:window on:resize={restartSimulation} />
 
-<svg bind:this={svg} class="w-full h-full cursor-grab"></svg>
+<svg
+	bind:this={svg}
+	class="fixed top-0 left-0 w-screen h-screen z-10 cursor-grab bg-black bg-dotted-40 bg-dotted-darkGray"
+></svg>

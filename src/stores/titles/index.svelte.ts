@@ -1,16 +1,29 @@
 import { env } from '$env/dynamic/public';
 
-const BRANCH_NAME = env.PUBLIC_VITE_BRANCH_NAME;
+const BRANCH_NAME = env.PUBLIC_BRANCH_NAME;
 
-class Titles {
-	mainTitle = $state('Babel Révolution');
+function createTitleStore() {
+	const mainTitle = $state('Babel Révolution');
+	let navTitle = $state('Babel Révolution');
+	let previousNavTitle = $state('Babel Révolution');
 
-	setMainTitle(title: string) {
-		if (BRANCH_NAME) {
-			title += ` (${BRANCH_NAME})`;
-		}
-		this.mainTitle = title;
+	function setNavTitle(title: string) {
+		previousNavTitle = navTitle;
+		navTitle = title;
 	}
+
+	return {
+		get mainTitle() {
+			return mainTitle + BRANCH_NAME;
+		},
+		get navTitle() {
+			return navTitle;
+		},
+		get previousNavTitle() {
+			return previousNavTitle;
+		},
+		setNavTitle
+	};
 }
 
-export const titles = new Titles();
+export const titleStore = createTitleStore();

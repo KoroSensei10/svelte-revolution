@@ -1,11 +1,13 @@
 import { dev } from '$app/environment';
-import type { Handle } from '@sveltejs/kit';
-import PocketBase from 'pocketbase';
-
-const dbUrl = import.meta.env.VITE_DB_URL as string;
+import { createPocketBase } from '$lib/server/pocketbase';
+import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.pb = new PocketBase(dbUrl, event.locals.pb?.authStore);
+	if (event.request.url.endsWith('__data.json')) {
+		redirect(300, event.request.url.replace(/__data.json$/, ''));
+	}
+
+	event.locals.pb = createPocketBase();
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	if (event.locals.pb.authStore.isValid) {
@@ -20,8 +22,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	response.headers.append(
 		'set-cookie',
-		event.locals.pb.authStore.exportToCookie({ httpOnly: false, path: '/', secure: dev ? false : true })
+		event.locals.pb.authStore.exportToCookie({ httpOnly: false, path: '/', secure: dev ? false : false })
 	);
+	// httpOnly: if true, the cookie is not accessible via JavaScript, that's why we're setting it to false
+	// path: '/' is the default, but we're setting it explicitly here
+	// secure: if true, send cookie over HTTPS only
 
 	return response;
 };

@@ -1,18 +1,44 @@
-import { buildNodesAndLinks, getSession } from '$lib/server/sessions';
+import { getSession } from '$lib/server/sessions';
 import { createNode } from '$lib/server/sessions/create';
 import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
 import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
+import type { GraphNode } from '$types/pocketBase/TableTypes';
+import { buildLinks } from '$lib/sessions';
+import { env } from '$env/dynamic/private';
+
+const iaserver = env.IA_SERVER_URL;
 
 export const load: ServerLoad = async ({ params, locals }) => {
-	const sessionData = await getSession(Number(params.slug));
-	const nodesAndLinks = await buildNodesAndLinks(sessionData);
+	const pb = locals.pb;
+	const sessionData = await getSession(pb, Number(params.slug));
+
+	const nodes = await pb
+		.collection('Node')
+		.getFullList({ filter: pb.filter('session = {:session}', { session: sessionData.id }) });
+
+	const links = buildLinks(nodes);
+
+	let data = null;
+	if (iaserver) {
+		data = await fetch(iaserver + '/hello', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: 'getNodes',
+				age: 30
+			})
+		});
+		console.log(await data.json());
+	}
 
 	// Admin only
 	let events: GraphEvent[] = [];
 	let ends: End[] = [];
 	if (sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin') {
 		if (locals.pb.authStore.isValid) {
-			const scenario = sessionData.expand.scenario.id;
+			const scenario = sessionData.expand?.scenario?.id;
 			events = await locals.pb.collection('Event').getFullList({
 				filter: locals.pb.filter('scenario = {:scenario}', { scenario })
 			});
@@ -24,15 +50,18 @@ export const load: ServerLoad = async ({ params, locals }) => {
 	// ---
 
 	const sides = await locals.pb.collection('Side').getFullList({
-		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData.expand.scenario.id })
+		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData?.expand?.scenario?.id })
 	});
 
 	return {
 		sessionData,
-		nodesAndLinks,
+		nodesAndLinks: {
+			nodes,
+			links
+		},
 		events,
-		sides,
 		ends,
+		sides,
 		// Admin onlys
 		isAdmin:
 			sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin'
@@ -57,7 +86,7 @@ export const actions: Actions = {
 			return fail(500, { success: false, error: 'Not in a session' });
 		}
 
-		if (!title || !text || !author) {
+		if (!title || !text || !author || !side) {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 
@@ -98,7 +127,7 @@ export const actions: Actions = {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 
-		let createdEventNode: GraphEvent;
+		let createdEventNode: GraphNode | null = null;
 		try {
 			const { title, text, author } = await locals.pb.collection('Event').getOne(eventId);
 			const firstNode = await locals.pb.collection('Node').getFirstListItem(
@@ -108,16 +137,19 @@ export const actions: Actions = {
 				})
 			);
 			createdEventNode = await createNode(locals.pb, title, text, author, sessionId, firstNode, 'event');
-			await locals.pb.collection('Session').update(sessionId, { events: createdEventNode.id });
+			await locals.pb.collection('Session').update(sessionId, { events: eventId });
 		} catch (error) {
 			console.error('Error creating event:', JSON.stringify(error));
+			if (createdEventNode) {
+				await locals.pb.collection('Node').delete(String(createdEventNode.id));
+			}
 			return fail(500, { success: false, error: 'Error while creating event' });
 		}
 
 		return {
 			status: 200,
 			success: true,
-			body: { message: 'Event added', event: JSON.stringify(createdEventNode) }
+			body: { message: 'Event added', event: createdEventNode }
 		};
 	},
 	endSession: async ({ request, locals }) => {

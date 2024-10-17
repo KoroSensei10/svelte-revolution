@@ -23,6 +23,15 @@
 	function checkValidity() {
 		validForm = theForm?.checkValidity();
 	}
+
+	$effect(() => {
+		if (form?.error) {
+			toast.error(form.error, { duration: 5000, position: 'bottom-center' });
+		} else if (form?.success) {
+			// TODO Traduction
+			toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
+		}
+	});
 </script>
 
 <div class="flex flex-col items-center">
@@ -36,7 +45,6 @@
 			return async ({ update }) => {
 				await update();
 				nProgress.done();
-				toast.success('Scénario créé avec succès', { duration: 3000, position: 'bottom-center' });
 			};
 		}}
 		action="?/createScenario"
@@ -69,7 +77,7 @@
 					<Radio langs={[...data.lang]} />
 					<MultiField
 						props={{
-							name: 'side',
+							name: 'sides',
 							title: $t('scenario.side'),
 							placeholderTitle: $t('scenario.side')
 						}}

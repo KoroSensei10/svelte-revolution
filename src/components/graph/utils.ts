@@ -1,8 +1,9 @@
+// TODO: change for the new Store system
 import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
+import { get } from 'svelte/store';
 import type { LinkMessage, NodeMessage } from '$types/graph';
 import type { BaseType } from 'd3';
 import * as d3 from 'd3';
-import { get } from 'svelte/store';
 
 export const colors = {
 	startNode: '#1b3022',
@@ -27,6 +28,10 @@ export const nodeRadius = {
 };
 
 function selectNode(node: NodeMessage) {
+	if (get(selectedNodeStore)?.id === node.id) {
+		selectedNodeStore.set(null);
+		return;
+	}
 	selectedNodeStore.set(node);
 }
 
@@ -38,30 +43,34 @@ export const updateLabelsInGraph = (
 ) => {
 	const links = get(linksStore);
 	const selectedNode = get(selectedNodeStore);
-	return labelLayer
-		.selectAll('text')
-		.data(get(nodesStore))
-		.join('text')
-		.attr('text-anchor', 'middle')
-		.attr('dy', (d) => {
-			return d.type !== 'startNode' ? -13 : 5;
-		})
-		.classed('fill-white', true)
-		.style('font-size', '18px') // TODO personalize font size
-		.text((d) => d.title)
-		.on('click', (_, d) => selectNode(d))
-		.style('cursor', 'pointer')
-		.on('mouseover', (_, d) => handleMouseOver(d, linksInGraph, updatedNodes, links))
-		.on('mouseout', () => handleMouseOut(linksInGraph, updatedNodes, selectedNode))
-		.call(
-			// @ts-expect-error d3....
-			d3
-				.drag<never, NodeMessage>()
-				.on('start', (event, d) => handleDragStart(event, d, simulation))
-				.on('drag', (event, d) => handleDrag(event, d))
-				.on('end', (event, d) => handleDragEnd(event, d, simulation)),
-			null
-		);
+	return (
+		labelLayer
+			.selectAll('text')
+			.data(get(nodesStore))
+			.join('text')
+			.attr('text-anchor', 'middle')
+			.attr('dy', (d) => {
+				return d.type !== 'startNode' ? -13 : 5;
+			})
+			.classed('fill-white', true)
+			.style('font-size', '18px') // TODO personalize font size
+			.text((d) => d.title)
+			.on('click', (_, d) => selectNode(d))
+			.style('cursor', 'pointer')
+			// @ts-expect-error d3...
+			.on('mouseover', (_, d) => handleMouseOver(d, linksInGraph, updatedNodes, links))
+			// @ts-expect-error d3...
+			.on('mouseout', () => handleMouseOut(linksInGraph, updatedNodes, selectedNode))
+			.call(
+				// @ts-expect-error d3....
+				d3
+					.drag<never, NodeMessage>()
+					.on('start', (event, d) => handleDragStart(event, d, simulation))
+					.on('drag', (event, d) => handleDrag(event, d))
+					.on('end', (event, d) => handleDragEnd(event, d, simulation)),
+				null
+			)
+	);
 };
 
 export const updateLinksInGraph = (linkLayer: d3.Selection<SVGGElement, NodeMessage, null, undefined>) => {
@@ -99,6 +108,7 @@ export const updateNodesInGraph = (
 		.on('mouseout', () => handleMouseOut(linksInGraph, updatedNodes, selectedNode))
 		.call(
 			d3
+				// @ts-expect-error d3...
 				.drag<BaseType | SVGCircleElement, NodeMessage>()
 				.on('start', (event, d) => handleDragStart(event, d, simulation))
 				.on('drag', (event, d) => handleDrag(event, d))
@@ -122,12 +132,12 @@ const getNodeRadius = (d: NodeMessage, selectedNode: NodeMessage | null) => {
 };
 
 const getNodeColor = (d: NodeMessage, selectedNode: NodeMessage | null) => {
-	if (d.type === 'startNode') {
-		return colors.startNode;
+	if (selectedNode && selectedNode.id === d.id) {
+		return colors.selectedNode;
 	} else if (d.type === 'event') {
 		return colors.eventNode;
-	} else if (selectedNode && selectedNode.id === d.id) {
-		return colors.selectedNode;
+	} else if (d.type === 'startNode') {
+		return colors.startNode;
 	}
 	return colors.defaultNode;
 };

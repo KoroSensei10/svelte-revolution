@@ -33,13 +33,13 @@
 		method="post"
 		class="flex flex-col items-center self-center w-full gap-4 sm:w-1/2"
 	>
-		<div class="flex flex-col items-start w-full gap-4 text-black">
+		<div class="flex flex-col items-start w-full gap-4 text-black dark:text-white">
 			<label class="flex items-center w-full gap-2 input input-bordered input-accent">
-				{$t('username')}
+				{$t('username')} |
 				<input type="text" class="grow" placeholder="Daisy" autocomplete="username" name="username" />
 			</label>
 			<label class="flex items-center w-full gap-2 input input-bordered input-accent">
-				{$t('password')}
+				{$t('password')} |
 				<input
 					type="password"
 					class="grow"
