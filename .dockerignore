@@ -14,6 +14,7 @@ dist
 # Ignore Docker files
 Dockerfile
 docker-compose.yml
+compose.yml
 
 # Ignore OS generated files
 .DS_Store
