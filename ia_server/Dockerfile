@@ -7,9 +7,6 @@ WORKDIR /app
 # Copy the Cargo.toml and Cargo.lock files
 COPY Cargo.toml Cargo.lock ./
 
-# Build the dependencies to cache them
-RUN cargo build --release
-
 # Copy the source code
 COPY . .
 
