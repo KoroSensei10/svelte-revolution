@@ -6,6 +6,7 @@
 	"scripts": {
 		"ia": "cd ./ia_server && cargo-watch -x 'run'",
 		"dev": "vite dev",
+		"vercel-build": "ADAPTER=auto vite build",
 		"build": "ADAPTER=bun vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
