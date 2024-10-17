@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/public';
 
-const BRANCH_NAME = env.PUBLIC_VITE_BRANCH_NAME;
+const BRANCH_NAME = env.PUBLIC_BRANCH_NAME;
 
 function createTitleStore() {
 	const mainTitle = $state('Babel Révolution');

@@ -1,5 +1,19 @@
-import adapter from '@sveltejs/adapter-auto';
-// import adapter from 'svelte-adapter-bun';
+import adapterAuto from '@sveltejs/adapter-auto';
+import adapterBun from 'svelte-adapter-bun';
+import 'dotenv/config';
+
+const adapterType = process.env.ADAPTER || 'auto';
+
+const adapter = () => {
+	switch (adapterType) {
+		case 'bun':
+			return adapterBun();
+		case 'auto':
+		default:
+			return adapterAuto();
+	}
+};
+
 const config = {
 	compilerOptions: {
 		runes: true

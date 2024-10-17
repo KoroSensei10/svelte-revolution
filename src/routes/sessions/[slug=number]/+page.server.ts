@@ -4,6 +4,9 @@ import { type Actions, fail, type ServerLoad } from '@sveltejs/kit';
 import type { End, GraphEvent } from '$types/pocketBase/TableTypes';
 import type { GraphNode } from '$types/pocketBase/TableTypes';
 import { buildLinks } from '$lib/sessions';
+import { env } from '$env/dynamic/private';
+
+const iaserver = env.IA_SERVER_URL;
 
 export const load: ServerLoad = async ({ params, locals }) => {
 	const pb = locals.pb;
@@ -14,6 +17,22 @@ export const load: ServerLoad = async ({ params, locals }) => {
 		.getFullList({ filter: pb.filter('session = {:session}', { session: sessionData.id }) });
 
 	const links = buildLinks(nodes);
+
+	let data = null;
+	if (iaserver) {
+		data = await fetch(iaserver + '/hello', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: 'getNodes',
+				age: 30
+			})
+		});
+	}
+
+	console.log(await data.json());
 
 	// Admin only
 	let events: GraphEvent[] = [];
@@ -123,7 +142,7 @@ export const actions: Actions = {
 		} catch (error) {
 			console.error('Error creating event:', JSON.stringify(error));
 			if (createdEventNode) {
-				await locals.pb.collection('Node').delete(createdEventNode.id);
+				await locals.pb.collection('Node').delete(String(createdEventNode.id));
 			}
 			return fail(500, { success: false, error: 'Error while creating event' });
 		}
