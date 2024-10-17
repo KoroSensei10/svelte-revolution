@@ -3,8 +3,10 @@
 	import { pb } from '$lib/client/pocketbase';
 	import { ClientResponseError } from 'pocketbase';
 	import toast from 'svelte-french-toast';
-	import { Pane, Button, Text, Textarea, Separator, TabGroup, TabPage } from 'svelte-tweakpane-ui';
+	import { Pane, Button, Text, Textarea, Separator, TabGroup, TabPage, FpsGraph } from 'svelte-tweakpane-ui';
 	import { linksStore, nodesStore, selectedNodeStore } from '$stores/graph';
+
+	let nodeUpdated = $state(false);
 
 	function checkAuth() {
 		pb.authStore.loadFromCookie(document.cookie);
@@ -43,11 +45,15 @@
 		}
 		try {
 			checkAuth();
-			await pb.collection('Node').update(String($selectedNodeStore.id), {
+			const id = String($selectedNodeStore.id);
+			const data = {
 				title: $selectedNodeStore.title,
 				text: $selectedNodeStore.text
-			});
+			};
+			$selectedNodeStore = null;
+			await pb.collection('Node').update(id, data);
 			toast.success('Node updated');
+			nodeUpdated = false;
 		} catch (e) {
 			const err = e as ClientResponseError;
 			toast.error(err.message);
@@ -69,7 +75,7 @@
 				.getFullList({ filter: `parent="${String($selectedNodeStore?.id)}"` });
 
 			const promiseList = nodes.map(async (node) => {
-				return pb.collection('Node').update(node.id, { parent: newParent });
+				return pb.collection('Node').update(String(node.id), { parent: newParent });
 			});
 			await Promise.all(promiseList);
 			await pb.collection('Node').delete(String($selectedNodeStore?.id));
@@ -96,6 +102,7 @@
 					title="Select Random Node"
 				></Button>
 			{/if}
+			<FpsGraph interval={50} label="FPS" rows={3} />
 		</TabPage>
 		{#if $nodesStore.length && $linksStore.length && $selectedNodeStore}
 			<TabPage selected={!!$selectedNodeStore} title="Graph">
@@ -103,11 +110,19 @@
 				<Separator />
 				<Button on:click={deleteNode} title="Delete node"></Button>
 				<Separator />
-				<Text bind:value={$selectedNodeStore.title} label="Node title"></Text>
-				<Textarea bind:value={$selectedNodeStore.text} label="Node description"></Textarea>
+				<Text on:change={() => (nodeUpdated = true)} bind:value={$selectedNodeStore.title} label="Node title"
+				></Text>
+				<Textarea
+					on:change={() => (nodeUpdated = true)}
+					bind:value={$selectedNodeStore.text}
+					label="Node description"
+				></Textarea>
 				<Text disabled value={String($selectedNodeStore.id)} label="Node ID"></Text>
 				<Text disabled value={String($selectedNodeStore.parent)} label="Parent ID"></Text>
 				<Button on:click={updateNode} title="Update node"></Button>
+				{#if nodeUpdated}
+					<Text disabled value="Change not saved !" label="Status"></Text>
+				{/if}
 			</TabPage>
 		{/if}
 	</TabGroup>

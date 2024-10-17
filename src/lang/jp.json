@@ -45,7 +45,8 @@
 	"side": {
 		"side": "側",
 		"sides": "側",
-		"chooseSide": "側を選択"
+		"chooseSide": "側を選択",
+		"yourSide": "あなたの側"
 	},
 	"form": {
 		"submit": "提出する",
@@ -121,5 +122,6 @@
 	"yourTitle": "タイトル",
 	"yourMessage": "メッセージ",
 	"yourName": "名前",
-	"publish": "公開"
+	"publish": "公開",
+	"messageTitle": "メッセージタイトル"
 }

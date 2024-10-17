@@ -72,6 +72,8 @@ export const actions: Actions = {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 
+		// TODO: ajouter ici le check ia si besoin
+
 		const node = await locals.pb.collection('Node').create({
 			title,
 			text,

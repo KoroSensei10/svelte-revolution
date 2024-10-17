@@ -162,12 +162,8 @@
 					nodesStore.set(
 						$nodesStore.map((node) => {
 							if (node.id === record.id) {
-								return {
-									...node,
-									text: record.text,
-									title: record.title,
-									parent: record.parent
-								};
+								node.text = record.text;
+								node.title = record.title;
 							}
 							return node;
 						})
