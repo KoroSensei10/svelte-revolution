@@ -1,41 +1,23 @@
-# syntax=docker/dockerfile:1
+# Use the official Rust image as the base image
+FROM rust:latest
 
-ARG RUST_VERSION=1.81.0
-ARG APP_NAME=rust-server
-
-
-FROM rust:${RUST_VERSION}-alpine AS build
-ARG APP_NAME
+# Set the working directory
 WORKDIR /app
 
-RUN apk add --no-cache clang lld musl-dev git
+# Copy the Cargo.toml and Cargo.lock files
+COPY Cargo.toml Cargo.lock ./
 
-RUN --mount=type=bind,source=src,target=src \
-    --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
-    --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
-    --mount=type=cache,target=/app/target/ \
-    --mount=type=cache,target=/usr/local/cargo/git/db \
-    --mount=type=cache,target=/usr/local/cargo/registry/ \
-    cargo build --locked --release && \
-    cp ./target/release/$APP_NAME /bin/server
+# Build the dependencies to cache them
+RUN cargo build --release
 
-FROM alpine:3.18 AS final
+# Copy the source code
+COPY . .
 
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
-USER appuser
+# Build the application
+RUN cargo build --release
 
-COPY --from=build /bin/server /bin/
-
-ENV ROCKET_ADDRESS=0.0.0.0
-
+# Expose the port that Rocket will run on
 EXPOSE 8000
 
-CMD ["/bin/server"]
+# Set the startup command to run the Rocket application
+CMD ["./target/release/rust-server"]
