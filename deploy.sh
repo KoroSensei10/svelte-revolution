@@ -15,19 +15,19 @@ sudo systemctl start docker
 sudo systemctl enable nginx
 sudo systemctl start nginx
 
-# Création du fichier .env.production
-echo "Création du fichier .env.production..."
-cat <<EOL > .env.production
-DB_URL=https://db.canard.cc
-PUBLIC_DB_URL=https://db.canard.cc
-EOL
+# # Création du fichier .env.production
+# echo "Création du fichier .env.production..."
+# cat <<EOL > .env.production
+# DB_URL=https://db.canard.cc
+# PUBLIC_DB_URL=https://db.canard.cc
+# EOL
 
 # Configuration de Nginx
 echo "Configuration de Nginx..."
-sudo tee /etc/nginx/sites-available/babel.canard.cc > /dev/null <<EOL
+sudo tee /etc/nginx/sites-available/docker.canard.cc > /dev/null <<EOL
 server {
     listen 80;
-    server_name babel.canard.cc;
+    server_name docker.canard.cc;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -39,7 +39,7 @@ server {
 }
 EOL
 
-sudo ln -s /etc/nginx/sites-available/babel.canard.cc /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/docker.canard.cc /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
@@ -49,7 +49,8 @@ sudo apt install -y certbot python3-certbot-nginx
 
 # Obtention et installation du certificat SSL
 echo "Obtention et installation du certificat SSL..."
-sudo certbot --nginx -d babel.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
+sudo certbot --nginx -d docker.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
+sudo systemctl reload nginx
 
 # Lancement de l'application avec Docker Compose
 echo "Lancement de l'application avec Docker Compose..."
