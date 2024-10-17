@@ -3,7 +3,6 @@ services:
         build: .
         ports:
             - '8080:8080'
-            - '443:8080'
         container_name: sveltekit
         environment:
             - PORT=8080
