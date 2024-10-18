@@ -5,16 +5,17 @@ COPY bun.lock* ./
 COPY package.json ./
 COPY . .
 RUN bun i
+ENV ADAPTER=bun
 RUN bun run build
-CMD ["bun" , "./build/index.js"]
 
 # Stage 2: Run
-# FROM oven/bun:1 AS runner
-# WORKDIR /app
-# COPY --from=builder /app/build ./build
-# COPY --from=builder /app/bun.lock* ./
-# COPY --from=builder /app/package.json ./
-# RUN bun i
+FROM oven/bun:1 AS runner
+WORKDIR /app
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/bun.lock* ./
+COPY --from=builder /app/package.json ./
+RUN bun i 
 # Can't use --production flag because of bun bug ?
-# EXPOSE 3000
-# CMD ["bun" , "./build/index.js"]
+ENV PORT=8080
+EXPOSE 8080
+CMD ["bun" , "./build/index.js"]

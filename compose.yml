@@ -4,9 +4,8 @@ services:
         ports:
             - '8080:8080'
         container_name: sveltekit
-        environment:
-            - PORT=8080
-            - NODE_ENV=production
+        env_file:
+            - ${ENV_FILE}
         depends_on:
             - pocketbase
             - iaserver

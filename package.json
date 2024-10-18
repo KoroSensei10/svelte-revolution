@@ -8,7 +8,7 @@
 		"ia-watch": "cd ./ia_server && cargo-watch -x 'run'",
 		"dev": "vite dev",
 		"vercel-build": "ADAPTER=auto vite build",
-		"build": "ADAPTER=bun vite build",
+		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
