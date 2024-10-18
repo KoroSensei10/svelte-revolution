@@ -35,5 +35,4 @@ fn hello_post(user_input: Json<UserInput>) -> Json<Message> {
 #[launch]
 fn rocket() -> _ {
     rocket::build().mount("/", routes![index, hello_post])
-    .mount("/api", routes![index, hello_post])
 }
