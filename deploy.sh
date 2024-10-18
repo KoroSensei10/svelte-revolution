@@ -14,24 +14,16 @@ sudo systemctl enable docker
 sudo systemctl start docker
 sudo systemctl enable nginx
 sudo systemctl start nginx
+# Définition des variables de nom de domaine
+DOMAIN1="docker.canard.cc"
+DOMAIN2="docker-db.canard.cc"
 
-# Configuration de Nginx
-echo "Configuration de Nginx..."
-sudo tee /etc/nginx/sites-available/docker.canard.cc > /dev/null <<EOL
+# Configuration de Nginx pour le premier domaine
+echo "Configuration de Nginx pour $DOMAIN1..."
+sudo tee /etc/nginx/sites-available/$DOMAIN1 > /dev/null <<EOL
 server {
     listen 80;
-    server_name docker.canard.cc;
-
-    # Redirection HTTP vers HTTPS
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name docker.canard.cc;
-
-    ssl_certificate /etc/letsencrypt/live/docker.canard.cc/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/docker.canard.cc/privkey.pem;
+    server_name $DOMAIN1;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -43,21 +35,12 @@ server {
 }
 EOL
 
-sudo tee /etc/nginx/sites-available/docker-db.canard.cc > /dev/null <<EOL
+# Configuration de Nginx pour le deuxième domaine
+echo "Configuration de Nginx pour $DOMAIN2..."
+sudo tee /etc/nginx/sites-available/$DOMAIN2 > /dev/null <<EOL
 server {
     listen 80;
-    server_name docker-db.canard.cc;
-
-    # Redirection HTTP vers HTTPS
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name docker-db.canard.cc;
-
-    ssl_certificate /etc/letsencrypt/live/docker-db.canard.cc/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/docker-db.canard.cc/privkey.pem;
+    server_name $DOMAIN2;
 
     location / {
         proxy_pass http://localhost:8090;
@@ -69,8 +52,8 @@ server {
 }
 EOL
 
-sudo ln -s /etc/nginx/sites-available/docker.canard.cc /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/docker-db.canard.cc /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/$DOMAIN1 /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/$DOMAIN2 /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
@@ -78,10 +61,9 @@ sudo systemctl reload nginx
 echo "Installation de Certbot..."
 sudo apt install -y certbot python3-certbot-nginx
 
-# Obtention et installation du certificat SSL
-echo "Obtention et installation du certificat SSL..."
-sudo certbot --nginx -d docker.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
-sudo certbot --nginx -d docker-db.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
+# Obtention et installation des certificats SSL
+echo "Obtention et installation des certificats SSL pour $DOMAIN1 et $DOMAIN2..."
+sudo certbot --nginx -d $DOMAIN1 -d $DOMAIN2 --non-interactive --agree-tos -m mathisjung02@gmail.com
 
 # Lancement de l'application avec Docker Compose
 echo "Lancement de l'application avec Docker Compose..."
