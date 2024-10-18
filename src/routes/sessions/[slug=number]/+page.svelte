@@ -12,12 +12,13 @@
 	import type { LayoutServerData } from '../../$types';
 	import { titleStore } from '$stores/titles/index.svelte';
 	import { selectedNodeStore } from '$stores/graph';
+	import toast from 'svelte-french-toast';
 
 	interface Props {
 		data: PageServerData & LayoutServerData;
 	}
 	let { data }: Props = $props();
-	let { events = [], user = null, nodesAndLinks, ends = [], sides = [], isAdmin = false } = data;
+	let { events = [], user = null, nodesAndLinks, ends = [], sides = [], isAdmin = false, iaConnected = false } = data;
 
 	let sessionData = $state(data.sessionData);
 
@@ -57,6 +58,12 @@
 		}
 
 		titleStore.setNavTitle(title);
+
+		if (iaConnected) {
+			toast.success("L'IA est connectée", {
+				position: 'top-left'
+			});
+		}
 	});
 
 	onDestroy(() => {

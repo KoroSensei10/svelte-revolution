@@ -7,6 +7,7 @@ import { buildLinks } from '$lib/sessions';
 import { env } from '$env/dynamic/private';
 
 const iaserver = env.IA_SERVER_URL;
+const checkMsgURL = iaserver ? `${iaserver}/api/checkMsg` : '';
 
 export const load: ServerLoad = async ({ params, locals }) => {
 	const pb = locals.pb;
@@ -17,21 +18,6 @@ export const load: ServerLoad = async ({ params, locals }) => {
 		.getFullList({ filter: pb.filter('session = {:session}', { session: sessionData.id }) });
 
 	const links = buildLinks(nodes);
-
-	let data = null;
-	if (iaserver) {
-		data = await fetch(iaserver + '/hello', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				name: 'getNodes',
-				age: 30
-			})
-		});
-		console.log(await data.json());
-	}
 
 	// Admin only
 	let events: GraphEvent[] = [];
@@ -53,6 +39,18 @@ export const load: ServerLoad = async ({ params, locals }) => {
 		filter: locals.pb.filter('scenario = {:scenario}', { scenario: sessionData?.expand?.scenario?.id })
 	});
 
+	let iaConnected = false;
+	if (iaserver) {
+		try {
+			const response = await fetch(`${iaserver}/api/health`);
+			if (response.ok) {
+				iaConnected = true;
+			}
+		} catch (error) {
+			console.error('IA Server not reachable', error);
+		}
+	}
+
 	return {
 		sessionData,
 		nodesAndLinks: {
@@ -64,7 +62,8 @@ export const load: ServerLoad = async ({ params, locals }) => {
 		sides,
 		// Admin onlys
 		isAdmin:
-			sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin'
+			sessionData.author === locals.pb.authStore.model?.id || locals.pb.authStore.model?.role === 'superAdmin',
+		iaConnected
 	};
 };
 
@@ -85,21 +84,33 @@ export const actions: Actions = {
 		if (!session) {
 			return fail(500, { success: false, error: 'Not in a session' });
 		}
-
 		if (!title || !text || !author || !side) {
 			return fail(422, { success: false, error: 'Missing required fields' });
 		}
 
+		const nodeData = { title, text, author, parent, session, side };
+
 		// TODO: ajouter ici le check ia si besoin
+		if (iaserver) {
+			try {
+				const response = await fetch(checkMsgURL, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(nodeData)
+				});
+				if (response.ok) {
+					const result = await response.json();
+					nodeData.text = result.text;
+					nodeData.title = result.title;
+				}
+			} catch (error) {
+				console.error('IA Server not reachable', error);
+			}
+		}
 
 		const node = await locals.pb.collection('Node').create({
-			title,
-			text,
-			author,
-			type: 'contribution',
-			parent,
-			session,
-			side
+			...nodeData,
+			type: 'contribution'
 		});
 
 		return {

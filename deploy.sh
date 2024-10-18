@@ -15,19 +15,23 @@ sudo systemctl start docker
 sudo systemctl enable nginx
 sudo systemctl start nginx
 
-# # Création du fichier .env.production
-# echo "Création du fichier .env.production..."
-# cat <<EOL > .env.production
-# DB_URL=https://db.canard.cc
-# PUBLIC_DB_URL=https://db.canard.cc
-# EOL
-
 # Configuration de Nginx
 echo "Configuration de Nginx..."
 sudo tee /etc/nginx/sites-available/docker.canard.cc > /dev/null <<EOL
 server {
     listen 80;
     server_name docker.canard.cc;
+
+    # Redirection HTTP vers HTTPS
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name docker.canard.cc;
+
+    ssl_certificate /etc/letsencrypt/live/docker.canard.cc/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/docker.canard.cc/privkey.pem;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -39,7 +43,34 @@ server {
 }
 EOL
 
+sudo tee /etc/nginx/sites-available/docker-db.canard.cc > /dev/null <<EOL
+server {
+    listen 80;
+    server_name docker-db.canard.cc;
+
+    # Redirection HTTP vers HTTPS
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name docker-db.canard.cc;
+
+    ssl_certificate /etc/letsencrypt/live/docker-db.canard.cc/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/docker-db.canard.cc/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:8090;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOL
+
 sudo ln -s /etc/nginx/sites-available/docker.canard.cc /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/docker-db.canard.cc /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
@@ -50,6 +81,7 @@ sudo apt install -y certbot python3-certbot-nginx
 # Obtention et installation du certificat SSL
 echo "Obtention et installation du certificat SSL..."
 sudo certbot --nginx -d docker.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
+sudo certbot --nginx -d docker-db.canard.cc --non-interactive --agree-tos -m mathisjung02@gmail.com
 
 # Lancement de l'application avec Docker Compose
 echo "Lancement de l'application avec Docker Compose..."
