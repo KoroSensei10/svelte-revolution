@@ -486,8 +486,8 @@
 		<input type="hidden" name="pb_cookie" value={pb.authStore.exportToCookie()} />
 
 		<!-- Errors -->
-		<div class="h-36 p-4 rounded-md overflow-auto">
-			{#if issues.length > 0}
+		<div class="p-4 rounded-md overflow-auto">
+			{#if issues.length > 0 || aiIssues.length > 0}
 				<div class="bg-black flex flex-col items-center gap-4">
 					<h3 class=" font-semibold text-xl flex items-center gap-2 k">
 						<TriangleAlert class="w-8 h-8" />
@@ -497,7 +497,15 @@
 					<div class=" grid grid-cols-2 grid-flow-row w-full gap-4 justify-center items-center">
 						{#each issues as issue (issue)}
 							<div class="bg-red-500 grow p-2 rounded-md flex flex-col items-center gap-2">
-								<div>{$t(issue.message)}</div>
+								{#if issue.path.length > 0}
+									<div class="text-xs font-mono opacity-75">{issue.path.join(' › ')}</div>
+								{/if}
+								<div>{issue.message}</div>
+							</div>
+						{/each}
+						{#each aiIssues as key (key)}
+							<div class="bg-red-500 grow p-2 rounded-md flex flex-col items-center gap-2">
+								<div>{$t(key)}</div>
 							</div>
 						{/each}
 					</div>

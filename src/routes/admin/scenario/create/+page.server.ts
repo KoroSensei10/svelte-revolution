@@ -41,8 +41,10 @@ export const actions = {
 			if (parsed.ai && parsed.aiConfig) {
 				try {
 					aiConfigSchema.parse(JSON.parse(parsed.aiConfig));
-				} catch {
-					return fail(400, { error: 'Invalid AI configuration' });
+				} catch (error) {
+					const err = error as z.ZodError;
+					const { message, path } = err.issues[0];
+					return fail(400, { error: message, path });
 				}
 			}
 
