@@ -26,7 +26,7 @@ services:
         ports:
             - '127.0.0.1:8090:8090'
         volumes:
-            - pocketbase-data:/app/pb_data
+            - pocketbase-data:/pb_data
 
 volumes:
     pocketbase-data:
