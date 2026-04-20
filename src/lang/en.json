@@ -117,7 +117,10 @@
     "choose": "Choose your side",
     "yourSide": "Your side",
     "sideSaved": "Side saved",
-    "title": "Side title"
+    "title": "Side title",
+    "needSideAndPseudo": "Please choose a side and set a username to start.",
+    "needSide": "Please choose and confirm a side to start.",
+    "needPseudo": "Please set a username to start."
   },
   "user": {
     "pseudo": "Nickname",

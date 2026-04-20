@@ -119,7 +119,10 @@
     "choose": "Validez votre camp",
     "yourSide": "Ton camp",
     "sideSaved": "Camp sauvegardé",
-    "title": "Titre du camp"
+    "title": "Titre du camp",
+    "needSideAndPseudo": "Veuillez choisir un camp et valider un pseudonyme pour commencer.",
+    "needSide": "Veuillez choisir et valider un camp pour commencer.",
+    "needPseudo": "Veuillez valider un pseudonyme pour commencer."
   },
   "user": {
     "pseudo": "Pseudo",

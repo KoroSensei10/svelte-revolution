@@ -47,7 +47,9 @@ async def run(
 
 	parsed = await chat_json(SYSTEM_PROMPT, _build_user_prompt(end_cfg.condition, node))
 	if not parsed:
+		log.warning("End: Mistral returned no parseable JSON for node %s", node.id)
 		return
+	log.info("End: Mistral verdict for node %s — matched=%s reason=%s", node.id, parsed.get("matched"), parsed.get("reason"))
 	if not parsed.get("matched"):
 		return
 

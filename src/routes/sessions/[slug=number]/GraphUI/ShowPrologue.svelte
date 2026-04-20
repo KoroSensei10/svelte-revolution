@@ -140,11 +140,26 @@
 				</form>
 			</div>
 		{/if}
+		{#if !currentSession.session.completed && !currentSession.admin.isAdmin}
+			{@const missingSide = !currentSession.sessionProfile.choosedSideId}
+			{@const missingPseudo = !currentSession.sessionProfile.pseudo}
+			{#if missingSide || missingPseudo}
+				<p class="text-sm text-amber-400 text-center">
+					{#if missingSide && missingPseudo}
+						{$t('side.needSideAndPseudo')}
+					{:else if missingSide}
+						{$t('side.needSide')}
+					{:else}
+						{$t('side.needPseudo')}
+					{/if}
+				</p>
+			{/if}
+		{/if}
 		<Button
 			variant="primary"
 			type="button"
-			disabled={!currentSession.session.completed && 
-				(!currentSession.admin.isAdmin && 
+			disabled={!currentSession.session.completed &&
+				(!currentSession.admin.isAdmin &&
 					(!currentSession.sessionProfile.choosedSideId || !currentSession.sessionProfile.pseudo))}
 			onclick={() => {
 				currentSession.userWantAccess = true;

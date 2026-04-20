@@ -117,7 +117,10 @@
     "choose": "Elige tu bando",
     "yourSide": "Tu bando",
     "sideSaved": "Bando guardado",
-    "title": "Título del bando"
+    "title": "Título del bando",
+    "needSideAndPseudo": "Por favor elige un bando y un nombre de usuario para empezar.",
+    "needSide": "Por favor elige y confirma un bando para empezar.",
+    "needPseudo": "Por favor establece un nombre de usuario para empezar."
   },
   "user": {
     "pseudo": "Apodo",

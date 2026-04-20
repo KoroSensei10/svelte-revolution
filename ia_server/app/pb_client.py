@@ -111,12 +111,31 @@ class PBClient:
 	async def find_end_id(self, scenario_id: str, end_title: str) -> str | None:
 		def _find() -> str | None:
 			try:
-				rec = self._pb.collection("End").get_first_list_item(
-					f'scenario = "{scenario_id}" && title = "{end_title}"'
+				records = self._pb.collection("End").get_full_list(
+					query_params={"filter": f'scenario = "{scenario_id}"'}
 				)
-			except ClientResponseError:
+			except ClientResponseError as e:
+				log.warning("find_end_id: failed to list End records for scenario %s: %s", scenario_id, e)
 				return None
-			return getattr(rec, "id", None)
+			# Exact match first, then case-insensitive fallback
+			for rec in records:
+				if getattr(rec, "title", "") == end_title:
+					return getattr(rec, "id", None)
+			for rec in records:
+				if getattr(rec, "title", "").strip().lower() == end_title.strip().lower():
+					log.info(
+						"find_end_id: matched End %r via case-insensitive lookup (aiConfig had %r)",
+						getattr(rec, "title", ""),
+						end_title,
+					)
+					return getattr(rec, "id", None)
+			log.warning(
+				"find_end_id: no End record with title %r for scenario %s; available: %s",
+				end_title,
+				scenario_id,
+				[getattr(r, "title", "") for r in records],
+			)
+			return None
 
 		return await asyncio.to_thread(_find)
 
