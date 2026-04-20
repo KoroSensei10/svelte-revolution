@@ -16,12 +16,14 @@ export const actions = {
 		const pb_cookie = data.get('pb_cookie') as string;
 		pb.authStore.loadFromCookie(pb_cookie);
 
-		await pb.collection('users').authRefresh();
-		
-		if (!pb || !pb.authStore) {
-			return fail(500, { error: 'Database not connected' });
-		} else if (!pb.authStore.isValid || !pb.authStore.record) {
-			// TODO better auth check
+		try {
+			await pb.collection('users').authRefresh();
+		} catch (e) {
+			console.error('authRefresh failed:', e);
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		if (!pb.authStore.isValid || !pb.authStore.record) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -42,6 +44,9 @@ export const actions = {
 				try {
 					aiConfigSchema.parse(JSON.parse(parsed.aiConfig));
 				} catch (error) {
+					if (error instanceof SyntaxError) {
+						return fail(400, { error: 'Invalid AI configuration JSON' });
+					}
 					const err = error as z.ZodError;
 					const { message, path } = err.issues[0];
 					return fail(400, { error: message, path });
@@ -79,7 +84,8 @@ export const actions = {
 						await pb.collection('Scenario').delete(scenario.id);
 						return fail(500, { error: 'Fail creating sides' });
 					}
-				} catch {
+				} catch (e) {
+					console.error('Fail creating events and ends:', e);
 					await pb.collection('Scenario').delete(scenario.id);
 					return fail(500, { error: 'Fail creating events and ends' });
 				}
@@ -89,7 +95,8 @@ export const actions = {
 					status: 201,
 					body: scenario
 				};
-			} catch {
+			} catch (e) {
+				console.error('Fail creating scenario:', e);
 				return fail(500, { error: 'Fail creating scenario' });
 			}
 		} catch (error) {
