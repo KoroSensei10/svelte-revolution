@@ -12,7 +12,9 @@
 		MessageCirclePlus,
 		MessageCircleWarning,
 		X,
+		BrainCircuit,
 	} from 'lucide-svelte';
+	import { resolve } from '$app/paths';
 	import GraphTree from '../../../../components/graph/GraphTree.svelte';
 	import { watch } from '$lib/runes/watch.svelte';
 	import AddNode from './AddNode.svelte';
@@ -189,6 +191,18 @@
 						color={states.admin ? 'black' : 'white'}
 					/>
 				</button>
+			{/if}
+			{#if currentSession.admin.isAdmin && currentSession.ai}
+				<a
+					href={resolve(`/admin/sessions/${currentSession.session.slug}/ai`)}
+					class="absolute border p-2 top-0 -translate-x-[88%] -translate-y-[188%] rounded-full bg-black bg-opacity-90 z-50 hover:bg-purple-900 transition-colors"
+					title={$t('ia.dashboard')}
+				>
+					<BrainCircuit
+						strokeWidth={1.5}
+						color="rgb(192, 132, 252)"
+					/>
+				</a>
 			{/if}
 			<!-- Add Node Or Session End infos -->
 			{#if currentSession.session.end && currentSession.session.completed}

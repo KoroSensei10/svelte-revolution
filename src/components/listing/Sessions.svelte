@@ -4,6 +4,7 @@
 	import { t } from 'svelte-i18n';
 	import { pb } from '$lib/client/pocketbase';
 	import graphe1 from '$lib/assets/graphe1.png';
+	import { BrainCircuit } from 'lucide-svelte';
 
 	import Tooltip from '$components/Tooltip.svelte';
 	import { fade } from 'svelte/transition';
@@ -110,13 +111,22 @@
 						</Tooltip>
 					</div>
 
-					<div class="w-full flex justify-between p-1 pl-2 bg-inherit rounded-b-lg">
+					<div class="w-full flex justify-between items-center p-1 pl-2 bg-inherit rounded-b-lg">
 						{#if session.expand?.author}
 							<div>
 								{$t('scenario.author')} : {session.expand?.author?.username}
 							</div>
 						{/if}
-						<div>
+						<div class="flex items-center gap-2">
+							{#if session.expand?.scenario?.ai && admin}
+								<a
+									href={resolve(`/admin/sessions/${session.slug}/ai`)}
+									class="text-purple-300 hover:text-purple-100 transition-colors"
+									title={$t('ia.dashboard')}
+								>
+									<BrainCircuit class="w-4 h-4" />
+								</a>
+							{/if}
 							{new Date(session.created).toISOString().split('T')[0]}
 						</div>
 					</div>
