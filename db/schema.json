@@ -1715,5 +1715,173 @@
       "CREATE INDEX `idx_otps_collectionRef_recordRef` ON `_otps` (collectionRef, recordRef)"
     ],
     "system": true
+  },
+  {
+    "id": "ailog001",
+    "listRule": "@request.auth.role = \"admin\" || @request.auth.role = \"superAdmin\"",
+    "viewRule": "@request.auth.role = \"admin\" || @request.auth.role = \"superAdmin\"",
+    "createRule": "@request.auth.role = \"superAdmin\"",
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "AiLog",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "d13y3vh0kmd8jma",
+        "hidden": false,
+        "id": "ailog_node",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "node",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "nv9zjvgci27tt7q",
+        "hidden": false,
+        "id": "ailog_session",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "session",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "ailog_capability",
+        "maxSelect": 1,
+        "name": "capability",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": [
+          "censor",
+          "trigger",
+          "end"
+        ]
+      },
+      {
+        "hidden": false,
+        "id": "ailog_matched",
+        "name": "matched",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "ailog_reason",
+        "max": 0,
+        "min": 0,
+        "name": "reason",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "ailog_ruleindex",
+        "max": null,
+        "min": null,
+        "name": "ruleIndex",
+        "onlyInt": true,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "ailog_resultnodeid",
+        "max": 0,
+        "min": 0,
+        "name": "resultNodeId",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "ailog_originaltitle",
+        "max": 0,
+        "min": 0,
+        "name": "originalTitle",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "ailog_originaltext",
+        "max": 0,
+        "min": 0,
+        "name": "originalText",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `idx_ailog_session` ON `AiLog` (`session`)"
+    ],
+    "system": false
   }
 ]
