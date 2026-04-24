@@ -20,7 +20,14 @@ SYSTEM_PROMPT = """You are an AI Game Master for a collaborative storytelling pl
 Decide whether the player's contribution satisfies the scenario's end condition.
 
 Respond ONLY with a JSON object of this exact shape, no extra text:
-{"matched": <true|false>, "reason": "<short explanation>"}"""
+{"matched": <true|false>, "reason": "<short explanation>"}
+
+IMPORTANT: The "reason" field must always be specific and reference concrete details
+from the player's contribution. Never give generic reasons like "no match" or
+"condition not met". Instead, briefly describe WHAT the player actually said or did,
+then explain WHY it does or does not satisfy the end condition.
+Example: "The player proposes a ceasefire, which is a diplomatic move — not a
+declaration of total war or betrayal."."""
 
 
 def _build_user_prompt(condition: str, node: NodeRecord) -> str:
@@ -51,6 +58,13 @@ async def run(
 		return
 	log.info("End: Mistral verdict for node %s — matched=%s reason=%s", node.id, parsed.get("matched"), parsed.get("reason"))
 	if not parsed.get("matched"):
+		await pb.create_ai_log({
+			"node": node.id,
+			"session": node.session,
+			"capability": "end",
+			"matched": False,
+			"reason": parsed.get("reason", ""),
+		})
 		return
 
 	scenario_id = scenario.get("id")
@@ -71,5 +85,12 @@ async def run(
 		await pb.update_session(node.session, {"completed": True, "end": end_id})
 		log.info("End: session %s ended with end %s", node.session, end_id)
 		await state.mark_fired(node.session, ("end", 0))
+		await pb.create_ai_log({
+			"node": node.id,
+			"session": node.session,
+			"capability": "end",
+			"matched": True,
+			"reason": parsed.get("reason", ""),
+		})
 	except Exception as e:  # noqa: BLE001
 		log.error("End: failed to update session %s: %s", node.session, e)

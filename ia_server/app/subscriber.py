@@ -52,6 +52,7 @@ class Subscriber:
 	async def _poll_loop(self) -> None:
 		# Start by ignoring everything that already exists at boot time.
 		since_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%fZ")
+		seen_ids: set[str] = set()
 		log.info("Polling Node collection from %s every %ss", since_iso, POLL_INTERVAL_S)
 
 		while not self._stop.is_set():
@@ -62,6 +63,11 @@ class Subscriber:
 				new_nodes = []
 
 			for n in new_nodes:
+				node_id = n.get("id", "")
+				if node_id in seen_ids:
+					continue
+				seen_ids.add(node_id)
+
 				created = n.get("created")
 				if isinstance(created, datetime):
 					created_str = created.strftime("%Y-%m-%d %H:%M:%S.%fZ")

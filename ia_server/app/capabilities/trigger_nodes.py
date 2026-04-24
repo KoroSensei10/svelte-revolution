@@ -24,7 +24,14 @@ Decide whether the player's contribution matches one of the configured trigger r
 Respond ONLY with a JSON object of this exact shape, no extra text:
 {"matched_rule_index": <integer or null>, "reason": "<short explanation>"}
 
-Rules are 0-indexed. If no rule clearly matches, return null."""
+Rules are 0-indexed. If no rule clearly matches, return null.
+
+IMPORTANT: The "reason" field must always be specific and reference concrete details
+from the player's contribution. Never give generic reasons like "no match" or
+"no clear match to configured trigger rules". Instead, briefly describe WHAT the
+player actually said or did, then explain WHY it does or does not satisfy a rule.
+Example: "The player discusses trade routes but does not explicitly agree to join
+the Syndicate's shadow operations."."""
 
 
 def _build_user_prompt(rules: list[tuple[int, str]], node: NodeRecord) -> str:
@@ -65,6 +72,13 @@ async def run(
 	matched = parsed.get("matched_rule_index")
 	if matched is None:
 		log.info("Trigger: no rule matched for node %s", node.id)
+		await pb.create_ai_log({
+			"node": node.id,
+			"session": node.session,
+			"capability": "trigger",
+			"matched": False,
+			"reason": parsed.get("reason", ""),
+		})
 		return
 	if not isinstance(matched, int):
 		log.warning("Trigger: matched_rule_index is not an int: %r", matched)
@@ -108,5 +122,14 @@ async def run(
 			created.get("id"),
 		)
 		await state.mark_fired(node.session, ("trigger", matched))
+		await pb.create_ai_log({
+			"node": node.id,
+			"session": node.session,
+			"capability": "trigger",
+			"matched": True,
+			"reason": parsed.get("reason", ""),
+			"ruleIndex": matched,
+			"resultNodeId": created.get("id", ""),
+		})
 	except Exception as e:  # noqa: BLE001
 		log.error("Trigger: failed to create node for rule %d: %s", matched, e)

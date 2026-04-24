@@ -32,7 +32,7 @@ class AIScript(BaseModel):
 
 
 class AIConfig(BaseModel):
-	vision: str
+	vision: str = ""
 	capabilities: list[AICapability] = Field(default_factory=list)
 	script: AIScript = Field(default_factory=AIScript)
 

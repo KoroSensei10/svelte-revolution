@@ -145,6 +145,15 @@ class PBClient:
 
 		await asyncio.to_thread(_update)
 
+	async def create_ai_log(self, payload: dict[str, Any]) -> None:
+		def _create() -> None:
+			self._pb.collection("AiLog").create(payload)
+
+		try:
+			await asyncio.to_thread(_create)
+		except Exception as e:  # noqa: BLE001
+			log.error("Failed to create AiLog: %s", e)
+
 
 def _snake_to_camel(name: str) -> str:
 	parts = name.split("_")

@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import re
 import unicodedata
+from typing import Any
 
 from ..models import AIConfig, NodeRecord
 from ..pb_client import PBClient
@@ -63,11 +64,23 @@ async def run(node: NodeRecord, config: AIConfig, pb: PBClient) -> None:
 
 	new_title, t_changed = _redact(node.title, banned)
 	new_text, x_changed = _redact(node.text, banned)
-	if not (t_changed or x_changed):
-		return
+	changed = t_changed or x_changed
 
-	log.info("Censoring node %s", node.id)
-	try:
-		await pb.update_node(node.id, {"title": new_title, "text": new_text})
-	except Exception as e:  # noqa: BLE001
-		log.error("Failed to update censored node %s: %s", node.id, e)
+	ai_log: dict[str, Any] = {
+		"node": node.id,
+		"session": node.session,
+		"capability": "censor",
+		"matched": changed,
+	}
+	if changed:
+		ai_log["originalTitle"] = node.title
+		ai_log["originalText"] = node.text
+
+	if changed:
+		log.info("Censoring node %s", node.id)
+		try:
+			await pb.update_node(node.id, {"title": new_title, "text": new_text})
+		except Exception as e:  # noqa: BLE001
+			log.error("Failed to update censored node %s: %s", node.id, e)
+
+	await pb.create_ai_log(ai_log)
