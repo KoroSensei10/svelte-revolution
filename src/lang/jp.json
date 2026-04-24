@@ -222,7 +222,21 @@
     "requiresFiredDesc": "このルールは、選択したルールが発動した後にのみ有効になります。",
     "endConditionDesc": "プレイヤーの投稿がこの条件に一致すると、AIがセッションを終了します。",
     "endConditionFieldDesc": "セッションが終了するために何が起こるべきかを説明してください。具体的に。",
-    "endTitleDesc": "条件が満たされたときに表示するエンディング。"
+    "endTitleDesc": "条件が満たされたときに表示するエンディング。",
+    "dashboard": "AIダッシュボード",
+    "sessionCompleted": "セッション完了",
+    "sessionInProgress": "セッション進行中",
+    "aiActive": "AI有効",
+    "aiInactive": "AI無効",
+    "notEvaluated": "未評価",
+    "rule": "ルール",
+    "sessionEnded": "セッション終了",
+    "censored": "検閲済み",
+    "triggered": "発動",
+    "noMatch": "一致なし",
+    "clean": "適合",
+    "reason": "理由",
+    "originalText": "元のテキスト"
   },
   "misc": {
     "add": "追加",

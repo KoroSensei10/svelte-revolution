@@ -81,3 +81,17 @@ export interface User {
 	name?: string;
 	avatar?: string;
 }
+
+export interface AiLog {
+	id: string;
+	node: string;
+	session: string;
+	capability: 'censor' | 'trigger' | 'end';
+	matched: boolean;
+	reason?: string;
+	ruleIndex?: number;
+	resultNodeId?: string;
+	originalTitle?: string;
+	originalText?: string;
+	created: string;
+}

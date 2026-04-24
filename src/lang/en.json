@@ -222,7 +222,21 @@
     "requiresFiredDesc": "This rule will only activate after the selected rules have already fired.",
     "endConditionDesc": "The AI ends the session when a player's contribution matches this condition.",
     "endConditionFieldDesc": "Describe what must happen for the session to end. Be specific.",
-    "endTitleDesc": "Which ending to display when the condition is met."
+    "endTitleDesc": "Which ending to display when the condition is met.",
+    "dashboard": "AI Dashboard",
+    "sessionCompleted": "Session completed",
+    "sessionInProgress": "Session in progress",
+    "aiActive": "AI active",
+    "aiInactive": "AI inactive",
+    "notEvaluated": "Not evaluated",
+    "rule": "Rule",
+    "sessionEnded": "Session ended",
+    "censored": "Censored",
+    "triggered": "Triggered",
+    "noMatch": "No match",
+    "clean": "Clean",
+    "reason": "Reason",
+    "originalText": "Original text"
   },
   "misc": {
     "add": "Add",

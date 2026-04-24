@@ -224,7 +224,21 @@
     "requiresFiredDesc": "Cette règle ne s'activera qu'après le déclenchement des règles sélectionnées.",
     "endConditionDesc": "L'IA termine la session lorsque la contribution d'un joueur correspond à cette condition.",
     "endConditionFieldDesc": "Décrivez ce qui doit se passer pour que la session se termine. Soyez précis.",
-    "endTitleDesc": "Quelle fin afficher lorsque la condition est remplie."
+    "endTitleDesc": "Quelle fin afficher lorsque la condition est remplie.",
+    "dashboard": "Tableau de bord IA",
+    "sessionCompleted": "Session terminée",
+    "sessionInProgress": "Session en cours",
+    "aiActive": "IA active",
+    "aiInactive": "IA inactive",
+    "notEvaluated": "Non évalué",
+    "rule": "Règle",
+    "sessionEnded": "Session terminée",
+    "censored": "Censuré",
+    "triggered": "Déclenché",
+    "noMatch": "Pas de correspondance",
+    "clean": "Conforme",
+    "reason": "Raison",
+    "originalText": "Texte original"
   },
   "misc": {
     "add": "Ajouter",
