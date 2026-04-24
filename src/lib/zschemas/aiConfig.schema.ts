@@ -10,8 +10,9 @@ const aiNodeDefSchema = nodeSchema.extend({
 export const aiConfigSchema = z.object({
 	vision: z
 		.string()
-		.min(10, { message: 'AI vision must be at least 10 characters long' })
-		.max(2000, { message: 'AI vision must be at most 2000 characters long' }),
+		.max(5000, { message: 'AI vision must be at most 5000 characters long' })
+		.optional()
+		.or(z.literal('')),
 	capabilities: z
 		.array(z.enum(aiCapabilities))
 		.min(1, { message: 'Select at least one AI capability' }),
@@ -23,7 +24,7 @@ export const aiConfigSchema = z.object({
 					condition: z
 						.string()
 						.min(3, { message: 'Trigger condition must be at least 3 characters long' })
-						.max(500),
+						.max(2000),
 					node: aiNodeDefSchema,
 					requiresFired: z.array(z.number().int().min(0)).optional()
 				})
@@ -34,7 +35,7 @@ export const aiConfigSchema = z.object({
 				condition: z
 					.string()
 					.min(3, { message: 'End condition must be at least 3 characters long' })
-					.max(500),
+					.max(2000),
 				endTitle: z.string().min(1, { message: 'End title is required' })
 			})
 			.optional()

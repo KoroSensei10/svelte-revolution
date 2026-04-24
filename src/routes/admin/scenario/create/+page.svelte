@@ -6,6 +6,7 @@
 	import nProgress from 'nprogress';
 	import { availableLocales } from '$lib/i18n';
 	import { fullScenarioSchema } from '$lib/zschemas/scenario.schema';
+	import { aiConfigSchema } from '$lib/zschemas/aiConfig.schema';
 	import { Sparkles, TriangleAlert, Trash2 } from 'lucide-svelte';
 	import { PreviewGraph } from '$stores/graph/Classes/PreviewGraph.svelte';
 	import { pb } from '$lib/client/pocketbase';
@@ -42,13 +43,7 @@
 				title: ''
 			}
 		],
-		events: [
-			{
-				title: '',
-				text: '',
-				author: ''
-			}
-		],
+		events: [],
 		ends: [
 			{
 				title: '',
@@ -67,13 +62,39 @@
 		}
 	});
 
-	const aiConfigJson = $derived(formData.ai ? JSON.stringify(aiConfig) : '');
+	const aiConfigJson = $derived.by(() => {
+		if (!formData.ai) return '';
+		const caps = new Set(aiConfig.capabilities);
+		const cleaned: AIConfig = {
+			vision: aiConfig.vision,
+			capabilities: aiConfig.capabilities,
+			script: {
+				bannedWords: caps.has('canCensor') ? aiConfig.script.bannedWords : undefined,
+				triggerRules: caps.has('canTriggerNodes') ? aiConfig.script.triggerRules : undefined,
+				endCondition: caps.has('canEndSession') ? aiConfig.script.endCondition : undefined,
+			}
+		};
+		// Strip endCondition if empty
+		if (cleaned.script.endCondition && !cleaned.script.endCondition.condition && !cleaned.script.endCondition.endTitle) {
+			cleaned.script.endCondition = undefined;
+		}
+		return JSON.stringify(cleaned);
+	});
 
 	const aiIssues = $derived.by(() => {
 		if (!formData.ai) return [];
 		const result: string[] = [];
-		if (!aiConfig.vision || aiConfig.vision.trim().length < 10) result.push('ia.visionTooShort');
 		if (aiConfig.capabilities.length === 0) result.push('ia.noCapabilities');
+		if (aiConfigJson) {
+			try {
+				aiConfigSchema.parse(JSON.parse(aiConfigJson));
+			} catch (e) {
+				const err = e as z.ZodError;
+				for (const issue of err.issues) {
+					result.push(issue.message);
+				}
+			}
+		}
 		return result;
 	});
 
@@ -145,7 +166,7 @@
 		formData.firstNode = { title: '', text: '', author: '' };
 		formData.ai = false;
 		formData.sides = [{ title: '' }, { title: '' }];
-		formData.events = [{ title: '', text: '', author: '' }];
+		formData.events = [];
 		formData.ends = [{ title: '', text: '' }];
 		aiConfig.vision = '';
 		aiConfig.capabilities = [];
@@ -399,14 +420,11 @@
 							</label>
 						</div>
 						<button
-							class="rounded-md border mt-2 px-4 py-2 h-fit {formData.events.length <= 1
-								? 'cursor-not-allowed text-gray-500 border-gray-500'
-								: 'bg-black text-gray-50  '}"
+							class="rounded-md border mt-2 px-4 py-2 h-fit bg-black text-gray-50"
 							type="button"
 							onclick={() => {
 								formData.events = formData.events.filter((_, index) => index !== i);
 							}}
-							disabled={formData.events.length <= 1}
 						>
 							{$t('misc.delete')}
 						</button>
