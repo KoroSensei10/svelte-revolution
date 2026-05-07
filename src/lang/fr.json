@@ -117,14 +117,14 @@
 	"previewDeactivated": "Prévisulation désactivée"
   },
   "side": {
-    "side": "Camp",
-    "sides": "Camps",
-    "chooseSide": "Choisir un camp",
-    "sideChosen": "Vous avez choisi votre camp",
-    "choose": "Validez votre camp",
-    "yourSide": "Ton camp",
-    "sideSaved": "Camp sauvegardé",
-    "title": "Titre du camp"
+    "side": "Rôle",
+    "sides": "Rôles",
+    "chooseSide": "Choisir un rôle",
+    "sideChosen": "Vous avez choisi votre rôle",
+    "choose": "Validez votre rôle",
+    "yourSide": "Ton rôle",
+    "sideSaved": "Rôle sauvegardé",
+    "title": "Titre du rôle"
   },
   "user": {
     "pseudo": "Pseudo",
