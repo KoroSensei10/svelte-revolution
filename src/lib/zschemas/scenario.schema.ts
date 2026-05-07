@@ -158,17 +158,17 @@ export const scenarioSchema = z.object({
 			message: t('errors.validation.fieldOftypeMustBeMinimumXLong', {
 				values: {
 					type: t('scenario.prologue'),
-					field: t('scenario.title'),
+					field: t('scenario.text'),
 					x: 3
 				}
 			})
 		})
-		.max(5000, {
+		.max(15000, {
 			message: t('errors.validation.fieldOftypeMustBeMaximumXLong', {
 				values: {
 					type: t('scenario.prologue'),
-					field: t('scenario.title'),
-					x: 5000
+					field: t('scenario.text'),
+					x: 15000
 				}
 			})
 		}),
