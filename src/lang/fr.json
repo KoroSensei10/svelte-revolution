@@ -109,17 +109,22 @@
       "title": "Titre de l'événement",
       "text": "Texte de l'événement",
       "author": "Auteur"
-    }
+    },
+	"node": {
+		"node": "noeud",
+		"nodes": "noeuds"
+	},
+	"previewDeactivated": "Prévisulation désactivée"
   },
   "side": {
-    "side": "Camp",
-    "sides": "Camps",
-    "chooseSide": "Choisir un camp",
-    "sideChosen": "Vous avez choisi votre camp",
-    "choose": "Validez votre camp",
-    "yourSide": "Ton camp",
-    "sideSaved": "Camp sauvegardé",
-    "title": "Titre du camp"
+    "side": "Rôle",
+    "sides": "Rôles",
+    "chooseSide": "Choisir un rôle",
+    "sideChosen": "Vous avez choisi votre rôle",
+    "choose": "Validez votre rôle",
+    "yourSide": "Ton rôle",
+    "sideSaved": "Rôle sauvegardé",
+    "title": "Titre du rôle"
   },
   "user": {
     "pseudo": "Pseudo",
@@ -236,7 +241,12 @@
       "notValid": "Le scénario n'est pas valide"
     },
     "internalError": "Erreur interne",
-    "unauthorized": "Non autorisé"
+    "unauthorized": "Non autorisé",
+	"validation": {
+		"fieldOftypeMustBeMinimumXLong": "{type}:{field} doit faire {x} charactères minimum",
+		"fieldOftypeMustBeMaximumXLong": "{type}:{field} doit faire {x} charactères maximum",
+		"thereMustBeAtLeastXItem": "Il doit y avoir au moins {x} {type}"
+	}
   },
   "print": {
     "print": "Imprimer",

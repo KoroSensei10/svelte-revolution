@@ -80,14 +80,11 @@ export class CurrentSessionStore {
 					.collection('End')
 					.getOne(res.record.end ?? '');
 				this.session.completed = res.record.completed;
-				this.session.end = res.record.end;
+				this.session.end = end.id;
 
-				this.session.expand = this.session.expand
-					? {
-						...this.session.expand,
-						...end,
-					}
-					: {};
+				this.session.expand = this.session.expand ?? {};
+				this.session.expand.end = end;
+
 				toast.success(t('sessions.sessionIsOver'), {
 					position: 'top-left',
 				});
@@ -122,3 +119,4 @@ export class CurrentSessionStore {
 }
 
 export const [getCurrentSessionCtx, setCurrentSessionCtx] = createContext<CurrentSessionStore>();
+
