@@ -179,12 +179,12 @@ export const scenarioSchema = z.object({
 export const fullScenarioSchema = z.object({
 	...scenarioSchema.shape,
 	firstNode: nodeSchema,
-	sides: z.array(sideSchema).min(2, { 
+	sides: z.array(sideSchema).min(1, { 
 		message: t('errors.validation.thereMustBeAtLeastXItem',{
 			values: {
 				type: t('side.side'),
-				x: 2
-			}				
+				x: 1
+			}
 		})
 	}),
 	events: z.array(eventSchema).min(1, {
@@ -192,7 +192,7 @@ export const fullScenarioSchema = z.object({
 			values: {
 				type: t('scenario.event.event'),
 				x: 1
-			}				
+			}
 		})
 	}),
 	ends: z.array(endSchema).min(1, { 
@@ -200,7 +200,7 @@ export const fullScenarioSchema = z.object({
 			values: {
 				type: t('scenario.end.end'),
 				x: 1
-			}				
+			}
 		})
 	})
 });
