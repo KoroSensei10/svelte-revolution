@@ -191,14 +191,14 @@
 				</button>
 			{/if}
 			<!-- Add Node Or Session End infos -->
-			{#if currentSession.session.end && currentSession.session.completed}
+			{#if currentSession.session.completed}
 				<button
 					onclick={() => {
 						setCheck('sessionEnd');
 					}}
 					class="absolute {states.sessionEnd
 						? 'bg-white'
-						: ''} border p-2 top-0 -translate-y-[200%] rounded-full bg-black bg-opacity-90 z-50"
+						: ''} border p-2 top-0 translate-y-[-200%] rounded-full bg-black bg-opacity-90 z-50"
 				>
 					<Info
 						strokeWidth={1.5}
@@ -212,7 +212,7 @@
 					}}
 					class="absolute {states.addNode
 						? 'bg-white'
-						: ''} border p-2 top-0 -translate-y-[200%] rounded-full bg-black bg-opacity-90 z-50"
+						: ''} border p-2 top-0 translate-y-[-200%] rounded-full bg-black bg-opacity-90 z-50"
 				>
 					<MessageCirclePlus
 						strokeWidth={1.5}
