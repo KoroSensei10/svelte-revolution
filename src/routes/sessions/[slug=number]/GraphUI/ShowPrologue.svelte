@@ -144,13 +144,12 @@
 			variant="primary"
 			type="button"
 			disabled={!currentSession.session.completed && 
-				(!currentSession.admin.isAdmin && 
-					(!currentSession.sessionProfile.choosedSideId || !currentSession.sessionProfile.pseudo))}
+				!currentSession.admin.isAdmin && 
+				(!currentSession.sessionProfile.choosedSideId || !currentSession.sessionProfile.pseudo)}
 			onclick={() => {
 				currentSession.userWantAccess = true;
 			}}
 		>
-			{console.log(currentSession.session)}
 			{$t('misc.start')}
 		</Button>
 	</div>
