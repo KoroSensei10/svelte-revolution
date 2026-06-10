@@ -13,7 +13,7 @@
 			{currentSession.session.expand?.end?.title || 'Session Ended'}
 		</h3>
 		<div class="text-gray-200">
-			{currentSession.session.expand?.end?.text}
+			{currentSession.session.expand?.end?.text || 'Missing session end'}
 		</div>
 	</div>
 </Overlay>

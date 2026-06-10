@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import Button from '$components/Button.svelte';
-	import { Pause, Play, Volume1, Volume2, VolumeOff } from 'lucide-svelte';
+	import { Pause, Play, Volume1, Volume2, VolumeOff } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	interface Props {

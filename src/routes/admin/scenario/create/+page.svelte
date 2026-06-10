@@ -6,7 +6,7 @@
 	import nProgress from 'nprogress';
 	import { availableLocales } from '$lib/i18n';
 	import { fullScenarioSchema } from '$lib/zschemas/scenario.schema';
-	import { Sparkles, TriangleAlert } from 'lucide-svelte';
+	import { Sparkles, TriangleAlert } from '@lucide/svelte';
 	import { PreviewGraph } from '$stores/graph/Classes/PreviewGraph.svelte';
 	import { pb } from '$lib/client/pocketbase';
 	import type { z } from 'zod';

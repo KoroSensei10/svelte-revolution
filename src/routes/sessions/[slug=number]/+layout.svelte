@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import { RefreshCcw } from 'lucide-svelte';
+	import { RefreshCcw } from '@lucide/svelte';
 
 	let { children } = $props();
 	let key = $state(0);
