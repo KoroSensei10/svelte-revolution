@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Square, SquareCheck } from 'lucide-svelte';
+	import { Square, SquareCheck } from '@lucide/svelte';
 	import Base from './Base.svelte';
 	import { cn } from '$lib/utils';
 

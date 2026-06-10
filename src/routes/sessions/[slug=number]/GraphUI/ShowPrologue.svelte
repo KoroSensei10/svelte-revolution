@@ -150,6 +150,7 @@
 				currentSession.userWantAccess = true;
 			}}
 		>
+			{console.log(currentSession.session)}
 			{$t('misc.start')}
 		</Button>
 	</div>

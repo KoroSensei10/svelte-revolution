@@ -9,7 +9,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import nProgress from 'nprogress';
 	import { resolve } from '$app/paths';
-	import { Menu } from 'lucide-svelte';
+	import { Menu } from '@lucide/svelte';
 	import Dropdown from '$components/Dropdown.svelte';
 	import Button from '$components/Button.svelte';
 	import { SvelteSet } from 'svelte/reactivity';

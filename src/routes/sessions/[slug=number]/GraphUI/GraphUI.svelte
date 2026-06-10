@@ -12,7 +12,7 @@
 		MessageCirclePlus,
 		MessageCircleWarning,
 		X,
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import GraphTree from '../../../../components/graph/GraphTree.svelte';
 	import { watch } from '$lib/runes/watch.svelte';
 	import AddNode from './AddNode.svelte';

@@ -1,5 +1,5 @@
 <script>
-	import { ArrowUp } from 'lucide-svelte';
+	import { ArrowUp } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	let showButton = $state(false);

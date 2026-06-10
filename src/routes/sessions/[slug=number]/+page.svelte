@@ -4,7 +4,7 @@
 	import { t } from 'svelte-i18n';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { LoaderPinwheel } from 'lucide-svelte';
+	import { LoaderPinwheel } from '@lucide/svelte';
 	import { pb } from '$lib/client/pocketbase';
 	import { titleStore } from '$stores/titles/index.svelte';
 	import { MainGraph as MainGraphClass } from '$stores/graph/Classes/MainGraph.svelte';

@@ -6,7 +6,7 @@
 	import nProgress from 'nprogress';
 	import Checkbox from '$components/form/Checkbox.svelte';
 	import Button from '$components/Button.svelte';
-	import { ChevronDown } from 'lucide-svelte';
+	import { ChevronDown } from '@lucide/svelte';
 
 	import type { ActionResult } from '@sveltejs/kit';
 	import { getCurrentSessionCtx } from '$stores/session.svelte';
